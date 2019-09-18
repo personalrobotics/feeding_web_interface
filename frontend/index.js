@@ -21,7 +21,7 @@ let COMMON_IMAGE_H = "11em";
 // 2: Acquisition auto; 3: Timing auto; 4: Transfer auto
 let trialType = -1;
 // which step is the program currently at?
-// 0: init; 1: acquisition; 2: timing; 3: transfer
+// 0: init; 1: acquisition; 3: timing; 2: transfer
 let currentStep = 0;
 // program mode: user mode (default) / developer mode
 let isUserMode = true;
@@ -112,7 +112,7 @@ $(function() {
             host : 'rosvideo.ngrok.io',
             width : 640,
             height : 480,
-            topic : "/camera/color/image_raw"
+            topic : "/camera/color/disable"
         });
         // in dev mode
         let devCameraViewer = new MJPEGCANVAS.Viewer({
@@ -120,7 +120,7 @@ $(function() {
             host : 'rosvideo.ngrok.io',
             width : 800,
             height : 480,
-            topic : "/camera/color/image_raw"
+            topic : "/camera/color/disable"
         });
 
         // Event handlers
@@ -265,11 +265,16 @@ $(function() {
         switch (currentStep % 4) {
         case 1:
             statusStr = "action";
-            break;
-        case 2:
-            statusStr = "timing";
+            if (newString == "What food would you like?") {
+                console.log("Restarting...");
+                restart();
+                return;
+            }
             break;
         case 3:
+            statusStr = "timing";
+            break;
+        case 2:
             statusStr = "transfer";
             break;
         default:
@@ -347,10 +352,10 @@ $(function() {
         showStatusBar(false, "action");
     }
 
-    function handleActionDone(msg) {
+    function handleTransferDone(msg) {
         currentStep++;
         // show the timing page
-        $("#action_pick_container").css("display", "none");
+        $("#transfer_pick_container").css("display", "none");
         $("#timing_pick_container").css("display", "block");
         if (trialType === 0 || trialType === 2 || trialType === 4) {
             // let user decide when the robot should feed
@@ -383,10 +388,10 @@ $(function() {
         console.log("Send feeding");
     }
     
-    function handleTimingDone(msg) {
+    function handleActionDone(msg) {
         currentStep++;
         // show the transfer page
-        $("#timing_pick_container").css("display", "none");
+        $("#action_pick_container").css("display", "none");
         $("#transfer_pick_container").css("display", "block");
         if (trialType === 0 || trialType === 2 || trialType === 3) {
             // let user decide how the food should be transfered
@@ -422,14 +427,18 @@ $(function() {
         showStatusBar(true, "transfer");
     }
     
-    function handleTransferDone(msg) {
+    function handleTimingDone(msg) {
         // show the restart page
-        $("#transfer_pick_container").css("display", "none");
+        $("#timing_pick_container").css("display", "none");
         $("#restart_pick_container").css("display", "block");
     }
 
     function restart() {
         console.log("Calling restart");
+        // Kill all containers
+        $("#transfer_pick_container").css("display", "none");
+        $("#timing_pick_container").css("display", "none");
+        $("#action_pick_container").css("display", "none");
         // show front page (food selection page)
         $("#restart_pick_container").css("display", "none");
         $("#food_pick_container").css("display", "block");
