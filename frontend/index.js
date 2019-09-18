@@ -4,11 +4,11 @@ let self = this;
 
 // list of food images
 // (note: the lasy entry MUST ALWAYS be the random image!)
-let FOODIMAGES = ["pics/food_pics/broccoli.png", "pics/food_pics/cantaloupe.jpg", "pics/food_pics/strawberry.jpg", "pics/food_pics/random.png"];
+let FOODIMAGES = ["pics/food_pics/apple.jpg", "pics/food_pics/cantaloupe.jpg", "pics/food_pics/strawberry.jpg", "pics/food_pics/random.png"];
 // list of food action images
-let ACTIONIMAGES = ["pics/actions/skewer.jpg", "pics/actions/tilt.jpg", "pics/actions/angle.jpg"];
+let ACTIONIMAGES = ["pics/actions/skewer.png", "pics/actions/tilt.png"];
 // list of food transfer images
-let TRANSFERIMAGES = ["pics/transfers/horizontal.jpg", "pics/transfers/tilt_the_food.jpg"];
+let TRANSFERIMAGES = ["pics/transfers/horizontal.png", "pics/transfers/tilt_the_food.png"];
 // food image size
 let FOOD_IMAGE_W = "15em";
 let FOOD_IMAGE_H = "12em";
@@ -47,17 +47,17 @@ $(function() {
 	   ros: self.ros,
            name: '/humanStudy/autoTiming'
 	});
-	self.autoTiming.set('false'); //Default set to manual
+	self.autoTiming.set(false); //Default set to manual
 	self.autoAcquisition = new ROSLIB.Param({
 	   ros: self.ros,
            name: '/humanStudy/autoAcquisition'
 	});
-	self.autoAcquisition.set('false'); //Default set to manual
+	self.autoAcquisition.set(false); //Default set to manual
 	self.autoTransfer = new ROSLIB.Param({
 	   ros: self.ros,
            name: '/humanStudy/autoTransfer'
 	});
-	self.autoTransfer.set('false'); //Default set to manual
+	self.autoTransfer.set(false); //Default set to manual
 
         // ROS topic
         // Publishers
@@ -98,12 +98,12 @@ $(function() {
         });
         self.transferDoneTopic.subscribe(handleTransferDone);
         // this subscriber is for the backend response messages
-        self.feedingResultTopic = new ROSLIB.Topic({
+        self.talkTopic = new ROSLIB.Topic({
             ros: self.ros, 
-            name: '/feeding_result_msg', 
+            name: '/talk_pub', 
             messageType: 'std_msgs/String'
         });
-        self.feedingResultTopic.subscribe(handleFeedingResult);
+        self.talkTopic.subscribe(handleTalkTopic);
 
         // Camera View
         // in user mode
@@ -191,33 +191,33 @@ $(function() {
 	    switch(trialType) {
 	        // Non-Autonomous
 		case 0:
-	            self.autoTransfer.set('false');
-	            self.autoTiming.set('false');
-	            self.autoAcquisition.set('false');
+	            self.autoTransfer.set(false);
+	            self.autoTiming.set(false);
+	            self.autoAcquisition.set(false);
 	            break;
 	        // Fully-Autonomous
 		case 1:
-	            self.autoTransfer.set('true');
-	            self.autoTiming.set('true');
-	            self.autoAcquisition.set('true');
+	            self.autoTransfer.set(true);
+	            self.autoTiming.set(true);
+	            self.autoAcquisition.set(true);
 	            break;
 	        // Acquisition Auto
 		case 2:
-	            self.autoTransfer.set('false');
-	            self.autoTiming.set('false');
-	            self.autoAcquisition.set('true');
+	            self.autoTransfer.set(false);
+	            self.autoTiming.set(false);
+	            self.autoAcquisition.set(true);
 	            break;
 	        // Timing Auto 
 		case 3:
-	            self.autoTransfer.set('false');
-	            self.autoTiming.set('true');
-	            self.autoAcquisition.set('false');
+	            self.autoTransfer.set(false);
+	            self.autoTiming.set(true);
+	            self.autoAcquisition.set(false);
 	            break;
 	        // Transfer Auto 
 		case 4:
-	            self.autoTransfer.set('true');
-	            self.autoTiming.set('false');
-	            self.autoAcquisition.set('false');
+	            self.autoTransfer.set(true);
+	            self.autoTiming.set(false);
+	            self.autoAcquisition.set(false);
 	            break;
             }
 
@@ -259,16 +259,26 @@ $(function() {
         $("#video_stream_container").css("display", "none");
     }
 
-    function handleFeedingResult(msg) {
-        let typeId = msg.type;
-        let success = msg.success;
-        if (typeId === 1) {
-            $("#timing_status").html("Approaching");
-        } else if (typeId === 2) {
-            $("#transfer_status").html("Ready to eat");
-        } else {  // acquisition
-            document.getElementById("action_status").innerHTML = success ? "SUCCEEDED" : "FAILED";
+    function handleTalkTopic(msg) {
+        let newString = msg.data;
+        var statusStr = "action";
+        switch (currentStep) {
+        case 1:
+            statusStr = "action";
+            break;
+        case 2:
+            statusStr = "timing";
+            break;
+        case 3:
+            statusStr = "transfer";
+            break;
+        default:
+            statusStr = "food";
         }
+
+        console.log("Got String: " + newString);
+
+        showStatusBarCustom(true, statusStr, newString);
     }
 
     function makeFoodSelection() {
@@ -332,6 +342,7 @@ $(function() {
         // publish the selected action name
         publishMsg(self.actionTopic, this.alt);
         // display status bar
+        console.log("publishing action");
         showStatusBar(false, "action");
     }
 
@@ -368,6 +379,7 @@ $(function() {
         publishMsg(self.actionTopic, "continue");
         // display status bar
         showStatusBar(false, "timing");
+        console.log("Send feeding");
     }
     
     function handleTimingDone(msg) {
@@ -526,6 +538,19 @@ $(function() {
         let statusBar = $("#" + name + "_status");
         statusBar.css("display", "block");
         statusBar.html("Waiting for robot response...");
+        if (expandLayout) {
+            // the status bar should take 2 columns
+            statusBar.css({
+                gridColumnStart: "1",
+                gridColumnEnd: "3",
+                marginBottom: "3em"
+            });
+        }
+    }
+    function showStatusBarCustom(expandLayout, name, text) {
+        let statusBar = $("#" + name + "_status");
+        statusBar.css("display", "block");
+        statusBar.html(text);
         if (expandLayout) {
             // the status bar should take 2 columns
             statusBar.css({
