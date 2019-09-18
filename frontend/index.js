@@ -133,8 +133,8 @@ $(function() {
             trialDropdownLists[i].addEventListener("click", makeTrialSelection);
         }
         // mode buttons
-        $("#user_mode_btn").click(switchMode);
-        $("#dev_mode_btn").click(switchMode);
+        // $("#user_mode_btn").click(switchMode);
+        // $("#dev_mode_btn").click(switchMode);
         // feed button
         $("#time_to_feed_btn").click(feedNow);
         // restart button
@@ -237,14 +237,14 @@ $(function() {
     function switchMode() {
         if (this.innerHTML === "User Mode") {
             isUserMode = true;
-            $("#user_mode_btn").css({"background-color": "#adc7dc", "color": "black"});
-            $("#dev_mode_btn").css({"background-color": "#d6e3ed", "color": "white"});
+            // $("#user_mode_btn").css({"background-color": "#adc7dc", "color": "black"});
+            // $("#dev_mode_btn").css({"background-color": "#d6e3ed", "color": "white"});
             // restart the whole program
             restart();
         } else {  // developer mode
             isUserMode = false;
-            $("#user_mode_btn").css({"background-color": "#d6e3ed", "color": "white"});
-            $("#dev_mode_btn").css({"background-color": "#adc7dc", "color": "black"});
+            // $("#user_mode_btn").css({"background-color": "#d6e3ed", "color": "white"});
+            // $("#dev_mode_btn").css({"background-color": "#adc7dc", "color": "black"});
             // hide trial type selection
             $("#trial_dropdown_container").css("display", "none");
         }
@@ -262,7 +262,7 @@ $(function() {
     function handleTalkTopic(msg) {
         let newString = msg.data;
         var statusStr = "action";
-        switch (currentStep) {
+        switch (currentStep % 4) {
         case 1:
             statusStr = "action";
             break;
@@ -277,6 +277,7 @@ $(function() {
         }
 
         console.log("Got String: " + newString);
+        console.log("Current Step: " + currentStep);
 
         showStatusBarCustom(true, statusStr, newString);
     }
@@ -303,7 +304,7 @@ $(function() {
                 // hide trial type selection
                 $("#trial_dropdown_container").css("display", "none");
                 // disable the developer mode button
-                document.getElementById("dev_mode_btn").disabled = true;
+                // document.getElementById("dev_mode_btn").disabled = true;
             } else {  // show large camera view in dev mode only
                 $("#food_display_container").css("display", "none");
                 $("#video_stream_container").css("display", "block");
@@ -428,11 +429,12 @@ $(function() {
     }
 
     function restart() {
+        console.log("Calling restart");
         // show front page (food selection page)
         $("#restart_pick_container").css("display", "none");
         $("#food_pick_container").css("display", "block");
         // enable the developer mode button
-        document.getElementById("dev_mode_btn").disabled = false;
+        // document.getElementById("dev_mode_btn").disabled = false;
         // reset variables
         trialType = -1;
         currentStep = 0;
