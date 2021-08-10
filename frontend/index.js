@@ -6,15 +6,15 @@ let self = this;
 // (note: the lasy entry MUST ALWAYS be the random image!)
 let FOODIMAGES = ["pics/food_pics/apple.jpg", "pics/food_pics/cantaloupe.jpg", "pics/food_pics/strawberry.jpg", "pics/food_pics/random.png"];
 // list of food action images
-let ACTIONIMAGES = ["pics/actions/skewer.png", "pics/actions/tilt.png"];
+let ACTIONIMAGES = ["pics/actions/vertical.png", "pics/actions/tilt.png"];
 // list of food transfer images
 let TRANSFERIMAGES = ["pics/transfers/horizontal.png", "pics/transfers/tilt_the_food.png"];
 // food image size
-let FOOD_IMAGE_W = "15em";
-let FOOD_IMAGE_H = "12em";
+let FOOD_IMAGE_W = "90%";
+let FOOD_IMAGE_H = "";
 // action and transfer image size
-let COMMON_IMAGE_W = "15em";
-let COMMON_IMAGE_H = "11em";
+let COMMON_IMAGE_W = "90%";
+let COMMON_IMAGE_H = "";
 
 // trial type: 
 // 0: Non-autonomous; 1: Autonomous
@@ -107,6 +107,7 @@ $(function() {
 
         // Camera View
         // in user mode
+        /*
         let userCameraViewer = new MJPEGCANVAS.Viewer({
             divID : "camera",
             host : 'rosvideo.ngrok.io',
@@ -122,6 +123,7 @@ $(function() {
             height : 480,
             topic : "/camera/color/disable"
         });
+        */
 
         // Event handlers
         // trial type dropdown hover

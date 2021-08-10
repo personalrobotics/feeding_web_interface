@@ -71,17 +71,20 @@ button:hover, #food_display_container img:hover, #video_stream:hover {
     color: white;
 }
 
+/*
 #food_display_container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
 }
+*/
 
 #food_display_container h2 {
     margin-top: 1em;
 }
 
 .pick_container, #camera_container {
-    margin: 0;
+    margin: 0 auto;
+    /*width: 100%;*/
 }
 
 .pick_container {
