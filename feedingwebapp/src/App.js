@@ -22,6 +22,7 @@ import Button from 'react-bootstrap/Button';
 import Home from "./Pages/Home/Home";
 import Settings from "./Pages/Settings/Settings";
 import Transition from "./Pages/Transitions/Transition";
+import Footer from "./Pages/Footer/Footer";
 
 function MyVerticallyCenteredModal(props) {
   return (
@@ -54,31 +55,35 @@ function App() {
   const [modalShow, setModalShow] = React.useState(false);
 
   return (
-    <Router>
-      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-        <Container>
-          <Navbar id="responsive-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link className="text-white border border-info rounded mx-1 btn-lg" href="/">Home</Nav.Link>
-              <Nav.Link className="text-white border border-info rounded mx-1 btn-lg" href="/settings">Settings</Nav.Link>
-            </Nav>
-            <Nav>
-              <Nav.Link onClick={() => setModalShow(true)} className="text-dark bg-info border border-info rounded btn-lg">Video</Nav.Link>
-            </Nav>
-            <MyVerticallyCenteredModal
-              show={modalShow}
-              onHide={() => setModalShow(false)}
-            />
-          </Navbar>
-        </Container>
-      </Navbar>
+    <>
+      
+      <Router>
+        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+          
+            <Navbar id="responsive-navbar-nav">
+              <Nav className="me-auto">
+                <Nav.Link className="text-white border border-info rounded mx-1 btn-lg btn-huge p-2" href="/">Home</Nav.Link>
+                <Nav.Link className="text-white border border-info rounded mx-1 btn-lg btn-huge p-2" href="/settings">Settings</Nav.Link>
+              </Nav>
+              <Nav>
+                <Nav.Link onClick={() => setModalShow(true)} className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2">Video</Nav.Link>
+              </Nav>
+              <MyVerticallyCenteredModal
+                show={modalShow}
+                onHide={() => setModalShow(false)}
+              />
+            </Navbar>
+          
+        </Navbar>
 
-      <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route exact path="/settings" element={<Settings />} />
-        <Route exact path="/transition" element={<Transition />} />
-      </Routes>
-    </Router >
+        <Routes>
+          <Route exact path="/" element={<Home />} />
+          <Route exact path="/settings" element={<Settings />} />
+          <Route exact path="/transition" element={<Transition />} />
+        </Routes>
+        <Footer/>
+      </Router >
+    </>
   );
 }
 
