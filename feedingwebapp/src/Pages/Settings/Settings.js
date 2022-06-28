@@ -23,7 +23,7 @@ const Settings = () => {
                 </ToggleButtonGroup>
             </Row>
 
-            <Row className="justify-content-center mx-1 my-2" style={{ paddingBottom: '35vh'}}>
+            <Row className="justify-content-center mx-1 my-2">
                 <Form.Label style={{fontSize: "30px"}}>Your preferred method of indicating readiness for a bite: </Form.Label>
                 <ToggleButtonGroup type="radio" name="options2" defaultValue={1} >
                     <ToggleButton className="border border-white btn-huge" style={{paddingLeft: '0px', paddingRight: '0px'}} id="tbg-radio-4" value={2}>
@@ -34,6 +34,18 @@ const Settings = () => {
                     </ToggleButton>
                     <ToggleButton className="border border-white btn-huge" style={{paddingLeft: '0px', paddingRight: '0px'}} id="tbg-radio-6" value={3}>
                         Press button
+                    </ToggleButton>
+                </ToggleButtonGroup>
+            </Row>
+
+            <Row className="justify-content-center mx-1 my-2" style={{ paddingBottom: '35vh'}}>
+                <Form.Label style={{fontSize: "30px"}}>Your preferred method for indicating selection of food: </Form.Label>
+                <ToggleButtonGroup type="radio" name="options2" defaultValue={1} >
+                    <ToggleButton className="border border-white btn-huge" style={{paddingLeft: '0px', paddingRight: '0px'}} id="tbg-radio-4" value={2}>
+                        A picture of plate
+                    </ToggleButton>
+                    <ToggleButton className="border border-white btn-huge" style={{paddingLeft: '0px', paddingRight: '0px'}} id="tbg-radio-5" value={3}>
+                        Scrollable list of food
                     </ToggleButton>
                 </ToggleButtonGroup>
             </Row>

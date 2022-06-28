@@ -17,7 +17,7 @@ const Footer = () => {
         <>
             <style type="text/css">
                 {`
-                @media screen and (max-width: 1000px) {
+                @media screen and (max-width: 1000px) and (min-height: 550px) {
                     .btn-huge {
                         padding: 15% 20%;
                         font-size: 200%;                        
@@ -29,15 +29,15 @@ const Footer = () => {
                         font-size: 150%;                       
                     }
                 }
-                    .txt-huge {
-                        font-size: 300%;
-                    }
+                .txt-huge {
+                    font-size: 300%;
+                }
 
                 `}
             </style>
             <MDBFooter bgColor='dark' className='text-center text-lg-left fixed-bottom'>
                 <div className='text-center p-3' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)'}}>
-                    <Button className="bg-danger rounded" size="huge" onClick={() => changeStatus()}>Emergency Stop</Button>
+                    <Button className="bg-danger rounded btn-huge" size="lg" onClick={() => changeStatus()}>Emergency Stop</Button>
                 </div>
             </MDBFooter>
         </>
