@@ -15,6 +15,7 @@ import Nav from 'react-bootstrap/Nav';
 import Modal from 'react-bootstrap/Modal';
 import useStore from ".//Pages/useStore";
 import Button from 'react-bootstrap/Button';
+import {ROS} from 'react-ros';
 
 // import MyVerticallyCenteredModal from 'react-bootstrap/'
 // import Modal from 'react-bootstrap/Modal'
@@ -22,6 +23,7 @@ import Button from 'react-bootstrap/Button';
 import Home from "./Pages/Home/Home";
 import Settings from "./Pages/Settings/Settings";
 import Transition from "./Pages/Transitions/Transition";
+import ROSPage from "./Pages/rosSubs";
 import Footer from "./Pages/Footer/Footer";
 
 function MyVerticallyCenteredModal(props) {
@@ -64,6 +66,7 @@ function App() {
               <Nav className="me-auto">
                 <Nav.Link className="text-white border border-info rounded mx-1 btn-lg btn-huge p-2" href="/">Home</Nav.Link>
                 <Nav.Link className="text-white border border-info rounded mx-1 btn-lg btn-huge p-2" href="/settings">Settings</Nav.Link>
+                <Nav.Link className="text-white border border-info rounded mx-1 btn-lg btn-huge p-2" href="/ros">ROS</Nav.Link>
               </Nav>
               <Nav>
                 <Nav.Link onClick={() => setModalShow(true)} className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2">Video</Nav.Link>
@@ -80,6 +83,7 @@ function App() {
           <Route exact path="/" element={<Home />} />
           <Route exact path="/settings" element={<Settings />} />
           <Route exact path="/transition" element={<Transition />} />
+          <Route exact path="/ros" element={<ROSPage />} />
         </Routes>
         <Footer/>
       </Router >
