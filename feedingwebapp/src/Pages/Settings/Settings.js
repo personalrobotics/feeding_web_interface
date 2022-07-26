@@ -8,7 +8,28 @@ import Footer from "../Footer/Footer";
 
 const Settings = () => {
     return (
+        
         <div>
+            <style type="text/css">
+                {`
+                @media screen and (max-width: 1000px) and (min-height: 550px) {
+                    .btn-huge {
+                        padding: 15% 20%;
+                        font-size: 200%;                        
+                    }
+                }
+                @media screen and (min-width: 1000px) {
+                    .btn-huge {
+                        padding: 5% 15%;
+                        font-size: 150%;                       
+                    }
+                }
+                .txt-huge {
+                    font-size: 300%;
+                }
+
+                `}
+            </style>
             <h1 style={{ textAlign: "center" }} className='txt-huge'>Settings</h1>
 
             <Row className="justify-content-center mx-1 my-2" >
@@ -49,8 +70,6 @@ const Settings = () => {
                     </ToggleButton>
                 </ToggleButtonGroup>
             </Row>
-
-            <Footer />
 
         </div>
     );

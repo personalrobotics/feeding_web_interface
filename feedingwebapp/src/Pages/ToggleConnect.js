@@ -2,6 +2,9 @@ import React from 'react'
 import { useROS } from 'react-ros'
 
 function ToggleConnect() {
+    var foo = useROS();
+    console.log({...foo});
+
     const { isConnected, topics, url, changeUrl, toggleConnection } = useROS();
 
     console.log(topics);
