@@ -4,6 +4,9 @@ import { ROS } from 'react-ros';
 import { useROS } from 'react-ros'
 import ScriptTag from 'react-script-tag';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import { RosConnection } from './roslib.min.js';
 
 import Button from 'react-bootstrap/Button';
@@ -14,10 +17,11 @@ import Modal from 'react-bootstrap/Modal';
 import Footer from "../Footer/Footer";
 import { Container } from "react-bootstrap";
 import { useForm } from "form-control-react";
+import fadeIn from 'react-animations/lib/fade-in'
 import ROSLIB from "roslib";
 
 
-const debug = false;
+const debug = true;
 const food = ["Apple", "Banana", "Carrot", "Cucumber", "Lettuce", "Mango", "Orange", "Pumpkin"];
 
 function MyVerticallyCenteredModal(props) {
@@ -55,7 +59,7 @@ function Home() {
     let { ros, isConnected, topics, url, changeUrl, toggleConnection, createListener } = useROS();
     console.log(topics)
     var new_topic_from_Robot = {
-        path: "/fromRobot",
+        path: "/from_robot",
         msgType: "std_msgs/String",
         type: "topic"
     }
@@ -63,7 +67,7 @@ function Home() {
     topics[4] = new_topic_from_Robot
 
     var new_topic_from_Web = {
-        path: "/fromWeb",
+        path: "/sillyTempTopic",
         msgType: "std_msgs/String",
         type: "topic"
     }
@@ -74,34 +78,15 @@ function Home() {
     const [queue, setQueue] = useState(0);
     const [message, setMessage] = useState("Hello")
     const [compression, setCompression] = useState('none');
-
-    // componentDidMount() {
-    //     console.log("entered add lib function")
-    //     const script1 = document.createElement('script');
-    //     script1.src = "http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js";
-    //     script1.async = true;
-    //     document.getElementsByTagName('head')[0].appendChild(script1);
-
-    //     const script2 = document.createElement('script');
-    //     script2.src = "http://static.robotwebtools.org/roslibjs/current/roslib.min.js"
-    //     script2.async = true;
-    //     document.getElementsByTagName('head')[0].appendChild(script2);
-
-    //     const script3 = document.createElement("script");
-    //     script3.type = "text/javascript"
-    //     script3.async = true;
-    //     script3.src = "./ScriptsROS.js"
-    //     document.getElementsByTagName('head')[0].appendChild(script3);
-
-    //     msg()
-    // }
+    const [fromWebAppTopic, setFromWebAppTopic] = useState(new ROSLIB.Topic({
+        ros: ros,
+        name: '/from_web',
+        messageType: 'std_msgs/String'
+    }));
 
     useEffect(() => {
         handleTopic(topic);
-        // var ros = new ROSLIB.Ros({
-        //     url : 'ws://localhost:9090'
-        //   });
-        //   console.log(ros)
+        runConnection();
     });
     const unsubscribe = () => {
         if (listener) {
@@ -151,15 +136,28 @@ function Home() {
     console.log(currentStateVal);
     const changeState = useStore((state) => state.changeState);
 
-    function AddLibrary() {
+    const notifyTimeout = () => toast("We are having trouble connecting to the robot. Please refresh the page and try again.");
 
+    function runConnection() {
+        if (!isConnected) {
+            toggleConnection();
+        }
+        handleTopic("/fromRobot");
     }
 
     function start_feeding_clicked() {
         console.log("start_feeding_clicked");
         // State 1: "Moving above the plate"
-        changeState(constants.States[1]);
-        console.log(isConnected);
+        runConnection();
+        fromWebAppTopic.publish(new ROSLIB.Message({
+            data: "start_feeding_clicked"
+        }));
+        if (isConnected || debug) {
+            changeState(constants.States[1]);
+        } else {
+            notifyTimeout();
+        }
+
     }
 
     // Temp Button #1
@@ -169,9 +167,14 @@ function Home() {
         changeState(constants.States[2]);
     }
 
-    function food_item_clicked() {
-        console.log("food_item_clicked");
+    function food_item_clicked(e) {
+        console.log("food_item_clicked" + e.target.value);
         // State 3: "Acquiring Food Item"
+        let strData = 'food_item_clicked: ';
+        strData += e.target.value;
+        fromWebAppTopic.publish(new ROSLIB.Message({
+            data: strData
+        }));
         changeState(constants.States[3]);
     }
 
@@ -185,6 +188,9 @@ function Home() {
     function ready_for_bite_clicked() {
         console.log("ready_for_bite_clicked");
         // State 5: "Moving closer to your mouth"
+        fromWebAppTopic.publish(new ROSLIB.Message({
+            data: "ready_for_bite_clicked"
+        }));
         changeState(constants.States[5]);
     }
 
@@ -198,7 +204,23 @@ function Home() {
     function done_with_bite_clicked() {
         console.log("done_with_bite_clicked");
         // State 1: "Moving above the plate"
+        fromWebAppTopic.publish(new ROSLIB.Message({
+            data: "done_with_bite_clicked"
+        }));
         changeState(constants.States[1]);
+    }
+
+    function done_with_arm_stowing() {
+        console.log("done_with_arm_stowing");
+        // State 7: "Not Eating"
+        fromWebAppTopic.publish(new ROSLIB.Message({
+            data: "done_with_arm_stowing"
+        }));
+        changeState(constants.States[7]);
+        if (isConnected) {
+            toggleConnection();
+        }
+
     }
 
     function RosConnect() {
@@ -216,52 +238,40 @@ function Home() {
             console.log('Connection to websocket server closed.');
         });
 
-        var cmdVel = new ROSLIB.Topic({
-            ros : ros,
-            name : '/cmd_vel',
-            messageType : 'geometry_msgs/Twist'
-          });
+        var fromWebTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/from_web',
+            messageType: 'std_msgs/String'
+        });
+
+        setFromWebAppTopic(fromWebTopic);
 
         var twist = new ROSLIB.Message({
-            linear : {
-              x : 0.1,
-              y : 0.2,
-              z : 0.3
-            },
-            angular : {
-              x : -0.1,
-              y : -0.2,
-              z : -0.3
-            }
-          });
-        cmdVel.publish(twist);
+            data: "Hello, world"
+        });
+        fromWebTopic.publish(twist);
     }
 
     if (currentStateVal.feeding_status == constants.States[7] || currentStateVal.feeding_status == constants.States[8]) {
         return (
             <>
-                <div>
+                <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
                     <ScriptTag type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js" />
                     <ScriptTag type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js" />
-                    {RosConnect()}
+                    {RosConnect}
 
-                    <h1 className="text-center txt-huge">Home</h1>
+                    <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>🏠 Home</h1>
+                    {isConnected ? <div><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected; Click "Start Feeding" to connect.</p></div>}
 
-
-                    <Button onClick={toggleConnection}>Connect to ADA</Button>
-                    <Button onClick={AddLibrary}>JS Lib</Button>
                     <Row xs={1} md={1} className="justify-content-center mx-2 my-2">
+                        <p class="transmessage" style={{ "margin-bottom": "10px", "margin-top": "0px", "font-size": "24px" }}>Hello!👋 I am ADA's faithful assistant, ADAWebapp! Bon Appétit! 😋</p>
                         <Button variant="primary" size="lg" className="btn-huge" id="#startBtn"
-                            onClick={start_feeding_clicked} style={{ width: "75%" }}>Start Feeding</Button>
+                            onClick={start_feeding_clicked} style={{ width: "75%", "font-size": "35px", "margin-top": "30px" }}>Click to Start Feeding</Button>
                     </Row>
-                    <b>ROS url input:  </b><input name="urlInput" defaultValue={url} onChange={event => changeUrl(event.target.value)} />  <br />
                     <MyVerticallyCenteredModal
                         show={modalShow}
                         onHide={() => setModalShow(false)}
                     />
-                    <button onClick={toggleConnection}>Toggle connect</button>
-                    {isConnected ? "connected" : "not connected"}
-                    <b>Topic to echo:  </b><input name="topicInput" defaultValue={topic} onChange={event => handleTopic(event.target.value)} />  <br />
                     <Footer />
                 </div>
             </>
@@ -270,16 +280,23 @@ function Home() {
     // State 1: "Moving above the plate"
     else if (currentStateVal.feeding_status == constants.States[1]) {
         return (
-            <div>
-                {isConnected ? <div><p class="connectedDiv">connected</p></div> : <div><p class="notConnectedDiv">not connected</p></div>}
+            <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+                {isConnected ? <div style={{ "display": "inline-block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline-block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
                 <Row className="justify-content-center mx-auto my-2 w-75">
                     {debug
-                        ? <Button variant="secondary" className="mx-2 mb-2" size="lg" onClick={moving_above_plate_done}>{constants.States[1]}_DONE</Button>
+                        ?
+                        <div>
+                            <Button variant="secondary" className="mx-2 mb-2" size="lg" onClick={moving_above_plate_done}>{constants.States[1]}_DONE</Button>
+                            {message == "moving_above_plate_done"
+                                ? moving_above_plate_done()
+                                : <div>
+                                    <h1 className="transMessHead" id={constants.States[1]}>Waiting for Robot to move above the plate...</h1>
+                                </div>}
+                        </div>
                         : message == "moving_above_plate_done"
                             ? moving_above_plate_done()
                             : <div>
-                                <h2 id={constants.States[1]}>Waiting for Robot to move above the plate...</h2>
-                                <p class="transmessage">Please wait. The robot is currently moving above your plate of food.</p>
+                                <h1 className="transMessHead" id={constants.States[1]}>Waiting for Robot to move above the plate...</h1>
                             </div>
                     }
                 </Row>
@@ -290,11 +307,17 @@ function Home() {
     // State 2: "Feeding"
     else if (currentStateVal.feeding_status == constants.States[2]) {
         return (
-            <div>
-                <h1 className="text-center txt-huge">Select a food item</h1>
-                <Row xs={1} md={3} lg={4} className="justify-content-center mx-1 my-2" style={{ paddingBottom: '35vh' }}>
+            <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+                <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>Food Item Selection</h1>
+                {isConnected ? <div style={{ "display": "block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
+
+                <div style={{ "display": "block" }}><Button className="doneBut" style={{ "font-size": "24px", "margin-top": "0px" }} onClick={() => changeState(constants.States[9])}>✅ Done Eating</Button></div>
+
+                <p class="transmessage" style={{ "margin-bottom": "0px" }}>Choose from one of the following food items.</p>
+
+                <Row xs={3} s={2} md={3} lg={4} className="justify-content-center mx-auto my-2" style={{ paddingBottom: '35vh' }}>
                     {food.map((value, i) => (
-                        <Button key={i} variant="primary" className="mx-2 mb-2 btn-huge" style={{ paddingLeft: "0px", paddingRight: "0px" }} size="lg" onClick={food_item_clicked}>{value}</Button>
+                        <Button key={i} variant="primary" className="mx-1 mb-1" style={{ paddingLeft: "0px", paddingRight: "0px", marginLeft: "0px", marginRight: "0px", "font-size": "25px" }} value={value} size="lg" onClick={(e) => food_item_clicked(e)}>{value}</Button>
                     ))}
                 </Row>
                 <Footer />
@@ -304,16 +327,28 @@ function Home() {
     // State 3: "Acquiring Food Item"
     else if (currentStateVal.feeding_status == constants.States[3]) {
         return (
-            <div>
-                {isConnected ? <div><p class="connectedDiv">connected</p></div> : <div><p class="notConnectedDiv">not connected</p></div>}
+            <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+                {isConnected ? <div style={{ "display": "inline-block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline-block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
+
+                <div style={{ "display": "inline-block" }}><Button className="cancelBut" style={{ "font-size": "24px", "margin-top": "0px" }} onClick={() => changeState(constants.States[1])}>🗑 Cancel Bite</Button></div>
+
                 <Row className="justify-content-center mx-auto my-2 w-75">
                     {debug
-                        ? <Button variant="secondary" className="mx-2 mb-2" size="lg" onClick={acquiring_food_item_done}>{constants.States[3]}_DONE</Button>
+                        ?
+                        <div>
+                            <Button variant="secondary" className="mx-2 mb-2" size="lg" onClick={acquiring_food_item_done}>{constants.States[3]}_DONE</Button>
+                            {
+                                message == "acquiring_food_item_done"
+                                    ? acquiring_food_item_done()
+                                    : <div>
+                                        <h1 id={constants.States[3]}>Waiting for Robot to acquire the food item selected...</h1>
+                                    </div>
+                            }
+                        </div>
                         : message == "acquiring_food_item_done"
                             ? acquiring_food_item_done()
                             : <div>
-                                <h2 id={constants.States[3]}>Waiting for Robot to acquire the food item selected...</h2>
-                                <p class="transmessage">Please wait. The robot is currently moving to acquire the food you have selected.</p>
+                                <h1 id={constants.States[3]}>Waiting for Robot to acquire the food item selected...</h1>
                             </div>
                     }
                 </Row>
@@ -324,11 +359,17 @@ function Home() {
     // State 4: "Waiting for user to open mouth"
     else if (currentStateVal.feeding_status == constants.States[4]) {
         return (
-            <div>
-                <h1 className=" text-center txt-huge">Click when ready for a bite</h1>
-                <h5>{constants.States[4]}</h5>
+            <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+                <h1 className=" text-center txt-huge" style={{ "font-size": "40px" }}>Readiness for Your Bite</h1>
+                {/* <h5>{constants.States[4]}</h5> */}
+
+                {isConnected ? <div style={{ "display": "inline-block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline-block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
+
+                <div style={{ "display": "inline-block" }}><Button className="cancelBut" style={{ "font-size": "24px", "margin-top": "0px" }} onClick={() => changeState(constants.States[1])}>🗑 Cancel Bite</Button></div>
+
+                <p class="transmessage" style={{ "margin-bottom": "0px" }}>Click the below button to indicate that you are ready for your bite.</p>
                 <Row className="justify-content-center mx-auto my-2 w-75">
-                    <Button variant="primary" className="mx-2 mb-2 btn-huge" size="lg" onClick={ready_for_bite_clicked}>Ready for a Bite</Button>
+                    <Button variant="primary" className="mx-2 mb-2 btn-huge" size="lg" onClick={ready_for_bite_clicked} style={{ width: "75%", "font-size": "35px" }}>Ready for a Bite</Button>
                 </Row>
                 <Footer />
             </div>
@@ -337,16 +378,28 @@ function Home() {
     // State 5: "Moving closer to your mouth"
     else if (currentStateVal.feeding_status == constants.States[5]) {
         return (
-            <div>
-                {isConnected ? <div><p class="connectedDiv">connected</p></div> : <div><p class="notConnectedDiv">not connected</p></div>}
+            <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+                {isConnected ? <div style={{ "display": "inline-block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline-block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
+
+                <div style={{ "display": "inline-block" }}><Button className="cancelBut" style={{ "font-size": "24px", "margin-top": "0px" }} onClick={() => changeState(constants.States[1])}>🗑 Cancel Bite</Button></div>
+
                 <Row className="justify-content-center mx-auto my-2 w-75">
                     {debug
-                        ? <Button variant="secondary" className="mx-2 mb-2" size="lg" onClick={moving_closer_mouth_done}>{constants.States[5]}_DONE</Button>
+                        ?
+                        <div>
+                            <Button variant="secondary" className="mx-2 mb-2" size="lg" onClick={moving_closer_mouth_done}>{constants.States[5]}_DONE</Button>
+                            {
+                                message == "moving_closer_mouth_done"
+                                    ? moving_closer_mouth_done()
+                                    : <div>
+                                        <h1 id={constants.States[5]}>Waiting for Robot to move closer to your mouth...</h1>
+                                    </div>
+                            }
+                        </div>
                         : message == "moving_closer_mouth_done"
                             ? moving_closer_mouth_done()
                             : <div>
-                                <h2 id={constants.States[5]}>Waiting for Robot to move closer to your mouth...</h2>
-                                <p class="transmessage">Please wait. The robot is currently moving closer to your mouth.</p>
+                                <h1 id={constants.States[5]}>Waiting for Robot to move closer to your mouth...</h1>
                             </div>
                     }
                 </Row>
@@ -357,11 +410,49 @@ function Home() {
     // State 6: "Waiting for user to complete the bite"
     else if (currentStateVal.feeding_status == constants.States[6]) {
         return (
-            <div>
-                <h1 className=" text-center txt-huge">Click when you are done with your bite</h1>
-                <h5>{constants.States[6]}</h5>
+            <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+                <h1 className=" text-center txt-huge" style={{ "font-size": "40px" }}>Complete Your Bite</h1>
+                {/* <h5>{constants.States[6]}</h5> */}
+
+                {isConnected ? <div style={{ "display": "inline-block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline-block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
+
+                <div style={{ "display": "inline-block" }}><Button className="cancelBut" style={{ "font-size": "24px", "margin-top": "0px" }} onClick={() => changeState(constants.States[1])}>🗑 Cancel Bite</Button></div>
+
+                <p class="transmessage" style={{ "margin-bottom": "0px" }}>Click the below button to indicate the completion of your bite.</p>
                 <Row className="justify-content-center mx-auto my-2 w-75">
-                    <Button variant="primary" className="mx-2 mb-2 btn-huge" size="lg" onClick={done_with_bite_clicked}>Done with Bite</Button>
+                    <Button variant="primary" className="mx-2 mb-2 btn-huge" size="lg" onClick={done_with_bite_clicked} style={{ width: "75%", "font-size": "35px" }}>Done with Bite</Button>
+                </Row>
+                <Footer />
+            </div>
+        )
+    }
+
+    // State 9: "Arm is getting stowed"
+    else if (currentStateVal.feeding_status == constants.States[9]) {
+        return (
+            <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+                {isConnected ? <div style={{ "display": "inline-block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline-block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
+
+                <Row className="justify-content-center mx-auto my-2 w-75">
+                    {debug
+                        ?
+                        <div>
+                            <Button variant="secondary" className="mx-2 mb-2" size="lg" onClick={done_with_arm_stowing}>{constants.States[9]}_DONE</Button>
+                            {
+                                message == "done_with_arm_stowing"
+                                    ? done_with_arm_stowing()
+                                    : <div>
+                                        <h1 id={constants.States[9]}>Waiting for Robot to stow the arm away...</h1>
+                                        <p class="transmessage" style={{ "margin-bottom": "10px", "margin-top": "0px", "font-size": "24px" }}>That was a delicious 😋 meal! Cheers 🥂 to your good health! </p>
+                                    </div>
+                            }
+                        </div>
+                        : message == "done_with_arm_stowing"
+                            ? done_with_arm_stowing()
+                            : <div>
+                                <h1 id={constants.States[9]}>Waiting for Robot to stow the arm away...</h1>
+                            </div>
+                    }
                 </Row>
                 <Footer />
             </div>

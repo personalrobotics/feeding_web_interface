@@ -30,7 +30,7 @@ const Settings = () => {
 
                 `}
             </style>
-            <h1 style={{ textAlign: "center" }} className='txt-huge'>Settings</h1>
+            <h1 style={{ textAlign: "center", "font-size": "40px" }} className='txt-huge'>⚙ Settings</h1>
 
             <Row className="justify-content-center mx-1 my-2" >
                 <Form.Label style={{fontSize: "30px"}}>Your preferred feeding style: </Form.Label>

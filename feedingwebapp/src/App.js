@@ -18,8 +18,8 @@ import * as constants from './Pages/Constants';
 import Button from 'react-bootstrap/Button';
 import { ROS } from 'react-ros';
 
-// import MyVerticallyCenteredModal from 'react-bootstrap/'
-// import Modal from 'react-bootstrap/Modal'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Home from "./Pages/Home/HomeWrapper";
 import Settings from "./Pages/Settings/Settings";
@@ -58,6 +58,8 @@ function App() {
   const [modalShow, setModalShow] = React.useState(false);
   const currentStateVal = useStore((state) => state.defaultState);
 
+  const notifyTimeout = () => toast("Please complete or terminate the feeding process to access Settings.");
+
   return (
     <>
 
@@ -67,16 +69,14 @@ function App() {
 
           <Navbar id="responsive-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link className="text-white border border-info rounded mx-1 btn-lg btn-huge p-2" href="/">Home</Nav.Link>
+              <Nav.Link className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" href="/" style={{"font-size": "175%"}}>Home</Nav.Link>
               {(currentStateVal.feeding_status == constants.States[7] || currentStateVal.feeding_status == constants.States[8]) ?
-                <Nav.Link className="text-white border border-info rounded mx-1 btn-lg btn-huge p-2" href="/settings">Settings</Nav.Link>
-                : <div onClick={() => alert("Settings is disabled when feeding is in progress. Please end the feeding and then you may access the Settings page for any changes.")}><Nav.Link disabled className="text-white border border-info rounded mx-1 btn-lg btn-huge p-2" href="/settings">Settings</Nav.Link></div>
+                <Nav.Link className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" style={{"font-size": "175%"}} href="/settings">Settings</Nav.Link>
+                : <div onClick={notifyTimeout}><Nav.Link disabled className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" style={{"font-size": "175%"}} href="/settings">Settings</Nav.Link></div>
               }
-
-              {/* <Nav.Link className="text-white border border-info rounded mx-1 btn-lg btn-huge p-2" href="/ros">ROS</Nav.Link> */}
             </Nav>
             <Nav>
-              <Nav.Link onClick={() => setModalShow(true)} className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2">Video</Nav.Link>
+              <Nav.Link onClick={() => setModalShow(true)} className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" style={{"font-size": "175%"}}>Video</Nav.Link>
             </Nav>
             <MyVerticallyCenteredModal
               show={modalShow}
@@ -92,6 +92,8 @@ function App() {
           <Route exact path="/transition" element={<Transition />} />
           <Route exact path="/ros" element={<ROSPage />} />
         </Routes>
+
+        <ToastContainer style={{"font-size": "28px"}}/>
         
       </Router >
     </>

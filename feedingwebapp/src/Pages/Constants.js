@@ -14,6 +14,8 @@
  * State 7: "Not Eating": During this state, the robot should be stationary. Usually starts off with this state. 
  * 
  * State 8: "Emergency Termination": During this state, the robot stops all its motions and stays in the position it was present at.
+ * 
+ * State 9: "Arm is getting stowed": During this state, the robot is stowing its arm into a sleeping position off to the side of the chair. 
  */
 export const States = {
     1: "Moving_above_the_plate",
@@ -23,5 +25,6 @@ export const States = {
     5: "Moving_Closer_to_your_Mouth",
     6: "Waiting_for_user_to_complete_bite",
     7: "Not_Eating",
-    8: "Emergency_Termination"
+    8: "Emergency_Termination",
+    9: "Arm_getting_stowed"
 }

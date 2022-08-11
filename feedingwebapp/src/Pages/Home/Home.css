@@ -50,16 +50,44 @@
 
   .connectedDiv {
     display: inline-block;
-    border: 5px;
+    border: 3px;
     border-color: green;
-    background-color: green;
+    border-style: solid;
+    /* background-color: green; */
     border-radius: 10px;
-    padding: 10px;
+    padding: 8px;
+    padding-top: 7px;
     margin: 10px;
-    color: white;
+    color: green;
   }
 
   .notConnectedDiv {
+    display: inline-block;
+    border: 3px;
+    border-color: #f0ad4e;
+    /* background-color: #f0ad4e; */
+    border-style: solid;
+    border-radius: 10px;
+    padding: 10px;
+    padding-top: 7px;
+    margin: 10px;
+    color: #f0ad4e;
+  }
+
+  .transmessage {
+    display: block;
+    width: 100%;
+    /* border-color: gray;
+    background-color: gray;
+    border-radius: 10px; */
+    padding: 10px;
+    /* color: white; */
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 100px;
+  }
+
+  .cancelBut {
     display: inline-block;
     border: 5px;
     border-color: red;
@@ -70,14 +98,18 @@
     color: white;
   }
 
-  .transmessage {
+  .doneBut {
     display: inline-block;
     border: 5px;
-    border-color: rgb(255, 204, 0);
-    background-color: rgb(255, 204, 0);
+    border-color: #5bc0de;
+    background-color: #5bc0de;
     border-radius: 10px;
-    padding: 10px;
+    padding:10px;
     margin: 10px;
-    color: white;
-    font-size: 30px;
+    color: black;
+  }
+
+  .transMessHead {
+    display: inline-block; 
+    width: 100%;
   }
