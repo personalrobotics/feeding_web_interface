@@ -1,13 +1,10 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import './Home.css'
-import { ROS } from 'react-ros';
 import { useROS } from 'react-ros'
 import ScriptTag from 'react-script-tag';
 
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-import { RosConnection } from './roslib.min.js';
 
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
@@ -15,13 +12,10 @@ import useStore from "../useStore";
 import * as constants from '../Constants';
 import Modal from 'react-bootstrap/Modal';
 import Footer from "../Footer/Footer";
-import { Container } from "react-bootstrap";
-import { useForm } from "form-control-react";
-import fadeIn from 'react-animations/lib/fade-in'
 import ROSLIB from "roslib";
 
 
-const debug = true;
+const debug = false;
 const food = ["Apple", "Banana", "Carrot", "Cucumber", "Lettuce", "Mango", "Orange", "Pumpkin"];
 
 function MyVerticallyCenteredModal(props) {
@@ -55,15 +49,15 @@ function MyVerticallyCenteredModal(props) {
 
 var listener = null;
 function Home() {
+    // Calls the useROS() to get instantiation and returns the following variables
+    let { ros, isConnected, topics, toggleConnection, createListener } = useROS();
 
-    let { ros, isConnected, topics, url, changeUrl, toggleConnection, createListener } = useROS();
-    console.log(topics)
+    // Topic to get message from the robot
     var new_topic_from_Robot = {
         path: "/from_robot",
         msgType: "std_msgs/String",
         type: "topic"
     }
-
     topics[4] = new_topic_from_Robot
 
     var new_topic_from_Web = {
@@ -76,7 +70,7 @@ function Home() {
 
     const [topic, setTopic] = useState('/');
     const [queue, setQueue] = useState(0);
-    const [message, setMessage] = useState("Hello")
+    const [message, setMessage] = useState("hello")
     const [compression, setCompression] = useState('none');
     const [fromWebAppTopic, setFromWebAppTopic] = useState(new ROSLIB.Topic({
         ros: ros,
@@ -114,7 +108,6 @@ function Home() {
         if (listener) {
             console.log("Subscribing to messages...");
             listener.subscribe(handleMsg);
-            console.log(handleMsg)
         } else {
             console.log("Topic '" + topic + "' not found...make sure to input the full topic path - including the leading '/'");
         }
@@ -142,7 +135,7 @@ function Home() {
         if (!isConnected) {
             toggleConnection();
         }
-        handleTopic("/fromRobot");
+        handleTopic("/from_robot");
     }
 
     function start_feeding_clicked() {
@@ -254,19 +247,19 @@ function Home() {
 
     if (currentStateVal.feeding_status == constants.States[7] || currentStateVal.feeding_status == constants.States[8]) {
         return (
-            <>
-                <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+            <div >
+                <div style={{"display": "block", "width": "100%", "height": "88vh", "overflow-x": "hidden", "overflow-y": "auto"}} className="outer">
                     <ScriptTag type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js" />
                     <ScriptTag type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js" />
                     {RosConnect}
 
                     <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>🏠 Home</h1>
-                    {isConnected ? <div><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected; Click "Start Feeding" to connect.</p></div>}
+                    {isConnected ? <div><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
 
-                    <Row xs={1} md={1} className="justify-content-center mx-2 my-2">
+                    <Row xs={1} md={1} className="justify-content-center mx-2 my-2" >
                         <p class="transmessage" style={{ "margin-bottom": "10px", "margin-top": "0px", "font-size": "24px" }}>Hello!👋 I am ADA's faithful assistant, ADAWebapp! Bon Appétit! 😋</p>
                         <Button variant="primary" size="lg" className="btn-huge" id="#startBtn"
-                            onClick={start_feeding_clicked} style={{ width: "75%", "font-size": "35px", "margin-top": "30px" }}>Click to Start Feeding</Button>
+                            onClick={start_feeding_clicked} style={{ width: "75%", "font-size": "35px", "margin-top": "30px"}}>Start Feeding</Button>
                     </Row>
                     <MyVerticallyCenteredModal
                         show={modalShow}
@@ -274,7 +267,7 @@ function Home() {
                     />
                     <Footer />
                 </div>
-            </>
+            </div>
         )
     }
     // State 1: "Moving above the plate"
@@ -290,14 +283,16 @@ function Home() {
                             {message == "moving_above_plate_done"
                                 ? moving_above_plate_done()
                                 : <div>
-                                    <h1 className="transMessHead" id={constants.States[1]}>Waiting for Robot to move above the plate...</h1>
+                                    <h1 id={constants.States[1]} className="waitingMsg">Waiting for Robot to move above the plate...</h1>
                                 </div>}
                         </div>
-                        : message == "moving_above_plate_done"
-                            ? moving_above_plate_done()
-                            : <div>
-                                <h1 className="transMessHead" id={constants.States[1]}>Waiting for Robot to move above the plate...</h1>
-                            </div>
+                        : message != "moving_above_plate_done" 
+                            ? message.split("; ")[0] == "moving_above_plate_done"
+                                ? moving_above_plate_done()
+                                : <div>
+                                    <h1 id={constants.States[1]} className="waitingMsg">Waiting for Robot to move above the plate...</h1>
+                                </div>
+                            : <p>Error with message from robot</p>
                     }
                 </Row>
                 <Footer />
@@ -311,14 +306,19 @@ function Home() {
                 <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>Food Item Selection</h1>
                 {isConnected ? <div style={{ "display": "block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
 
-                <div style={{ "display": "block" }}><Button className="doneBut" style={{ "font-size": "24px", "margin-top": "0px" }} onClick={() => changeState(constants.States[9])}>✅ Done Eating</Button></div>
+                <div style={{ "display": "block" }}><Button className="doneBut" style={{ "font-size": "24px", "margin-top": "0px", "marginRight": "10px", "marginLeft": "auto", "display": "block"}} onClick={() => changeState(constants.States[9])}>✅ Done Eating</Button></div>
 
                 <p class="transmessage" style={{ "margin-bottom": "0px" }}>Choose from one of the following food items.</p>
 
                 <Row xs={3} s={2} md={3} lg={4} className="justify-content-center mx-auto my-2" style={{ paddingBottom: '35vh' }}>
-                    {food.map((value, i) => (
+                    {debug
+                    ? food.map((value, i) => (
                         <Button key={i} variant="primary" className="mx-1 mb-1" style={{ paddingLeft: "0px", paddingRight: "0px", marginLeft: "0px", marginRight: "0px", "font-size": "25px" }} value={value} size="lg" onClick={(e) => food_item_clicked(e)}>{value}</Button>
-                    ))}
+                    ))
+                    : message.split("; ")[1].split(", ").map((value, i) => (
+                        <Button key={i} variant="primary" className="mx-1 mb-1" style={{ paddingLeft: "0px", paddingRight: "0px", marginLeft: "0px", marginRight: "0px", "font-size": "25px" }} value={value} size="lg" onClick={(e) => food_item_clicked(e)}>{value}</Button>
+                    ))
+                    }
                 </Row>
                 <Footer />
             </div>
@@ -341,14 +341,14 @@ function Home() {
                                 message == "acquiring_food_item_done"
                                     ? acquiring_food_item_done()
                                     : <div>
-                                        <h1 id={constants.States[3]}>Waiting for Robot to acquire the food item selected...</h1>
+                                        <h1 id={constants.States[3]} className="waitingMsg">Waiting for Robot to acquire the food item selected...</h1>
                                     </div>
                             }
                         </div>
                         : message == "acquiring_food_item_done"
                             ? acquiring_food_item_done()
                             : <div>
-                                <h1 id={constants.States[3]}>Waiting for Robot to acquire the food item selected...</h1>
+                                <h1 id={constants.States[3]} className="waitingMsg">Waiting for Robot to acquire the food item selected...</h1>
                             </div>
                     }
                 </Row>
@@ -359,13 +359,13 @@ function Home() {
     // State 4: "Waiting for user to open mouth"
     else if (currentStateVal.feeding_status == constants.States[4]) {
         return (
-            <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+            <div style={{"display": "block", "width": "100%", "height": "115vh", "overflow-x": "hidden", "overflow-y": "auto"}} className="outer">
                 <h1 className=" text-center txt-huge" style={{ "font-size": "40px" }}>Readiness for Your Bite</h1>
                 {/* <h5>{constants.States[4]}</h5> */}
 
-                {isConnected ? <div style={{ "display": "inline-block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline-block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
+                {isConnected ? <div style={{ "display": "inline"}}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
 
-                <div style={{ "display": "inline-block" }}><Button className="cancelBut" style={{ "font-size": "24px", "margin-top": "0px" }} onClick={() => changeState(constants.States[1])}>🗑 Cancel Bite</Button></div>
+                <div style={{ "display": "inline"}}><Button className="cancelBut" style={{ "font-size": "24px" }} onClick={() => changeState(constants.States[1])}>🗑 Cancel Bite</Button></div>
 
                 <p class="transmessage" style={{ "margin-bottom": "0px" }}>Click the below button to indicate that you are ready for your bite.</p>
                 <Row className="justify-content-center mx-auto my-2 w-75">
@@ -392,14 +392,14 @@ function Home() {
                                 message == "moving_closer_mouth_done"
                                     ? moving_closer_mouth_done()
                                     : <div>
-                                        <h1 id={constants.States[5]}>Waiting for Robot to move closer to your mouth...</h1>
+                                        <h1 id={constants.States[5]} className="waitingMsg">Waiting for Robot to move closer to your mouth...</h1>
                                     </div>
                             }
                         </div>
                         : message == "moving_closer_mouth_done"
                             ? moving_closer_mouth_done()
                             : <div>
-                                <h1 id={constants.States[5]}>Waiting for Robot to move closer to your mouth...</h1>
+                                <h1 id={constants.States[5]} className="waitingMsg">Waiting for Robot to move closer to your mouth...</h1>
                             </div>
                     }
                 </Row>
@@ -410,7 +410,7 @@ function Home() {
     // State 6: "Waiting for user to complete the bite"
     else if (currentStateVal.feeding_status == constants.States[6]) {
         return (
-            <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+            <div style={{"display": "block", "width": "100%", "height": "105vh", "overflow-x": "hidden", "overflow-y": "auto"}} className="outer">
                 <h1 className=" text-center txt-huge" style={{ "font-size": "40px" }}>Complete Your Bite</h1>
                 {/* <h5>{constants.States[6]}</h5> */}
 
@@ -442,7 +442,7 @@ function Home() {
                                 message == "done_with_arm_stowing"
                                     ? done_with_arm_stowing()
                                     : <div>
-                                        <h1 id={constants.States[9]}>Waiting for Robot to stow the arm away...</h1>
+                                        <h1 id={constants.States[9]} className="waitingMsg">Waiting for Robot to stow the arm away...</h1>
                                         <p class="transmessage" style={{ "margin-bottom": "10px", "margin-top": "0px", "font-size": "24px" }}>That was a delicious 😋 meal! Cheers 🥂 to your good health! </p>
                                     </div>
                             }
@@ -450,7 +450,7 @@ function Home() {
                         : message == "done_with_arm_stowing"
                             ? done_with_arm_stowing()
                             : <div>
-                                <h1 id={constants.States[9]}>Waiting for Robot to stow the arm away...</h1>
+                                <h1 id={constants.States[9]} className="waitingMsg">Waiting for Robot to stow the arm away...</h1>
                             </div>
                     }
                 </Row>

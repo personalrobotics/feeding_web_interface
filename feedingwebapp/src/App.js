@@ -16,7 +16,7 @@ import Modal from 'react-bootstrap/Modal';
 import useStore from ".//Pages/useStore";
 import * as constants from './Pages/Constants';
 import Button from 'react-bootstrap/Button';
-import { ROS } from 'react-ros';
+import { useROS } from 'react-ros';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -43,11 +43,12 @@ function MyVerticallyCenteredModal(props) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <iframe src='https://www.youtube.com/embed/E7wJTI-1dvQ'
+        <iframe src='http://localhost:8080/stream_viewer?topic=/camera/color/image_raw&?type=ros_compressed?qualiity=25?default_transport=compressed'
           frameborder='0'
           allow='autoplay; encrypted-media'
           allowfullscreen
           title='video'
+          style={{"width": "100%", "height": "200px", "overflow":"hidden"}}
         />
       </Modal.Body>
     </Modal>
