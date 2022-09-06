@@ -20,6 +20,8 @@ In the `Home.js` file, you can set `debug = true` and run the application in deb
 - On the fourth terminal (designate this terminal for yourself to be the "ROBOT receiving messages from app") - You can listen to messages from `from_web` topic. An example command is `rostopic echo /from_web` to listen to messages published from the webapp. 
 
 ### How to run camera 'stuff' with the app?
+The following steps will outline the method to use to run the video collected from a particular topic in the rosbag _These steps might be diffrerent for if you were to connect to Robot's camera (please check)._
+- First, 
 
 ## What are some next steps? 
 - Enabling a method of selecting food from the live video feed that gets displayed in the video tab. 
