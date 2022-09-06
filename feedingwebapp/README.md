@@ -1,70 +1,28 @@
-# Getting Started with Create React App
+# Documentation
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## How to run the app locally?
+- Clone the repo: `git clone git@github.com:personalrobotics/feeding_web_interface.git`
+- Then checkout `2022_revamp` branch
+- `cd feeding_web_interface/feedingwebapp`
+- Perform `npm install` to install all the packages related to this project
+- Then, `npm start` to begin the application.
 
-## Available Scripts
+In the `Home.js` file, you can set `debug = true` and run the application in debug mode or set it to `debug = false` and run it along with roscore/ros messages. 
 
-In the project directory, you can run:
+### How to run ROS 'stuff' with the app in `debug = false` mode?
+- Make sure you are in a ROS workspace with all required ROS packages installed. 
+- `cd` into the ROS workspace
+- Make sure to open up at least four terminals with all of them inside the workspace. 
+- Then, run `source devel/setup.bash` in each of the terminals that are open (Use Tmux to make splitting terminal easier on Ubuntu)
+- On the first terminal, run `roscore`
+- On the second terminal, run `roslaunch rosbridge_server rosbridge_websocket.launch` to start the webserver. _This will allow the webapp to actually directly connect with the server (when you hit "start feeding" button)._
+- On the third terminal (designate this terminal for yourself to be the "ROBOT sending messages to app") - You can publish messages to `/from_robot` topic and communicate with the webapp to make changes to the states. An example message is `rostopic pub /from_robot std_msgs/String "<state>"`. 
+- On the fourth terminal (designate this terminal for yourself to be the "ROBOT receiving messages from app") - You can listen to messages from `from_web` topic. An example command is `rostopic echo /from_web` to listen to messages published from the webapp. 
 
-### `npm start`
+### How to run camera 'stuff' with the app?
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## What are some next steps? 
+- Enabling a method of selecting food from the live video feed that gets displayed in the video tab. 
+- What happens if Wifi goes out? 
+- What happens if there is accidental refreshes?
+- When you first start the webapp, it should first get the status from the robot and update itself to mimic that of the robot. This could be something that can be implemented to eliminate any syncing issues between the robot and the app. Further, in the Settings page, the app should get the settings as default from the robot. 
