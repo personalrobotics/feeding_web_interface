@@ -62,4 +62,5 @@ For further information about this, you can refer to [Web Video server](http://w
 - Enabling a method of selecting food from the live video feed that gets displayed in the video tab. 
 - What happens if Wifi goes out? 
 - What happens if the user accidentally refreshes?
-- When you first start the webapp, it should first get the status from the robot and update itself to mimic that of the robot. This could be something that can be implemented to eliminate any syncing issues between the robot and the app. Further, in the Settings page, the app should get the settings as default from the robot. 
+- When you first start the webapp, it should first get the status from the robot and update itself to mimic that of the robot. This could be something that can be implemented to eliminate any syncing issues between the robot and the app. Further, in the Settings page, the app should get the settings as default from the robot.
+- Currently, the E-stop is not accessible when the video modal is open. Consider changing this. 
