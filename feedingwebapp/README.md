@@ -2,7 +2,8 @@
 ## Summary
 This project aims to develop a web app to connect and control feeding through ADA robot. The overall workflow (state machine) for this robot can be seen below. 
 
-<img width="817" alt="image" src="https://user-images.githubusercontent.com/26337328/189498586-0d5f48c0-2acd-422f-8235-1a3b5216c2e6.png">
+![Web App State Machine](https://user-images.githubusercontent.com/8277986/191333326-c71a1765-475c-40f6-87da-a79b7c73e0ee.png)
+
 
 ## Dependencies
 - [`npm`](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
@@ -15,6 +16,7 @@ This project aims to develop a web app to connect and control feeding through AD
 - `cd feeding_web_interface/feedingwebapp`
 - Perform `npm install` to install all the packages related to this project
 - Then, `npm start` to begin the application.
+- Then, use a web browser to navigate to `localhost:3000` to see the application.
 
 In the `Home.js` file, you can set `debug = true` and run the application in debug mode or set it to `debug = false` and run it along with roscore/ros messages. 
 
