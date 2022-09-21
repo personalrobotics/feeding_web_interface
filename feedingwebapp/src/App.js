@@ -1,5 +1,5 @@
 import './App.css';
-import React from 'react';
+import React, {useRef} from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -27,7 +27,30 @@ import Transition from "./Pages/Transitions/Transition";
 import ROSPage from "./Pages/rosSubs";
 import Footer from "./Pages/Footer/Footer";
 
+function getWidthHeight(imageWidth = 640, imageHeight = 480) {
+  let imageAspectRatio = imageWidth / imageHeight;
+  let windowWidth = window.innerWidth;
+  let windowHeight = window.innerHeight;
+  console.log(windowWidth, windowHeight)
+  let returnWidth = 0;
+  let returnHeight = 0;
+  if (windowWidth / windowHeight > imageAspectRatio) {
+    returnHeight = windowHeight - 70;
+    returnWidth = imageAspectRatio * returnHeight;
+  } else {
+    returnWidth = windowWidth; 
+    returnHeight = (1 / imageAspectRatio) * returnWidth;
+  }
+  console.log(returnWidth)
+  console.log(returnHeight)
+  return {
+    "width": returnWidth,
+    "height": returnHeight
+  }
+}
+
 function MyVerticallyCenteredModal(props) {
+  const ref = useRef(null);
   return (
     <Modal
       {...props}
@@ -36,19 +59,22 @@ function MyVerticallyCenteredModal(props) {
       backdrop="static"
       keyboard={false}
       centered
+      id="myModal"
+      ref={ref}
+      fullscreen={true}
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
           Live Video
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <iframe src='http://localhost:8080/stream_viewer?topic=/camera/color/image_raw&?type=ros_compressed?qualiity=25?default_transport=compressed'
+      <Modal.Body style={{"paddingLeft": "10px", "overflow": "hidden"}}>
+        <iframe src={`http://localhost:8080/stream?topic=/camera/color/image_raw&default_transport=compressed&width=${Math.round(getWidthHeight().width) - 30}&height=${Math.round(getWidthHeight().height)}&quality=20`}
           frameborder='0'
           allow='autoplay; encrypted-media'
           allowfullscreen
           title='video'
-          style={{"width": "100%", "height": "200px", "overflow":"hidden"}}
+          style={{"width": getWidthHeight().width, "height": getWidthHeight().height}}
         />
       </Modal.Body>
     </Modal>

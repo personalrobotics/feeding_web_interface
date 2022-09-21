@@ -16,36 +16,7 @@ import ROSLIB from "roslib";
 
 
 const debug = false;
-const food = ["Apple", "Banana", "Carrot", "Cucumber", "Lettuce", "Mango", "Orange", "Pumpkin"];
-
-function MyVerticallyCenteredModal(props) {
-    return (
-        <>
-            <Modal
-                {...props}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                backdrop="static"
-                keyboard={false}
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        Live Video
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <iframe src='https://www.youtube.com/embed/E7wJTI-1dvQ'
-                        frameborder='0'
-                        allow='autoplay; encrypted-media'
-                        allowfullscreen
-                        title='video'
-                    />
-                </Modal.Body>
-            </Modal>
-        </>
-    );
-}
+let food = ["Apple", "Banana", "Carrot", "Cucumber", "Lettuce", "Mango", "Orange", "Pumpkin"];
 
 var listener = null;
 function Home() {
@@ -63,7 +34,7 @@ function Home() {
 
     const [topic, setTopic] = useState('/');
     const [queue, setQueue] = useState(0);
-    const [message, setMessage] = useState("")
+    const [message, setMessage] = useState("");
     const [compression, setCompression] = useState('none');
 
     // Topic to send message from webapp to robot
@@ -118,7 +89,20 @@ function Home() {
     }
     const handleMsg = (msg) => {
         console.log(msg);
-        setMessage(msg["data"]);
+        let mssg = msg["data"].split("; ");
+        if (mssg.length > 1) {
+            setMessage(mssg[0]);
+            console.log(mssg[1])
+            let foodList = [];
+            let foodTemp = mssg[1].split(", ")
+            for (let i = 0; i < foodTemp.length; i++) {
+                foodList.push(foodTemp[i]);
+            }
+            food = foodList;
+        } else {
+            setMessage(msg["data"]);
+            food = ["Apple", "Banana", "Carrot", "Cucumber", "Lettuce", "Mango", "Orange", "Pumpkin"];
+        }
         console.log(message)
     }
 
@@ -255,7 +239,7 @@ function Home() {
     if (currentStateVal.feeding_status == constants.States[7] || currentStateVal.feeding_status == constants.States[8]) {
         return (
             <div >
-                <div style={{ "display": "block", "width": "100%", "height": "88vh", "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+                <div style={{ "display": "block", "width": "100%", "height": "120vh", "overflow-x": "hidden", "overflow-y": "scroll"}} className="outer">
                     <ScriptTag type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js" />
                     <ScriptTag type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js" />
                     {RosConnect}
@@ -268,10 +252,6 @@ function Home() {
                         <Button variant="primary" size="lg" className="btn-huge" id="#startBtn"
                             onClick={start_feeding_clicked} style={{ width: "75%", "font-size": "35px", "margin-top": "30px" }}>Start Feeding</Button>
                     </Row>
-                    <MyVerticallyCenteredModal
-                        show={modalShow}
-                        onHide={() => setModalShow(false)}
-                    />
                     <Footer />
                 </div>
             </div>
@@ -293,13 +273,11 @@ function Home() {
                                     <h1 id={constants.States[1]} className="waitingMsg">Waiting for Robot to move above the plate...</h1>
                                 </div>}
                         </div>
-                        : message != "moving_above_plate_done"
-                            ? message.split("; ")[0] == "moving_above_plate_done"
-                                ? moving_above_plate_done()
-                                : <div>
-                                    <h1 id={constants.States[1]} className="waitingMsg">Waiting for Robot to move above the plate...</h1>
-                                </div>
-                            : <p>Error with message from robot</p>
+                        : message == "moving_above_plate_done"
+                            ? moving_above_plate_done()
+                            : <div>
+                                <h1 id={constants.States[1]} className="waitingMsg">Waiting for Robot to move above the plate...</h1>
+                            </div>
                     }
                 </Row>
                 <Footer />
@@ -318,11 +296,7 @@ function Home() {
                 <p class="transmessage" style={{ "margin-bottom": "0px" }}>Choose from one of the following food items.</p>
 
                 <Row xs={3} s={2} md={3} lg={4} className="justify-content-center mx-auto my-2" style={{ paddingBottom: '35vh' }}>
-                    {debug
-                        ? food.map((value, i) => (
-                            <Button key={i} variant="primary" className="mx-1 mb-1" style={{ paddingLeft: "0px", paddingRight: "0px", marginLeft: "0px", marginRight: "0px", "font-size": "25px" }} value={value} size="lg" onClick={(e) => food_item_clicked(e)}>{value}</Button>
-                        ))
-                        : message.split("; ")[1].split(", ").map((value, i) => (
+                    {food.map((value, i) => (
                             <Button key={i} variant="primary" className="mx-1 mb-1" style={{ paddingLeft: "0px", paddingRight: "0px", marginLeft: "0px", marginRight: "0px", "font-size": "25px" }} value={value} size="lg" onClick={(e) => food_item_clicked(e)}>{value}</Button>
                         ))
                     }
