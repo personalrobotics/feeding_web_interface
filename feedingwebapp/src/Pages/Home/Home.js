@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import './Home.css'
 import { useROS } from 'react-ros'
 import ScriptTag from 'react-script-tag';
@@ -13,9 +13,11 @@ import * as constants from '../Constants';
 import Modal from 'react-bootstrap/Modal';
 import Footer from "../Footer/Footer";
 import ROSLIB from "roslib";
+import ToggleButton from 'react-bootstrap/ToggleButton';
+import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 
 
-const debug = false;
+const debug = true;
 let food = ["Apple", "Banana", "Carrot", "Cucumber", "Lettuce", "Mango", "Orange", "Pumpkin"];
 
 var listener = null;
@@ -36,6 +38,7 @@ function Home() {
     const [queue, setQueue] = useState(0);
     const [message, setMessage] = useState("");
     const [compression, setCompression] = useState('none');
+    const [modalState, setModalState] = useState(false);
 
     // Topic to send message from webapp to robot
     const [fromWebAppTopic, setFromWebAppTopic] = useState(new ROSLIB.Topic({
@@ -106,9 +109,6 @@ function Home() {
         console.log(message)
     }
 
-    // For the Video modal
-    const [modalShow, setModalShow] = React.useState(false);
-
     const currentStateVal = useStore((state) => state.defaultState);
     console.log(currentStateVal);
     const changeState = useStore((state) => state.changeState);
@@ -123,21 +123,87 @@ function Home() {
         handleTopic("/from_robot");
     }
 
-    // Functions that change states
+    function MyPlateGuessModal(props) {
+        console.log("print enter")
+        const ref = useRef(null);
+        return (
+            <Modal
+                {...props}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                backdrop="static"
+                keyboard={false}
+                centered
+                id="myModal"
+                ref={ref}
+                fullscreen={true}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Give Your Plate Location Guess
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body style={{ "paddingLeft": "10px", "overflow": "hidden" }}>
+                    <Button variant="warning" onClick={() => setModalState(true)}>
+                          Home
+                     </Button>{' '}
+                    <ToggleButtonGroupUncontrolled />
+                    {' '}
+                    <Button variant="secondary" onClick={() => setModalState(true)}>
+                          Exit
+                     </Button>{' '}
+                </Modal.Body>
+            </Modal>
+        );
+    }
 
+    function ToggleButtonGroupUncontrolled() {
+        const [value, setValue] = useState([1, 4]);
+      
+        /*
+         * The second argument that will be passed to
+         * `handleChange` from `ToggleButtonGroup`
+         * is the SyntheticEvent object, but we are
+         * not using it in this example so we will omit it.
+         */
+        const handleChange = (val) => setValue(val);
+      
+        return (
+            
+          <ToggleButtonGroup type="radio" name="options">
+            <ToggleButton id="tbg-btn-1" value={1}>
+              Go Left
+            </ToggleButton>
+            <ToggleButton id="tbg-btn-2" value={2}>
+              Go Right
+            </ToggleButton>
+            <ToggleButton id="tbg-btn-3" value={3}>
+              Go Forward
+            </ToggleButton>
+            <ToggleButton id="tbg-btn-4" value={4}>
+              Go Backward
+            </ToggleButton>
+          </ToggleButtonGroup>
+        );
+      }
+      
+    // Functions that change states
     function start_feeding_clicked() {
         console.log("start_feeding_clicked");
+        // raida -- console.log("entering_start_feeding");
         // State 1: "Moving above the plate"
         runConnection();
         fromWebAppTopic.publish(new ROSLIB.Message({
             data: "start_feeding_clicked"
         }));
         if (isConnected || debug) {
-            changeState(constants.States[1]);
+            console.log("debug ADAthon")
+            setModalState(true);
+            //MyPlateGuessModal();
+            //changeState(constants.States[1]);
         } else {
             notifyTimeout();
         }
-
     }
 
     // Temp Button #1
@@ -239,7 +305,7 @@ function Home() {
     if (currentStateVal.feeding_status == constants.States[7] || currentStateVal.feeding_status == constants.States[8]) {
         return (
             <div >
-                <div style={{ "display": "block", "width": "100%", "height": "120vh", "overflow-x": "hidden", "overflow-y": "scroll"}} className="outer">
+                <div style={{ "display": "block", "width": "100%", "height": "120vh", "overflow-x": "hidden", "overflow-y": "scroll" }} className="outer">
                     <ScriptTag type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js" />
                     <ScriptTag type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js" />
                     {RosConnect}
@@ -247,6 +313,10 @@ function Home() {
                     <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>🏠 Home</h1>
                     {isConnected ? <div><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
 
+                    <MyPlateGuessModal
+                     show={modalState}
+                     onHide={() => setModalState(false)}
+                     />
                     <Row xs={1} md={1} className="justify-content-center mx-2 my-2" >
                         <p class="transmessage" style={{ "margin-bottom": "10px", "margin-top": "0px", "font-size": "24px" }}>Hello!👋 I am ADA's faithful assistant, ADAWebapp! Bon Appétit! 😋</p>
                         <Button variant="primary" size="lg" className="btn-huge" id="#startBtn"
@@ -297,8 +367,8 @@ function Home() {
 
                 <Row xs={3} s={2} md={3} lg={4} className="justify-content-center mx-auto my-2" style={{ paddingBottom: '35vh' }}>
                     {food.map((value, i) => (
-                            <Button key={i} variant="primary" className="mx-1 mb-1" style={{ paddingLeft: "0px", paddingRight: "0px", marginLeft: "0px", marginRight: "0px", "font-size": "25px" }} value={value} size="lg" onClick={(e) => food_item_clicked(e)}>{value}</Button>
-                        ))
+                        <Button key={i} variant="primary" className="mx-1 mb-1" style={{ paddingLeft: "0px", paddingRight: "0px", marginLeft: "0px", marginRight: "0px", "font-size": "25px" }} value={value} size="lg" onClick={(e) => food_item_clicked(e)}>{value}</Button>
+                    ))
                     }
                 </Row>
                 <Footer />
