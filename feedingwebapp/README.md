@@ -11,14 +11,15 @@ This project aims to develop a web app to connect and control feeding through AD
 
 ## Usage 
 ### How to run the app locally?
-- Clone the repo: `git clone git@github.com:personalrobotics/feeding_web_interface.git`
-- Then checkout `2022_revamp` branch
-- `cd feeding_web_interface/feedingwebapp`
+- Clone the repo: `git clone git@github.com:personalrobotics/feeding_web_interface.git` using SSH, or `git clone https://github.com/personalrobotics/feeding_web_interface.git` using HTTP
+- See all branches: `git branch -a` and check to make sure `2022_revamp` branch shows up
+- Then checkout `2022_revamp` branch: `git checkout 2022_revamp`
+- Run `cd ./feedingwebapp`
 - Perform `npm install` to install all the packages related to this project
 - Then, `npm start` to begin the application.
 - Then, use a web browser to navigate to `localhost:3000` to see the application.
 
-In the `Home.js` file, you can set `debug = true` and run the application in debug mode or set it to `debug = false` and run it along with roscore/ros messages. 
+In the `Home.js` file, you can set `debug = true` and run the application in debug mode to experience the GUI of the app without needing it to connect to ROS. Otherwise, set it to `debug = false` and run it along with roscore/ros messages. 
 
 #### How to run ROS 'stuff' with the app in `debug = true` mode?
 For this, you just need the web app running. And, to mimic the robot/webapp communicating, there are some default buttons throughtout the app that can help mimic the state changes as described in the state machine picture above. 
