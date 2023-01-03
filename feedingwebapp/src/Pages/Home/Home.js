@@ -13,8 +13,6 @@ import * as constants from '../Constants';
 import Modal from 'react-bootstrap/Modal';
 import Footer from "../Footer/Footer";
 import ROSLIB from "roslib";
-import ToggleButton from 'react-bootstrap/ToggleButton';
-import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 
 
 const debug = true;
@@ -136,57 +134,71 @@ function Home() {
                 centered
                 id="myModal"
                 ref={ref}
-                fullscreen={true}
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        Give Your Plate Location Guess
-                    </Modal.Title>
-                </Modal.Header>
+                fullscreen={true}>
+                    <div class="modal-header text-center">
+                    <h1 className="modal-title w-100">Plate Location Input</h1>
+                    </div>
                 <Modal.Body style={{ "paddingLeft": "10px", "overflow": "hidden" }}>
-                    <Button variant="warning" onClick={() => setModalState(true)}>
-                          Home
-                     </Button>{' '}
-                    <ToggleButtonGroupUncontrolled />
-                    {' '}
-                    <Button variant="secondary" onClick={() => setModalState(true)}>
-                          Exit
-                     </Button>{' '}
+                <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
+                    <Button variant="warning" size="lg" onClick={() => setModalState(true)} style={{ "display": "block", "margin-left": '60px', "margin-bottom": "10px", "margin-right": "60px"}}>
+                        Home
+                    </Button>{' '}
+                    </Row>
+                    <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
+                    <Button id="tbg-btn-3" size="lg" value={3} style={{"margin-left": '15%', "margin-bottom": "10px", "margin-right": '15%'}} >
+                        Go Forward
+                    </Button>
+                    </Row>
+                    <div class="row">
+                        <div class="col">
+                        <Button id="tbg-btn-1" size="lg" value={1} style={{"margin-left": '70%'}}>
+                            Go Left
+                        </Button>
+                        </div>
+
+                        <div class="col">
+                        <Button id="tbg-btn-2" size="lg" value={2} style={{"margin-left": '15%', "margin-right": '60%'}}>
+                            Go Right
+                        </Button>
+                    </div>
+                    </div>
+                    <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
+                    <Button id="tbg-btn-4" size="lg" value={4} style={{ "display": "block", "margin-left": '15%', "margin-top": "10px", "margin-right": '15%'}}>
+                        Go Backward
+                    </Button>
+                    </Row>
+                    <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
+                    <Button variant="secondary" size="lg" onClick={() => setModalState(false)} style={{ "display": "block", "margin-left": '23%', "margin-top": "10px", "margin-right": '23%'}}>
+                        Exit
+                    </Button>
+                    </Row>
                 </Modal.Body>
+                <Footer />
+                
             </Modal>
         );
     }
 
-    function ToggleButtonGroupUncontrolled() {
-        const [value, setValue] = useState([1, 4]);
-      
-        /*
-         * The second argument that will be passed to
-         * `handleChange` from `ToggleButtonGroup`
-         * is the SyntheticEvent object, but we are
-         * not using it in this example so we will omit it.
-         */
-        const handleChange = (val) => setValue(val);
-      
-        return (
-            
-          <ToggleButtonGroup type="radio" name="options">
-            <ToggleButton id="tbg-btn-1" value={1}>
-              Go Left
-            </ToggleButton>
-            <ToggleButton id="tbg-btn-2" value={2}>
-              Go Right
-            </ToggleButton>
-            <ToggleButton id="tbg-btn-3" value={3}>
-              Go Forward
-            </ToggleButton>
-            <ToggleButton id="tbg-btn-4" value={4}>
-              Go Backward
-            </ToggleButton>
-          </ToggleButtonGroup>
-        );
-      }
-      
+    // function ToggleButtonGroupUncontrolled() {
+    //     const [value, setValue] = useState([1, 4]);
+
+    //     /*
+    //      * The second argument that will be passed to
+    //      * `handleChange` from `ToggleButtonGroup`
+    //      * is the SyntheticEvent object, but we are
+    //      * not using it in this example so we will omit it.
+    //      */
+    //     const handleChange = (val) => setValue(val);
+
+    //     return (
+
+    //       <ToggleButtonGroup type="radio" name="options" style={{"display": "block"}}>
+
+    //       </ToggleButtonGroup>
+    //     );
+    //   }
+
+
     // Functions that change states
     function start_feeding_clicked() {
         console.log("start_feeding_clicked");
@@ -314,9 +326,9 @@ function Home() {
                     {isConnected ? <div><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
 
                     <MyPlateGuessModal
-                     show={modalState}
-                     onHide={() => setModalState(false)}
-                     />
+                        show={modalState}
+                        onHide={() => setModalState(false)}
+                    />
                     <Row xs={1} md={1} className="justify-content-center mx-2 my-2" >
                         <p class="transmessage" style={{ "margin-bottom": "10px", "margin-top": "0px", "font-size": "24px" }}>Hello!👋 I am ADA's faithful assistant, ADAWebapp! Bon Appétit! 😋</p>
                         <Button variant="primary" size="lg" className="btn-huge" id="#startBtn"
