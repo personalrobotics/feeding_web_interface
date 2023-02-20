@@ -46,7 +46,7 @@ function Home() {
     }));
 
     useEffect(() => {
-        handleTopic(topic);
+        handleTopic(topic, callbackFn);
         runConnection();
     });
 
@@ -58,7 +58,7 @@ function Home() {
     }
 
     // Some functions that handles topics from roslibjs
-    const handleTopic = (topicInput) => {
+    const handleTopic = (topicInput, callbackFn) => {
         if (topic !== topicInput) {
             setTopic(topicInput);
             unsubscribe();
@@ -77,7 +77,7 @@ function Home() {
         }
         if (listener) {
             console.log("Subscribing to messages...");
-            listener.subscribe(handleMsg);
+            listener.subscribe(callbackFn);
         } else {
             console.log("Topic '" + topic + "' not found...make sure to input the full topic path - including the leading '/'");
         }
@@ -88,7 +88,7 @@ function Home() {
     const handleCompression = (compInput) => {
         setCompression(compInput);
     }
-    const handleMsg = (msg) => {
+    const callbackFn = (msg) => {
         console.log(msg);
         let mssg = msg["data"].split("; ");
         if (mssg.length > 1) {
@@ -118,7 +118,7 @@ function Home() {
         if (!isConnected) {
             toggleConnection();
         }
-        handleTopic("/from_robot");
+        handleTopic("/from_robot", callbackFn);
     }
 
     function MyPlateGuessModal(props) {
