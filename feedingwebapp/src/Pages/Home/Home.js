@@ -4,6 +4,7 @@ import { useROS } from 'react-ros'
 import ScriptTag from 'react-script-tag';
 
 import { toast } from 'react-toastify';
+import { dot } from 'mathjs'
 import 'react-toastify/dist/ReactToastify.css';
 
 import Button from 'react-bootstrap/Button';
@@ -242,12 +243,13 @@ function Home() {
             console.log("entered");
             let alertBoolVal = result[0]
             let cameraOffset = result[1]
+            // add tf transformation here
             let rot = [0, 0, 8];
             let trans = [9, 9, 9];
             fromWebAppAlertTopic.publish(new ROSLIB.Message({
                 data: alertBoolVal
             }));
-            // let robot_offset = math.dot(rot, cameraOffset) + trans;
+            let robot_offset = dot(rot, cameraOffset)
             let robot_offset = 0;
             fromWebAppOffsetTopic.publish(new ROSLIB.Message({
                 data: robot_offset
