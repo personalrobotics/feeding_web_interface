@@ -10,6 +10,7 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import useStore from "../useStore";
 import * as constants from '../Constants';
+import * as movementConstants from '../MovementConstants';
 import Modal from 'react-bootstrap/Modal';
 import Footer from "../Footer/Footer";
 import ROSLIB from "roslib";
@@ -18,10 +19,10 @@ import ROSLIB from "roslib";
 const debug = true;
 let food = ["Apple", "Banana", "Carrot", "Cucumber", "Lettuce", "Mango", "Orange", "Pumpkin"];
 
-var listener = null;
+var listener = [];
 function Home() {
     // Calls the useROS() to get instantiation and returns the following variables
-    let { ros, isConnected, topics, toggleConnection, createListener } = useROS();
+    let { ros, isConnected, topics, services, toggleConnection, createListener } = useROS();
 
     // Topic to get message from the robot
     var new_topic_from_Robot = {
@@ -29,8 +30,24 @@ function Home() {
         msgType: "std_msgs/String",
         type: "topic"
     }
+    
+    // Service: 
+    // Service type: ada_feeding/PlateService
+    // alert_and_offset
+
+    var alert_and_offset_service = new ROSLIB.Service({
+        ros: ros, 
+        name: "/alert_and_offset",
+        serviceType: "ada_feeding/PlateService"
+    });
+
+    console.log(services);
+    services[31] = alert_and_offset_service;
+    console.log(services);
+
     // Add this topic to the list of topics provided from useROS()
-    topics[4] = new_topic_from_Robot
+    topics[4] = new_topic_from_Robot;
+    console.log(topics);
 
     const [topic, setTopic] = useState('/');
     const [queue, setQueue] = useState(0);
@@ -45,6 +62,24 @@ function Home() {
         messageType: 'std_msgs/String'
     }));
 
+    const [fromWebAppMovementTopic, setFromWebAppMovementTopic] = useState(new ROSLIB.Topic({
+        ros: ros,
+        name: '/from_web_movement',
+        messageType: 'std_msgs/String'
+    }));
+
+    const [fromWebAppAlertTopic, setFromWebAppAlertTopic] = useState(new ROSLIB.Topic({
+        ros: ros, 
+        name: '/from_web_alert',
+        messageType: 'std_msgs/Bool'
+    }))
+
+    const [fromWebAppOffsetTopic, setFromWebAppOffsetTopic] = useState(new ROSLIB.Topic({
+        ros: ros,
+        name: '/from_web_offset',
+        messageType: 'std_msgs/Float64MultiArray' // float64
+    }))
+
     useEffect(() => {
         handleTopic(topic, callbackFn);
         runConnection();
@@ -53,35 +88,49 @@ function Home() {
     const unsubscribe = () => {
         if (listener) {
             console.log("Unsubscribing");
-            listener.unsubscribe();
+            for (let i = 0; i < listener.length; i++) {
+                console.log(listener[i])
+                listener[i].unsubscribe();
+            }
         }
     }
 
     // Some functions that handles topics from roslibjs
     const handleTopic = (topicInput, callbackFn) => {
-        if (topic !== topicInput) {
-            setTopic(topicInput);
-            unsubscribe();
-            return;
-        }
+        // if (topic !== topicInput) {
+        //     setTopic(topicInput);
+        //     unsubscribe();
+        //     return;
+        // }
         unsubscribe();
-        listener = null;
+        // listener = [];
         for (var i in topics) {
             if (topics[i].path == topicInput) {
-                listener = createListener(topics[i].path,
+                let j = listener.length - 1;
+                console.log(topics[i]);
+                listener[j] = createListener(topics[i].path,
                     topics[i].msgType,
                     Number(queue),
                     compression);
+                if (listener) {
+                    console.log("Subscribing to messages...");
+                    listener[j].subscribe(callbackFn);
+                } else {
+                    console.log("Topic '" + topic + "' not found...make sure to input the full topic path - including the leading '/'");
+                }
+                console.log(listener);
+                j += 1;
                 break;
             }
         }
-        if (listener) {
-            console.log("Subscribing to messages...");
-            listener.subscribe(callbackFn);
-        } else {
-            console.log("Topic '" + topic + "' not found...make sure to input the full topic path - including the leading '/'");
-        }
+
     }
+
+    const handleTopics = () => {
+        handleTopic("/from_robot", callbackFn);
+        // handleTopic("/alert_from_robot", callbackFn_Alert);
+    }
+
     const handleQueue = (queueInput) => {
         setQueue(queueInput);
     }
@@ -107,6 +156,11 @@ function Home() {
         console.log(message)
     }
 
+    // const callbackFn_Alert = (msg) => {
+    //     console.log(msg);
+    //     setAlertVal(msg["data"]);
+    // }
+
     const currentStateVal = useStore((state) => state.defaultState);
     console.log(currentStateVal);
     const changeState = useStore((state) => state.changeState);
@@ -118,11 +172,12 @@ function Home() {
         if (!isConnected) {
             toggleConnection();
         }
-        handleTopic("/from_robot", callbackFn);
+        handleTopics();
+        // handleTopic("/from_robot", callbackFn);
+        // handleTopic("/alert_from_robot", callbackFn_Alert);
     }
 
     function MyPlateGuessModal(props) {
-        console.log("print enter")
         const ref = useRef(null);
         return (
             <Modal
@@ -135,69 +190,75 @@ function Home() {
                 id="myModal"
                 ref={ref}
                 fullscreen={true}>
-                    <div class="modal-header text-center">
+                <div class="modal-header text-center">
                     <h1 className="modal-title w-100">Plate Location Input</h1>
-                    </div>
+                </div>
                 <Modal.Body style={{ "paddingLeft": "10px", "overflow": "hidden" }}>
-                <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
-                    <Button variant="warning" size="lg" onClick={() => setModalState(true)} style={{ "display": "block", "margin-left": '60px', "margin-bottom": "10px", "margin-right": "60px"}}>
-                        Home
-                    </Button>{' '}
+                    <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
+                        <Button variant="warning" size="lg" onClick={() => setModalState(true)} style={{ "display": "block", "margin-left": '60px', "margin-bottom": "10px", "margin-right": "60px" }}>
+                            Home
+                        </Button>{' '}
                     </Row>
                     <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
-                    <Button id="tbg-btn-3" size="lg" value={3} style={{"margin-left": '15%', "margin-bottom": "10px", "margin-right": '15%'}} >
-                        Go Forward
-                    </Button>
+                        <Button id="tbg-btn-3" size="lg" onClick={() => movePlateLocation(movementConstants.movementStates[1])} value={3} style={{ "margin-left": '15%', "margin-bottom": "10px", "margin-right": '15%' }} >
+                            Go Forward
+                        </Button>
                     </Row>
                     <div class="row">
                         <div class="col">
-                        <Button id="tbg-btn-1" size="lg" value={1} style={{"margin-left": '70%'}}>
-                            Go Left
-                        </Button>
+                            <Button id="tbg-btn-1" size="lg" onClick={() => movePlateLocation(movementConstants.movementStates[2])} value={1} style={{ "margin-left": '70%' }}>
+                                Go Left
+                            </Button>
                         </div>
 
                         <div class="col">
-                        <Button id="tbg-btn-2" size="lg" value={2} style={{"margin-left": '15%', "margin-right": '60%'}}>
-                            Go Right
-                        </Button>
-                    </div>
+                            <Button id="tbg-btn-2" size="lg" onClick={() => movePlateLocation(movementConstants.movementStates[3])} value={2} style={{ "margin-left": '15%', "margin-right": '60%' }}>
+                                Go Right
+                            </Button>
+                        </div>
                     </div>
                     <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
-                    <Button id="tbg-btn-4" size="lg" value={4} style={{ "display": "block", "margin-left": '15%', "margin-top": "10px", "margin-right": '15%'}}>
-                        Go Backward
-                    </Button>
+                        <Button id="tbg-btn-4" size="lg" onClick={() => movePlateLocation(movementConstants.movementStates[4])} value={4} style={{ "display": "block", "margin-left": '15%', "margin-top": "10px", "margin-right": '15%' }}>
+                            Go Backward
+                        </Button>
                     </Row>
                     <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
-                    <Button variant="secondary" size="lg" onClick={() => setModalState(false)} style={{ "display": "block", "margin-left": '23%', "margin-top": "10px", "margin-right": '23%'}}>
-                        Exit
-                    </Button>
+                        <Button variant="secondary" size="lg" onClick={exitPlateLocationInputClicked} style={{ "display": "block", "margin-left": '23%', "margin-top": "10px", "margin-right": '23%' }}>
+                            Exit
+                        </Button>
                     </Row>
                 </Modal.Body>
                 <Footer />
-                
             </Modal>
         );
     }
 
-    // function ToggleButtonGroupUncontrolled() {
-    //     const [value, setValue] = useState([1, 4]);
+    function movePlateLocation(direction) {
+        fromWebAppMovementTopic.publish(new ROSLIB.Message({
+            data: direction
+        }));
+        var request = new ROSLIB.Service({});
+        alert_and_offset_service.callService(request, function(result) {
+            console.log("entered");
+            let alertBoolVal = result[0]
+            let cameraOffset = result[1]
+            let rot = [0, 0, 8];
+            let trans = [9, 9, 9];
+            fromWebAppAlertTopic.publish(new ROSLIB.Message({
+                data: alertBoolVal
+            }));
+            // let robot_offset = math.dot(rot, cameraOffset) + trans;
+            let robot_offset = 0;
+            fromWebAppOffsetTopic.publish(new ROSLIB.Message({
+                data: robot_offset
+            }))
+        })
+    }
 
-    //     /*
-    //      * The second argument that will be passed to
-    //      * `handleChange` from `ToggleButtonGroup`
-    //      * is the SyntheticEvent object, but we are
-    //      * not using it in this example so we will omit it.
-    //      */
-    //     const handleChange = (val) => setValue(val);
-
-    //     return (
-
-    //       <ToggleButtonGroup type="radio" name="options" style={{"display": "block"}}>
-
-    //       </ToggleButtonGroup>
-    //     );
-    //   }
-
+    function exitPlateLocationInputClicked() {
+        setModalState(false);
+        changeState(constants.States[1]);
+    }
 
     // Functions that change states
     function start_feeding_clicked() {
@@ -211,8 +272,7 @@ function Home() {
         if (isConnected || debug) {
             console.log("debug ADAthon")
             setModalState(true);
-            //MyPlateGuessModal();
-            //changeState(constants.States[1]);
+            MyPlateGuessModal();
         } else {
             notifyTimeout();
         }
@@ -304,6 +364,30 @@ function Home() {
         });
 
         setFromWebAppTopic(fromWebTopic);
+
+        var fromWebMovementTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: 'from_web_movement',
+            messageType: 'std_msgs/String'
+        })
+
+        setFromWebAppMovementTopic(fromWebMovementTopic);
+
+        var fromWebOffsetTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: 'from_web_offset',
+            messageType: 'std_msgs/String'
+        });
+
+        setFromWebAppOffsetTopic(fromWebOffsetTopic);
+
+        var fromWebAlertTopic = new ROSLIB.Topic({
+            ros: ros, 
+            name: 'from_web_alert',
+            messageType: 'std_msgs/Bool'
+        });
+
+        setFromWebAppAlertTopic(fromWebAlertTopic);
 
         var twist = new ROSLIB.Message({
             data: "Hello, world"
