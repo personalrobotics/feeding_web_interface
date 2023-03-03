@@ -19,6 +19,8 @@ import ROSLIB from "roslib";
 
 const debug = true;
 let food = ["Apple", "Banana", "Carrot", "Cucumber", "Lettuce", "Mango", "Orange", "Pumpkin"];
+let alertBoolVal = null;
+let robotOffset = null;
 
 var listener = [];
 function Home() {
@@ -235,26 +237,34 @@ function Home() {
     }
 
     function movePlateLocation(direction) {
-        fromWebAppMovementTopic.publish(new ROSLIB.Message({
-            data: direction
-        }));
         var request = new ROSLIB.Service({});
         alert_and_offset_service.callService(request, function(result) {
             console.log("entered");
-            let alertBoolVal = result[0]
-            let cameraOffset = result[1]
-            // add tf transformation here
-            let rot = [0, 0, 8];
-            let trans = [9, 9, 9];
-            fromWebAppAlertTopic.publish(new ROSLIB.Message({
-                data: alertBoolVal
-            }));
-            let robot_offset = dot(rot, cameraOffset)
-            let robot_offset = 0;
-            fromWebAppOffsetTopic.publish(new ROSLIB.Message({
-                data: robot_offset
-            }))
-        })
+            alertBoolVal = result[0]
+            robotOffset = result[1]
+        });
+        fromWebAppAlertTopic.publish(new ROSLIB.Message({
+            data: alertBoolVal
+            // if true then alert pop up
+        }));
+        var listener = new ROSLIB.Topic({
+            ros : ros,
+            name : '/alert_listener',
+            messageType : 'std_msgs/Bool'
+        });
+        listener.subscribe(function(message) {
+        console.log('Received message on ' + listener.name + ': ' + message.data);
+        if (message.data == True){
+            // call alert popup
+        }
+        listener.unsubscribe();
+        });
+        fromWebAppMovementTopic.publish(new ROSLIB.Message({
+            data: direction
+        }));
+        fromWebAppOffsetTopic.publish(new ROSLIB.Message({
+            data: robotOffset
+        }))
     }
 
     function exitPlateLocationInputClicked() {
