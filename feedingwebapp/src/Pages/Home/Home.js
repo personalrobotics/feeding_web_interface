@@ -4,7 +4,6 @@ import { useROS } from 'react-ros'
 import ScriptTag from 'react-script-tag';
 
 import { toast } from 'react-toastify';
-import { dot } from 'mathjs'
 import 'react-toastify/dist/ReactToastify.css';
 
 import Button from 'react-bootstrap/Button';
@@ -237,7 +236,7 @@ function Home() {
     }
 
     function plateLocatorLoop(){
-        while (alertBoolVal==false){
+        if (alertBoolVal==false){
             // service call
             var request = new ROSLIB.Service({});
             alert_and_offset_service.callService(request, function(result) {
@@ -263,6 +262,21 @@ function Home() {
             fromWebAppMovementTopic.publish(new ROSLIB.Message({
                 data: direction
             }))
+        }
+    }
+
+    function closeAlertLoop() {
+        while (robotOffset!='none') {
+            // publish offset
+            fromWebAppOffsetTopic.publish(new ROSLIB.Message({
+                data: robotOffset
+            }));
+            // service call to update offset
+            var request = new ROSLIB.Service({});
+            alert_and_offset_service.callService(request, function(result) {
+            console.log("entered");
+            robotOffset = result[1]
+            });
         }
     }
 
@@ -391,20 +405,6 @@ function Home() {
         });
 
         setFromWebAppOffsetTopic(fromWebOffsetTopic);
-
-        while (robotOffset!='none') {
-            // publish offset
-            fromWebAppOffsetTopic.publish(new ROSLIB.Message({
-                data: robotOffset
-            }));
-            // service call to update offset
-            var request = new ROSLIB.Service({});
-            alert_and_offset_service.callService(request, function(result) {
-            console.log("entered");
-            alertBoolVal = result[0]
-            robotOffset = result[1]
-            });
-        }
 
         var fromWebAlertTopic = new ROSLIB.Topic({
             ros: ros, 
