@@ -19,8 +19,8 @@ import ROSLIB from "roslib";
 
 const debug = true;
 let food = ["Apple", "Banana", "Carrot", "Cucumber", "Lettuce", "Mango", "Orange", "Pumpkin"];
-let alertBoolVal = null;
-let robotOffset = null;
+let alertBoolVal = false;
+let robotOffset = 'none';
 
 var listener = [];
 function Home() {
@@ -236,35 +236,34 @@ function Home() {
         );
     }
 
-    function movePlateLocation(direction) {
-        var request = new ROSLIB.Service({});
-        alert_and_offset_service.callService(request, function(result) {
+    function plateLocatorLoop(){
+        while (alertBoolVal==false){
+            // service call
+            var request = new ROSLIB.Service({});
+            alert_and_offset_service.callService(request, function(result) {
             console.log("entered");
+            // update alert msg values
             alertBoolVal = result[0]
             robotOffset = result[1]
-        });
+            })
+        }
+    }
+
+    function movePlateLocation(direction) {
+        // service call function
+        plateLocatorLoop();
+        // publish alert
         fromWebAppAlertTopic.publish(new ROSLIB.Message({
             data: alertBoolVal
-            // if true then alert pop up
         }));
-        var listener = new ROSLIB.Topic({
-            ros : ros,
-            name : '/alert_listener',
-            messageType : 'std_msgs/Bool'
-        });
-        listener.subscribe(function(message) {
-        console.log('Received message on ' + listener.name + ': ' + message.data);
-        if (message.data == True){
+        if (alertBoolVal==true) {
             // call alert popup
         }
-        listener.unsubscribe();
-        });
-        fromWebAppMovementTopic.publish(new ROSLIB.Message({
-            data: direction
-        }));
-        fromWebAppOffsetTopic.publish(new ROSLIB.Message({
-            data: robotOffset
-        }))
+        if (alertBoolVal==false) {        
+            fromWebAppMovementTopic.publish(new ROSLIB.Message({
+                data: direction
+            }))
+        }
     }
 
     function exitPlateLocationInputClicked() {
@@ -392,6 +391,20 @@ function Home() {
         });
 
         setFromWebAppOffsetTopic(fromWebOffsetTopic);
+
+        while (robotOffset!='none') {
+            // publish offset
+            fromWebAppOffsetTopic.publish(new ROSLIB.Message({
+                data: robotOffset
+            }));
+            // service call to update offset
+            var request = new ROSLIB.Service({});
+            alert_and_offset_service.callService(request, function(result) {
+            console.log("entered");
+            alertBoolVal = result[0]
+            robotOffset = result[1]
+            });
+        }
 
         var fromWebAlertTopic = new ROSLIB.Topic({
             ros: ros, 
