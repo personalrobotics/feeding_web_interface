@@ -32,13 +32,13 @@ function Home() {
         msgType: "std_msgs/String",
         type: "topic"
     }
-    
+
     // Service: 
     // Service type: ada_feeding/PlateService
     // alert_and_offset
 
     var alert_and_offset_service = new ROSLIB.Service({
-        ros: ros, 
+        ros: ros,
         name: "/alert_and_offset",
         serviceType: "ada_feeding/PlateService"
     });
@@ -56,6 +56,7 @@ function Home() {
     const [message, setMessage] = useState("");
     const [compression, setCompression] = useState('none');
     const [modalState, setModalState] = useState(false);
+    const [alertModalDisplay, setAlertModalDisplay] = useState(false);
 
     // Topic to send message from webapp to robot
     const [fromWebAppTopic, setFromWebAppTopic] = useState(new ROSLIB.Topic({
@@ -71,7 +72,7 @@ function Home() {
     }));
 
     const [fromWebAppAlertTopic, setFromWebAppAlertTopic] = useState(new ROSLIB.Topic({
-        ros: ros, 
+        ros: ros,
         name: '/from_web_alert',
         messageType: 'std_msgs/Bool'
     }))
@@ -235,15 +236,39 @@ function Home() {
         );
     }
 
-    function plateLocatorLoop(){
-        if (alertBoolVal==false){
+    function AlertModal(props) {
+        const ref = useRef(null);
+        return (
+            <Modal
+                {...props}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                backdrop="static"
+                keyboard={false}
+                centered
+                id="myModal"
+                ref={ref}
+                fullscreen={true}>
+                <div class="modal-header text-center">
+                    <h1 className="modal-title w-100">Alert, Alert, Alert!</h1>
+                </div>
+                <Modal.Body style={{ "paddingLeft": "10px", "overflow": "hidden" }}>
+                    <p>Alert! Robot is taking over!</p>
+                </Modal.Body>
+                <Footer />
+            </Modal>
+        );
+    }
+
+    function plateLocatorLoop() {
+        if (alertBoolVal == false) {
             // service call
             var request = new ROSLIB.Service({});
-            alert_and_offset_service.callService(request, function(result) {
-            console.log("entered");
-            // update alert msg values
-            alertBoolVal = result[0]
-            robotOffset = result[1]
+            alert_and_offset_service.callService(request, function (result) {
+                console.log("entered");
+                // update alert msg values
+                alertBoolVal = result[0]
+                robotOffset = result[1]
             })
         }
     }
@@ -255,10 +280,11 @@ function Home() {
         fromWebAppAlertTopic.publish(new ROSLIB.Message({
             data: alertBoolVal
         }));
-        if (alertBoolVal==true) {
+        if (alertBoolVal == true) {
             // call alert popup
+            setAlertModalDisplay(true);
         }
-        if (alertBoolVal==false) {        
+        if (alertBoolVal == false) {
             fromWebAppMovementTopic.publish(new ROSLIB.Message({
                 data: direction
             }))
@@ -266,16 +292,16 @@ function Home() {
     }
 
     function closeAlertLoop() {
-        while (robotOffset!='none') {
+        while (robotOffset != 'none') {
             // publish offset
             fromWebAppOffsetTopic.publish(new ROSLIB.Message({
                 data: robotOffset
             }));
             // service call to update offset
             var request = new ROSLIB.Service({});
-            alert_and_offset_service.callService(request, function(result) {
-            console.log("entered");
-            robotOffset = result[1]
+            alert_and_offset_service.callService(request, function (result) {
+                console.log("entered");
+                robotOffset = result[1]
             });
         }
     }
@@ -407,7 +433,7 @@ function Home() {
         setFromWebAppOffsetTopic(fromWebOffsetTopic);
 
         var fromWebAlertTopic = new ROSLIB.Topic({
-            ros: ros, 
+            ros: ros,
             name: 'from_web_alert',
             messageType: 'std_msgs/Bool'
         });
@@ -438,6 +464,12 @@ function Home() {
                         show={modalState}
                         onHide={() => setModalState(false)}
                     />
+
+                    <AlertModal
+                        show={alertModalDisplay}
+                        onHide={() => setAlertModalDisplay(false)}
+                    />
+
                     <Row xs={1} md={1} className="justify-content-center mx-2 my-2" >
                         <p class="transmessage" style={{ "margin-bottom": "10px", "margin-top": "0px", "font-size": "24px" }}>Hello!👋 I am ADA's faithful assistant, ADAWebapp! Bon Appétit! 😋</p>
                         <Button variant="primary" size="lg" className="btn-huge" id="#startBtn"
