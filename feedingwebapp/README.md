@@ -2,8 +2,8 @@
 ## Summary
 This project aims to develop a web app to connect and control feeding through ADA robot. The overall workflow (state machine) for this robot can be seen below. 
 
-![Web App State Machine](https://user-images.githubusercontent.com/8277986/191333326-c71a1765-475c-40f6-87da-a79b7c73e0ee.png)
-
+<!-- ![Web App State Machine](https://user-images.githubusercontent.com/8277986/191333326-c71a1765-475c-40f6-87da-a79b7c73e0ee.png) -->
+![newWebAppWorkflow](https://user-images.githubusercontent.com/26337328/223597500-5e520b7a-eb2b-45ad-b9e8-91fec1bdeba4.jpg)
 
 ## Dependencies
 - [`npm`](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
