@@ -18,8 +18,6 @@ import ROSLIB from "roslib";
 
 const debug = true;
 let food = ["Apple", "Banana", "Carrot", "Cucumber", "Lettuce", "Mango", "Orange", "Pumpkin"];
-let alertBoolVal = false;
-let robotOffset = 'none';
 
 var listener = [];
 function Home() {
@@ -33,20 +31,6 @@ function Home() {
         type: "topic"
     }
 
-    // Service: 
-    // Service type: ada_feeding/PlateService
-    // alert_and_offset
-
-    var alert_and_offset_service = new ROSLIB.Service({
-        ros: ros,
-        name: "/alert_and_offset",
-        serviceType: "ada_feeding/PlateService"
-    });
-
-    console.log(services);
-    services[31] = alert_and_offset_service;
-    console.log(services);
-
     // Add this topic to the list of topics provided from useROS()
     topics[4] = new_topic_from_Robot;
     console.log(topics);
@@ -55,8 +39,6 @@ function Home() {
     const [queue, setQueue] = useState(0);
     const [message, setMessage] = useState("");
     const [compression, setCompression] = useState('none');
-    const [modalState, setModalState] = useState(false);
-    const [alertModalDisplay, setAlertModalDisplay] = useState(false);
 
     // Topic to send message from webapp to robot
     const [fromWebAppTopic, setFromWebAppTopic] = useState(new ROSLIB.Topic({
@@ -64,24 +46,6 @@ function Home() {
         name: '/from_web',
         messageType: 'std_msgs/String'
     }));
-
-    const [fromWebAppMovementTopic, setFromWebAppMovementTopic] = useState(new ROSLIB.Topic({
-        ros: ros,
-        name: '/from_web_movement',
-        messageType: 'std_msgs/String'
-    }));
-
-    const [fromWebAppAlertTopic, setFromWebAppAlertTopic] = useState(new ROSLIB.Topic({
-        ros: ros,
-        name: '/from_web_alert',
-        messageType: 'std_msgs/Bool'
-    }))
-
-    const [fromWebAppOffsetTopic, setFromWebAppOffsetTopic] = useState(new ROSLIB.Topic({
-        ros: ros,
-        name: '/from_web_offset',
-        messageType: 'std_msgs/Float64MultiArray' // float64
-    }))
 
     useEffect(() => {
         handleTopic(topic, callbackFn);
@@ -100,13 +64,7 @@ function Home() {
 
     // Some functions that handles topics from roslibjs
     const handleTopic = (topicInput, callbackFn) => {
-        // if (topic !== topicInput) {
-        //     setTopic(topicInput);
-        //     unsubscribe();
-        //     return;
-        // }
         unsubscribe();
-        // listener = [];
         for (var i in topics) {
             if (topics[i].path == topicInput) {
                 let j = listener.length - 1;
@@ -131,7 +89,6 @@ function Home() {
 
     const handleTopics = () => {
         handleTopic("/from_robot", callbackFn);
-        // handleTopic("/alert_from_robot", callbackFn_Alert);
     }
 
     const handleQueue = (queueInput) => {
@@ -159,11 +116,6 @@ function Home() {
         console.log(message)
     }
 
-    // const callbackFn_Alert = (msg) => {
-    //     console.log(msg);
-    //     setAlertVal(msg["data"]);
-    // }
-
     const currentStateVal = useStore((state) => state.defaultState);
     console.log(currentStateVal);
     const changeState = useStore((state) => state.changeState);
@@ -176,145 +128,11 @@ function Home() {
             toggleConnection();
         }
         handleTopics();
-        // handleTopic("/from_robot", callbackFn);
-        // handleTopic("/alert_from_robot", callbackFn_Alert);
-    }
-
-    function MyPlateGuessModal(props) {
-        const ref = useRef(null);
-        return (
-            <Modal
-                {...props}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                backdrop="static"
-                keyboard={false}
-                centered
-                id="myModal"
-                ref={ref}
-                fullscreen={true}>
-                <div class="modal-header text-center">
-                    <h1 className="modal-title w-100">Plate Location Input</h1>
-                </div>
-                <Modal.Body style={{ "paddingLeft": "10px", "overflow": "hidden" }}>
-                    <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
-                        <Button variant="warning" size="lg" onClick={() => setModalState(true)} style={{ "display": "block", "margin-left": '60px', "margin-bottom": "10px", "margin-right": "60px" }}>
-                            Home
-                        </Button>{' '}
-                    </Row>
-                    <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
-                        <Button id="tbg-btn-3" size="lg" onClick={() => movePlateLocation(movementConstants.movementStates[1])} value={3} style={{ "margin-left": '15%', "margin-bottom": "10px", "margin-right": '15%' }} >
-                            Go Forward
-                        </Button>
-                    </Row>
-                    <div class="row">
-                        <div class="col">
-                            <Button id="tbg-btn-1" size="lg" onClick={() => movePlateLocation(movementConstants.movementStates[2])} value={1} style={{ "margin-left": '70%' }}>
-                                Go Left
-                            </Button>
-                        </div>
-
-                        <div class="col">
-                            <Button id="tbg-btn-2" size="lg" onClick={() => movePlateLocation(movementConstants.movementStates[3])} value={2} style={{ "margin-left": '15%', "margin-right": '60%' }}>
-                                Go Right
-                            </Button>
-                        </div>
-                    </div>
-                    <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
-                        <Button id="tbg-btn-4" size="lg" onClick={() => movePlateLocation(movementConstants.movementStates[4])} value={4} style={{ "display": "block", "margin-left": '15%', "margin-top": "10px", "margin-right": '15%' }}>
-                            Go Backward
-                        </Button>
-                    </Row>
-                    <Row xs={1} md={6} className="justify-content-center mx-2 my-2" >
-                        <Button variant="secondary" size="lg" onClick={exitPlateLocationInputClicked} style={{ "display": "block", "margin-left": '23%', "margin-top": "10px", "margin-right": '23%' }}>
-                            Exit
-                        </Button>
-                    </Row>
-                </Modal.Body>
-                <Footer />
-            </Modal>
-        );
-    }
-
-    function AlertModal(props) {
-        const ref = useRef(null);
-        return (
-            <Modal
-                {...props}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                backdrop="static"
-                keyboard={false}
-                centered
-                id="myModal"
-                ref={ref}
-                fullscreen={true}>
-                <div class="modal-header text-center">
-                    <h1 className="modal-title w-100">Alert, Alert, Alert!</h1>
-                </div>
-                <Modal.Body style={{ "paddingLeft": "10px", "overflow": "hidden" }}>
-                    <p>Alert! Robot is taking over!</p>
-                </Modal.Body>
-                <Footer />
-            </Modal>
-        );
-    }
-
-    function plateLocatorLoop() {
-        if (alertBoolVal == false) {
-            // service call
-            var request = new ROSLIB.Service({});
-            alert_and_offset_service.callService(request, function (result) {
-                console.log("entered");
-                // update alert msg values
-                alertBoolVal = result[0]
-                robotOffset = result[1]
-            })
-        }
-    }
-
-    function movePlateLocation(direction) {
-        // service call function
-        plateLocatorLoop();
-        // publish alert
-        fromWebAppAlertTopic.publish(new ROSLIB.Message({
-            data: alertBoolVal
-        }));
-        if (alertBoolVal == true) {
-            // call alert popup
-            setAlertModalDisplay(true);
-        }
-        if (alertBoolVal == false) {
-            fromWebAppMovementTopic.publish(new ROSLIB.Message({
-                data: direction
-            }))
-        }
-    }
-
-    function closeAlertLoop() {
-        while (robotOffset != 'none') {
-            // publish offset
-            fromWebAppOffsetTopic.publish(new ROSLIB.Message({
-                data: robotOffset
-            }));
-            // service call to update offset
-            var request = new ROSLIB.Service({});
-            alert_and_offset_service.callService(request, function (result) {
-                console.log("entered");
-                robotOffset = result[1]
-            });
-        }
-    }
-
-    function exitPlateLocationInputClicked() {
-        setModalState(false);
-        changeState(constants.States[1]);
     }
 
     // Functions that change states
     function start_feeding_clicked() {
         console.log("start_feeding_clicked");
-        // raida -- console.log("entering_start_feeding");
         // State 1: "Moving above the plate"
         runConnection();
         fromWebAppTopic.publish(new ROSLIB.Message({
@@ -322,8 +140,7 @@ function Home() {
         }));
         if (isConnected || debug) {
             console.log("debug ADAthon")
-            setModalState(true);
-            MyPlateGuessModal();
+            changeState(constants.States[1]);
         } else {
             notifyTimeout();
         }
@@ -415,35 +232,6 @@ function Home() {
         });
 
         setFromWebAppTopic(fromWebTopic);
-
-        var fromWebMovementTopic = new ROSLIB.Topic({
-            ros: ros,
-            name: 'from_web_movement',
-            messageType: 'std_msgs/String'
-        })
-
-        setFromWebAppMovementTopic(fromWebMovementTopic);
-
-        var fromWebOffsetTopic = new ROSLIB.Topic({
-            ros: ros,
-            name: 'from_web_offset',
-            messageType: 'std_msgs/String'
-        });
-
-        setFromWebAppOffsetTopic(fromWebOffsetTopic);
-
-        var fromWebAlertTopic = new ROSLIB.Topic({
-            ros: ros,
-            name: 'from_web_alert',
-            messageType: 'std_msgs/Bool'
-        });
-
-        setFromWebAppAlertTopic(fromWebAlertTopic);
-
-        var twist = new ROSLIB.Message({
-            data: "Hello, world"
-        });
-        fromWebTopic.publish(twist);
     }
 
     // Rendering based on current statuses
@@ -459,16 +247,6 @@ function Home() {
 
                     <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>🏠 Home</h1>
                     {isConnected ? <div><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
-
-                    <MyPlateGuessModal
-                        show={modalState}
-                        onHide={() => setModalState(false)}
-                    />
-
-                    <AlertModal
-                        show={alertModalDisplay}
-                        onHide={() => setAlertModalDisplay(false)}
-                    />
 
                     <Row xs={1} md={1} className="justify-content-center mx-2 my-2" >
                         <p class="transmessage" style={{ "margin-bottom": "10px", "margin-top": "0px", "font-size": "24px" }}>Hello!👋 I am ADA's faithful assistant, ADAWebapp! Bon Appétit! 😋</p>
