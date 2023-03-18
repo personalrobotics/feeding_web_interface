@@ -10,8 +10,6 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import useStore from "../useStore";
 import * as constants from '../Constants';
-import * as movementConstants from '../MovementConstants';
-import Modal from 'react-bootstrap/Modal';
 import Footer from "../Footer/Footer";
 import ROSLIB from "roslib";
 

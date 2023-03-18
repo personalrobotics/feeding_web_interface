@@ -16,16 +16,6 @@
  * State 8: "Emergency Termination": During this state, the robot stops all its motions and stays in the position it was present at.
  * 
  * State 9: "Arm is getting stowed": During this state, the robot is stowing its arm into a sleeping position off to the side of the chair. 
- *
- * State 10: "Forward": During this state, the robot moves forward.
- *
- * State 11: "Backward": During this state, the robot moves backward.
- *
- * State 12: "Left": During this state, the robot moves left.
- *
- * State 13: "Right": During this state, the robot moves right.
- *
- * State 14: "Alert": During this state, the robot sends an alert to user through the app.
  */
 export const States = {
     1: "Moving_above_the_plate",
@@ -36,10 +26,5 @@ export const States = {
     6: "Waiting_for_user_to_complete_bite",
     7: "Not_Eating",
     8: "Emergency_Termination",
-    9: "Arm_getting_stowed",
-    10: "Forward",
-    11: "Backward",
-    12: "Left",
-    13: "Right",
-    14: "Alert"
+    9: "Arm_getting_stowed"
 }
