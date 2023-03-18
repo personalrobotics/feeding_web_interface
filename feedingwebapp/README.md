@@ -1,5 +1,5 @@
 # Feeding Web Interface
-> For Technical Documentation, please refer to [this file](https://github.com/personalrobotics/feeding_web_interface/blob/2023PreDeployment/feedingwebapp/README.md).
+> For Technical Documentation, please refer to [this file](https://github.com/personalrobotics/feeding_web_interface/blob/2023PreDeployment/feedingwebapp/TechDocumentation.md).
 
 ## Summary
 This project aims to develop a web app to connect and control feeding through ADA robot. The overall workflow (state machine) for this robot can be seen below. 
