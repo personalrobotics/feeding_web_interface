@@ -180,9 +180,6 @@ const Settings = () => {
                 `}
             </style>
             <h1 style={{ textAlign: "center", "font-size": "40px" }} className='txt-huge'>⚙ Settings</h1>
-            <Button variant="primary" size="lg" style={{ "display": "block", "margin-left": '48%', "margin-top": "10px", "margin-right": '23%', "fontSize": "30px"}}>
-                Reset
-            </Button>
 
             <Row className="justify-content-center mx-1 my-2" >
                 <Form.Label style={{ fontSize: "30px" }}>Your preferred feeding position: </Form.Label>
