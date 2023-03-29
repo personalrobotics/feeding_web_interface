@@ -1,9 +1,160 @@
-import React from "react";
-
+import React, { useState }from "react";
+import Button from 'react-bootstrap/Button';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
+import styled from 'styled-components';
+
+const btn = styled.button`
+    background-color: purple;
+    color: white;
+    font-size: 20px;
+    padding: 10px 60px;
+    border-radius: 5px;
+    margin: 10px 0px;
+    cursor: pointer;
+`;
+
+const ButtonToggle = styled(btn)`
+  opacity: 0.6;
+  ${({ active }) =>
+    active &&
+    `
+    opacity: 1;
+  `}
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+`;
+
+const positions = ['Side Feeding', 'Front Feeding'];
+const readiness = ['Open Mouth', 'Say "I am Ready"', 'Press Button'];
+const selection = ['A picture of plate', 'Scrollable list of food'];
+const food = ['Name', 'Location', 'Pixel'];
+const interaction = ['Voice', 'Switch'];
+const video = ['ON', 'OFF'];
+const plate = ['ON', 'OFF'];
+
+function ToggleGroupPositions() {
+    const [active, setActive] = useState(positions[0]);
+    return (
+      <ButtonGroup>
+        {positions.map(type => (
+          <ButtonToggle
+            key={type}
+            active={active === type}
+            onClick={() => setActive(type)}
+          >
+            {type}
+          </ButtonToggle>
+        ))}
+      </ButtonGroup>
+    );
+  }
+
+  function ToggleGroupReadiness() {
+    const [active, setActive] = useState(readiness[0]);
+    return (
+      <ButtonGroup>
+        {readiness.map(type => (
+          <ButtonToggle
+            key={type}
+            active={active === type}
+            onClick={() => setActive(type)}
+          >
+            {type}
+          </ButtonToggle>
+        ))}
+      </ButtonGroup>
+    );
+  }
+
+  function ToggleGroupSelection() {
+    const [active, setActive] = useState(selection[0]);
+    return (
+      <ButtonGroup>
+        {selection.map(type => (
+          <ButtonToggle
+            key={type}
+            active={active === type}
+            onClick={() => setActive(type)}
+          >
+            {type}
+          </ButtonToggle>
+        ))}
+      </ButtonGroup>
+    );
+  }
+
+  function ToggleGroupFood() {
+    const [active, setActive] = useState(food[0]);
+    return (
+      <ButtonGroup>
+        {food.map(type => (
+          <ButtonToggle
+            key={type}
+            active={active === type}
+            onClick={() => setActive(type)}
+          >
+            {type}
+          </ButtonToggle>
+        ))}
+      </ButtonGroup>
+    );
+  }
+
+  function ToggleGroupMedium() {
+    const [active, setActive] = useState(interaction[0]);
+    return (
+      <ButtonGroup>
+        {interaction.map(type => (
+          <ButtonToggle
+            key={type}
+            active={active === type}
+            onClick={() => setActive(type)}
+          >
+            {type}
+          </ButtonToggle>
+        ))}
+      </ButtonGroup>
+    );
+  }
+
+  function ToggleGroupPlate() {
+    const [active, setActive] = useState(plate[0]);
+    return (
+      <ButtonGroup>
+        {plate.map(type => (
+          <ButtonToggle
+            key={type}
+            active={active === type}
+            onClick={() => setActive(type)}
+          >
+            {type}
+          </ButtonToggle>
+        ))}
+      </ButtonGroup>
+    );
+  }
+
+  function ToggleGroupVideo() {
+    const [active, setActive] = useState(video[0]);
+    return (
+      <ButtonGroup>
+        {video.map(type => (
+          <ButtonToggle
+            key={type}
+            active={active === type}
+            onClick={() => setActive(type)}
+          >
+            {type}
+          </ButtonToggle>
+        ))}
+      </ButtonGroup>
+    );
+  }
 
 const Settings = () => {
     return (
@@ -31,43 +182,43 @@ const Settings = () => {
             <h1 style={{ textAlign: "center", "font-size": "40px" }} className='txt-huge'>⚙ Settings</h1>
 
             <Row className="justify-content-center mx-1 my-2" >
-                <Form.Label style={{ fontSize: "30px" }}>Your preferred feeding style: </Form.Label>
-                <ToggleButtonGroup type="radio" name="options" defaultValue={1}>
-                    <ToggleButton className="border border-white btn-huge" style={{ paddingLeft: '0px', paddingRight: '0px' }} id="tbg-radio-2" value={2}>
-                        Side Feeding
-                    </ToggleButton>
-                    <ToggleButton className="border border-white btn-huge" style={{ paddingLeft: '0px', paddingRight: '0px' }} id="tbg-radio-3" value={3}>
-                        Front Feeding
-                    </ToggleButton>
-                </ToggleButtonGroup>
+                <Form.Label style={{ fontSize: "30px" }}>Your preferred feeding position: </Form.Label>
+                <ToggleGroupPositions />
             </Row>
 
             <Row className="justify-content-center mx-1 my-2">
-                <Form.Label style={{ fontSize: "30px" }}>Your preferred method of indicating readiness for a bite: </Form.Label>
-                <ToggleButtonGroup type="radio" name="options2" defaultValue={1} >
-                    <ToggleButton className="border border-white btn-huge" style={{ paddingLeft: '0px', paddingRight: '0px' }} id="tbg-radio-4" value={2}>
-                        Open Mouth
-                    </ToggleButton>
-                    <ToggleButton className="border border-white btn-huge" style={{ paddingLeft: '0px', paddingRight: '0px' }} id="tbg-radio-5" value={3}>
-                        Say "I'm done"
-                    </ToggleButton>
-                    <ToggleButton className="border border-white btn-huge" style={{ paddingLeft: '0px', paddingRight: '0px' }} id="tbg-radio-6" value={3}>
-                        Press button
-                    </ToggleButton>
-                </ToggleButtonGroup>
+                <Form.Label style={{ fontSize: "30px" }}>Your preferred way of indicating readiness for a bite: </Form.Label>
+                <ToggleGroupReadiness />
             </Row>
 
-            <Row className="justify-content-center mx-1 my-2" style={{ paddingBottom: '35vh' }}>
-                <Form.Label style={{ fontSize: "30px" }}>Your preferred method for indicating selection of food: </Form.Label>
-                <ToggleButtonGroup type="radio" name="options2" defaultValue={1} >
-                    <ToggleButton className="border border-white btn-huge" style={{ paddingLeft: '0px', paddingRight: '0px' }} id="tbg-radio-4" value={2}>
-                        A picture of plate
-                    </ToggleButton>
-                    <ToggleButton className="border border-white btn-huge" style={{ paddingLeft: '0px', paddingRight: '0px' }} id="tbg-radio-5" value={3}>
-                        Scrollable list of food
-                    </ToggleButton>
-                </ToggleButtonGroup>
+            <Row className="justify-content-center mx-1 my-2">
+                <Form.Label style={{ fontSize: "30px" }}>Your preferred way for indicating selection of food: </Form.Label>
+                <ToggleGroupSelection />
             </Row>
+
+            <Row className="justify-content-center mx-1 my-2">
+                <Form.Label style={{ fontSize: "30px" }}>Your preferred way of choosing food: </Form.Label>
+                <ToggleGroupFood />
+            </Row>
+
+            <Row className="justify-content-center mx-1 my-2">
+                <Form.Label style={{ fontSize: "30px" }}>Your preferred interaction medium: </Form.Label>
+                <ToggleGroupMedium />
+            </Row>
+
+            <Row className="justify-content-center mx-1 my-2">
+                <Form.Label style={{ fontSize: "30px" }}>Video from robot's camera: </Form.Label>
+                <ToggleGroupVideo/>
+            </Row>
+
+            <Row className="justify-content-center mx-1 my-2">
+                <Form.Label style={{ fontSize: "30px" }}>Plate locator functionality: </Form.Label>
+                <ToggleGroupPlate />
+            </Row>
+             
+                <button type="button" class="btn btn-success" style={{"margin-left": '48%', "fontSize": "30px", "margin-right": '3%', "margin-down": '30px'}}>Save</button>
+                <button type="button" class="btn btn-danger" style={{"fontSize": "30px"}}>Cancel</button>
+
         </div>
     );
 }
