@@ -216,8 +216,8 @@ const Settings = () => {
                 <ToggleGroupPlate />
             </Row>
              
-                <button type="button" class="btn btn-success" style={{"margin-left": '48%', "fontSize": "30px", "margin-right": '3%', "margin-down": '30px'}}>Save</button>
-                <button type="button" class="btn btn-danger" style={{"fontSize": "30px"}}>Cancel</button>
+                <button type="button" class="btn btn-success" style={{"margin-left": '48%', "fontSize": "30px", "margin-right": '3%', "margin-down": '30px'}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Save</a></button>
+                <button type="button" class="btn btn-danger" style={{"fontSize": "30px"}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Cancel</a></button>
 
         </div>
     );
