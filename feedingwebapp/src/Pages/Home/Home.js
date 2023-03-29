@@ -117,6 +117,7 @@ function Home() {
     const currentStateVal = useStore((state) => state.defaultState);
     console.log(currentStateVal);
     const changeState = useStore((state) => state.changeState);
+    const [foodTrying, setFoodTrying] = useState("");
 
     // Notification/Alert definition
     const notifyTimeout = () => toast("We are having trouble connecting to the robot. Please refresh the page and try again.");
@@ -131,17 +132,23 @@ function Home() {
     // Functions that change states
     function start_feeding_clicked() {
         console.log("start_feeding_clicked");
-        // State 1: "Moving above the plate"
         runConnection();
         fromWebAppTopic.publish(new ROSLIB.Message({
             data: "start_feeding_clicked"
         }));
         if (isConnected || debug) {
             console.log("debug ADAthon")
-            changeState(constants.States[1]);
+            changeState(constants.States[10]);
+            // changeState(constants.States[1]);
         } else {
             notifyTimeout();
         }
+    }
+
+    function exitPlateLocator() {
+        console.log("Exit Plate Locator");
+        // State 1: "Moving above the plate"
+        changeState(constants.States[1]);
     }
 
     // Temp Button #1
@@ -165,6 +172,21 @@ function Home() {
     // Temp Button #2
     function acquiring_food_item_done() {
         console.log("acquiring_food_item_done");
+        // State 11: "Status_of_food_on_fork"
+        changeState(constants.States[11]);
+    }
+
+    function food_retrying() {
+        console.log("food_retrying: " + foodTrying);
+        let strData = 'food_item_clicked: ' + foodTrying;
+        fromWebAppTopic.publish(new ROSLIB.Message({
+            data: strData
+        }));
+        changeState(constants.States[3]);
+    }
+
+    function acquiring_food_successful() {
+        console.log("acquiring_food_successful");
         // State 4: "Waiting for user to open mouth"
         changeState(constants.States[4]);
     }
@@ -204,7 +226,6 @@ function Home() {
         if (isConnected) {
             toggleConnection();
         }
-
     }
 
     // Connection function for sending messages to the robot (using regular JS)
@@ -256,6 +277,21 @@ function Home() {
             </div>
         )
     }
+
+    // State 10: "Plate Locator"
+    else if (currentStateVal.feeding_status == constants.States[10]) {
+        return (
+            <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+                {isConnected ? <div style={{ "display": "inline-block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline-block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
+                <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>🍽️ Plate Locator</h1>
+                {/* TODO: RAIDA */}
+                {/* TODO: Remove the temp button once your "exit button is configured". Use the exitPlateLocator function!*/}
+                <Button variant="primary" size="lg" className="btn-huge" id="#startBtn"
+                    onClick={exitPlateLocator} style={{ width: "75%", "font-size": "35px", "margin-top": "30px" }}>Temp Button</Button>
+            </div>
+        )
+    }
+
     // State 1: "Moving above the plate"
     else if (currentStateVal.feeding_status == constants.States[1]) {
         return (
@@ -290,13 +326,16 @@ function Home() {
                 <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>Food Item Selection</h1>
                 {isConnected ? <div style={{ "display": "block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
 
-                <div style={{ "display": "block" }}><Button className="doneBut" style={{ "font-size": "24px", "margin-top": "0px", "marginRight": "10px", "marginLeft": "auto", "display": "block" }} onClick={() => changeState(constants.States[9])}>✅ Done Eating</Button></div>
+                <div style={{ "display": "block" }}>
+                    <Button className="doneBut" style={{ "font-size": "24px", "margin-top": "0px", "marginRight": "10px", "marginLeft": "auto", "display": "block" }} onClick={() => changeState(constants.States[10])}>🍽️ Locate Plate</Button>
+                    <Button className="doneBut" style={{ "font-size": "24px", "margin-top": "0px", "marginRight": "10px", "marginLeft": "auto", "display": "block" }} onClick={() => changeState(constants.States[9])}>✅ Done Eating</Button>
+                </div>
 
                 <p class="transmessage" style={{ "margin-bottom": "0px" }}>Choose from one of the following food items.</p>
 
                 <Row xs={3} s={2} md={3} lg={4} className="justify-content-center mx-auto my-2" style={{ paddingBottom: '35vh' }}>
                     {food.map((value, i) => (
-                        <Button key={i} variant="primary" className="mx-1 mb-1" style={{ paddingLeft: "0px", paddingRight: "0px", marginLeft: "0px", marginRight: "0px", "font-size": "25px" }} value={value} size="lg" onClick={(e) => food_item_clicked(e)}>{value}</Button>
+                        <Button key={i} variant="primary" className="mx-1 mb-1" style={{ paddingLeft: "0px", paddingRight: "0px", marginLeft: "0px", marginRight: "0px", "font-size": "25px" }} value={value} size="lg" onClick={(e) => { setFoodTrying(e); food_item_clicked(e) }}>{value}</Button>
                     ))
                     }
                 </Row>
@@ -336,6 +375,23 @@ function Home() {
             </div>
         )
     }
+
+    // State 11: "Status of food on fork"
+    else if (currentStateVal.feeding_status == constants.States[11]) {
+        return (
+            <div style={{ "display": "block", "width": "100%", "height": "115vh", "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
+                <h1 className=" text-center txt-huge" style={{ "font-size": "40px" }}>Status of Food on fork</h1>
+                {isConnected ? <div style={{ "display": "inline" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
+                <p class="transmessage" style={{ "margin-bottom": "0px" }}>Click the below button to indicate whether food is on fork.</p>
+                <Row className="justify-content-center mx-auto my-2 w-75">
+                    <Button variant="primary" className="mx-2 mb-2 btn-huge" size="lg" onClick={acquiring_food_successful} style={{ width: "75%", "font-size": "35px" }}>Fork has food!</Button>
+                    <Button variant="primary" className="mx-2 mb-2 btn-huge" size="lg" onClick={food_retrying} style={{ width: "75%", "font-size": "35px" }}>Fork is empty</Button>
+                </Row>
+                <Footer />
+            </div>
+        )
+    }
+
     // State 4: "Waiting for user to open mouth"
     else if (currentStateVal.feeding_status == constants.States[4]) {
         return (
@@ -355,6 +411,7 @@ function Home() {
             </div>
         )
     }
+
     // State 5: "Moving closer to your mouth"
     else if (currentStateVal.feeding_status == constants.States[5]) {
         return (
