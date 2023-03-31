@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Home.css'
+import Col from 'react-bootstrap/Col'
 import { useROS } from 'react-ros'
 import ScriptTag from 'react-script-tag';
 
@@ -121,6 +122,28 @@ function Home() {
 
     // Notification/Alert definition
     const notifyTimeout = () => toast("We are having trouble connecting to the robot. Please refresh the page and try again.");
+
+    function getWidthHeight(imageWidth = 80, imageHeight = 40) {
+        let imageAspectRatio = imageWidth / imageHeight;
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
+        console.log(windowWidth, windowHeight)
+        let returnWidth = 0;
+        let returnHeight = 0;
+        if (windowWidth / windowHeight > imageAspectRatio) {
+            returnHeight = windowHeight - 70;
+            returnWidth = imageAspectRatio * returnHeight;
+        } else {
+            returnWidth = windowWidth;
+            returnHeight = (1 / imageAspectRatio) * returnWidth;
+        }
+        console.log(returnWidth)
+        console.log(returnHeight)
+        return {
+            "width": returnWidth,
+            "height": returnHeight
+        }
+    }
 
     function runConnection() {
         if (!isConnected) {
@@ -284,10 +307,54 @@ function Home() {
             <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
                 {isConnected ? <div style={{ "display": "inline-block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline-block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
                 <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>🍽️ Plate Locator</h1>
-                {/* TODO: RAIDA */}
-                {/* TODO: Remove the temp button once your "exit button is configured". Use the exitPlateLocator function!*/}
-                <Button variant="primary" size="lg" className="btn-huge" id="#startBtn"
-                    onClick={exitPlateLocator} style={{ width: "75%", "font-size": "35px", "margin-top": "30px" }}>Temp Button</Button>
+                <iframe src={`http://localhost:8080/stream?topic=/camera/color/image_raw&default_transport=compressed&width=${Math.round(getWidthHeight().width) - 30}&height=${Math.round(getWidthHeight().height)}&quality=20`}
+                    frameborder='0'
+                    allow='autoplay; encrypted-media'
+                    allowfullscreen
+                    title='video'
+                    style={{ "width": getWidthHeight().width, "height": getWidthHeight().height }}
+                />
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <Button variant="primary" id="tbg-btn-1" style={{ "font-size": "25px", "margin-left": '15%'}} >
+                                Forward
+                            </Button>
+                        </div>
+
+                        <div class="col">
+                            <Button variant="success" id="tbg-btn-2" onClick={exitPlateLocator} style={{width:"96%", "font-size": "25px", "margin-bottom": "5%", "margin-left": '10%', "margin-right": "2%"}}>
+                                Looks Good
+                            </Button>
+                        </div>
+
+                        <div class="w-100"></div>
+
+                        <div class="col-3">
+                            <Button variant="primary" id="tbg-btn-3" style={{ "font-size": "25px", "margin-left": '2%' }}>
+                                Left
+                            </Button>
+                        </div>
+
+                        <div class="col">
+                            <Button variant="primary" id="tbg-btn-4" style={{ "font-size": "25px", "margin-left": '3%' }}>
+                                Right
+                            </Button>
+                        </div>
+ 
+                        <div class="w-100"></div>
+                        <div class="col">
+                            <Button variant="primary" id="tbg-btn-5" style={{ "font-size": "25px", "margin-left": '15%', "margin-top": "5%", "margin-right": '15%' }}>
+                                Backward
+                            </Button>
+                        </div>
+                        <div class="col">
+                            <Button id="tbg-btn-6" variant="warning" style={{width:"96%", "font-size": "25px", "margin-left": '10%', "margin-right": "2%" }}>
+                                Center Plate
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }

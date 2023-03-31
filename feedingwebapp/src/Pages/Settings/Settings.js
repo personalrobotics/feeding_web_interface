@@ -5,6 +5,8 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
 import styled from 'styled-components';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const btn = styled.button`
     background-color: purple;
@@ -156,6 +158,8 @@ function ToggleGroupPositions() {
     );
   }
 
+const notifyTimeout = () => toast("The settings have been saved.");
+
 const Settings = () => {
     return (
         <div>
@@ -183,12 +187,12 @@ const Settings = () => {
 
             <Row className="justify-content-center mx-1 my-2" >
                 <Form.Label style={{ fontSize: "30px" }}>Your preferred feeding position: </Form.Label>
-                <ToggleGroupPositions />
+                <ToggleGroupPositions /> 
             </Row>
 
             <Row className="justify-content-center mx-1 my-2">
                 <Form.Label style={{ fontSize: "30px" }}>Your preferred way of indicating readiness for a bite: </Form.Label>
-                <ToggleGroupReadiness />
+               <ToggleGroupReadiness /> 
             </Row>
 
             <Row className="justify-content-center mx-1 my-2">
@@ -216,9 +220,9 @@ const Settings = () => {
                 <ToggleGroupPlate />
             </Row>
              
-                <button type="button" class="btn btn-success" style={{"margin-left": '48%', "fontSize": "30px", "margin-right": '3%', "margin-down": '30px'}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Save</a></button>
-                <button type="button" class="btn btn-danger" style={{"fontSize": "30px"}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Cancel</a></button>
-
+            <button type="button" class="btn btn-success" style={{"margin-left": '48%', "fontSize": "30px", "margin-right": '3%', "margin-down": '30px'}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Save</a></button>
+            <button type="button" class="btn btn-danger" style={{"fontSize": "30px"}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Cancel</a></button>
+            
         </div>
     );
 }
