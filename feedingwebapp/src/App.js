@@ -1,5 +1,5 @@
 import './App.css';
-import React, {useRef} from 'react';
+import React, { useRef } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -38,7 +38,7 @@ function getWidthHeight(imageWidth = 640, imageHeight = 480) {
     returnHeight = windowHeight - 70;
     returnWidth = imageAspectRatio * returnHeight;
   } else {
-    returnWidth = windowWidth; 
+    returnWidth = windowWidth;
     returnHeight = (1 / imageAspectRatio) * returnWidth;
   }
   console.log(returnWidth)
@@ -68,13 +68,13 @@ function MyVerticallyCenteredModal(props) {
           Live Video
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{"paddingLeft": "10px", "overflow": "hidden"}}>
+      <Modal.Body style={{ "paddingLeft": "10px", "overflow": "hidden" }}>
         <iframe src={`http://localhost:8080/stream?topic=/camera/color/image_raw&default_transport=compressed&width=${Math.round(getWidthHeight().width) - 30}&height=${Math.round(getWidthHeight().height)}&quality=20`}
           frameborder='0'
           allow='autoplay; encrypted-media'
           allowfullscreen
           title='video'
-          style={{"width": getWidthHeight().width, "height": getWidthHeight().height}}
+          style={{ "width": getWidthHeight().width, "height": getWidthHeight().height }}
         />
       </Modal.Body>
     </Modal>
@@ -96,14 +96,14 @@ function App() {
 
           <Navbar id="responsive-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" href="/" style={{"font-size": "175%"}}>Home</Nav.Link>
+              <Nav.Link className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" href="/" style={{ "font-size": "175%" }}>Home</Nav.Link>
               {(currentStateVal.feeding_status == constants.States[7] || currentStateVal.feeding_status == constants.States[8]) ?
-                <Nav.Link className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" style={{"font-size": "175%"}} href="/settings">Settings</Nav.Link>
-                : <div onClick={notifyTimeout}><Nav.Link disabled className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" style={{"font-size": "175%"}} href="/settings">Settings</Nav.Link></div>
+                <Nav.Link className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" style={{ "font-size": "175%" }} href="/settings">Settings</Nav.Link>
+                : <div onClick={notifyTimeout}><Nav.Link disabled className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" style={{ "font-size": "175%" }} href="/settings">Settings</Nav.Link></div>
               }
             </Nav>
             <Nav>
-              <Nav.Link onClick={() => setModalShow(true)} className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" style={{"font-size": "175%"}}>Video</Nav.Link>
+              <Nav.Link onClick={() => setModalShow(true)} className="text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2" style={{ "font-size": "175%" }}>Video</Nav.Link>
             </Nav>
             <MyVerticallyCenteredModal
               show={modalShow}
@@ -120,8 +120,8 @@ function App() {
           <Route exact path="/ros" element={<ROSPage />} />
         </Routes>
 
-        <ToastContainer style={{"font-size": "28px"}}/>
-        
+        <ToastContainer style={{ "font-size": "28px" }} />
+
       </Router >
     </>
   );
