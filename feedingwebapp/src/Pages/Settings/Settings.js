@@ -11,8 +11,8 @@ import 'react-toastify/dist/ReactToastify.css';
 const btn = styled.button`
     background-color: purple;
     color: white;
-    font-size: 20px;
-    padding: 10px 60px;
+    font-size: 25px;
+    padding: 10px 20px;
     border-radius: 5px;
     margin: 10px 0px;
     cursor: pointer;
@@ -158,8 +158,6 @@ function ToggleGroupPositions() {
     );
   }
 
-const notifyTimeout = () => toast("The settings have been saved.");
-
 const Settings = () => {
     return (
         <div>
@@ -220,7 +218,7 @@ const Settings = () => {
                 <ToggleGroupPlate />
             </Row>
              
-            <button type="button" class="btn btn-success" style={{"margin-left": '48%', "fontSize": "30px", "margin-right": '3%', "margin-down": '30px'}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Save</a></button>
+            <button type="button" class="btn btn-success" style={{"margin-left": '28%', "fontSize": "30px", "margin-right": '3%', "margin-down": '30px'}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Save</a></button>
             <button type="button" class="btn btn-danger" style={{"fontSize": "30px"}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Cancel</a></button>
             
         </div>
