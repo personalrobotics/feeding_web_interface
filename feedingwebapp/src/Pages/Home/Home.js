@@ -307,13 +307,15 @@ function Home() {
             <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
                 {isConnected ? <div style={{ "display": "inline-block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline-block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
                 <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>🍽️ Plate Locator</h1>
-                <iframe src={`http://localhost:8080/stream?topic=/camera/color/image_raw&default_transport=compressed&width=${Math.round(getWidthHeight().width) - 30}&height=${Math.round(getWidthHeight().height)}&quality=20`}
+                <p align="center">
+                <iframe width="360" height="215"
+                    src='https://www.youtube.com/embed/7Br3Y1NRbAo'
                     frameborder='0'
                     allow='autoplay; encrypted-media'
                     allowfullscreen
                     title='video'
-                    style={{ "width": getWidthHeight().width, "height": getWidthHeight().height }}
                 />
+                </p>
                 <div class="container">
                     <div class="row">
                         <div class="col">

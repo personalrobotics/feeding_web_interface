@@ -38,8 +38,49 @@ const food = ['Name', 'Location', 'Pixel'];
 const interaction = ['Voice', 'Switch'];
 const video = ['ON', 'OFF'];
 const plate = ['ON', 'OFF'];
+let pos = 'Side Feeding';
+
+// COOKIES LOGIC
+/*
+// settings page will have default button values
+// if user changes button values and clicks on save, the new button values will be recorded in cookies
+// if cookies are present, the settings will boot up with those; otherwise default values will be loaded
+// If you set a new cookie, older cookies are not overwritten. 
+// The new cookie is added to document.cookie; so if you want to find the value of one specified cookie, 
+// you must write a JavaScript function that searches for the cookie value in the cookie string.
+
+// global values
+let pos = 'Side Feeding';
+let ready = 'Open Mouth';
+let select = 'A picture of plate';
+let choose = 'Name';
+let interact = 'Voice';
+let vid = 'ON';
+let locator = 'ON';
+
+// if save clicked, update global values from above and activate buttons accordingly, keep that going until next save click
+// cookies won't be lost until a expire date
+// not sure if onclick will work in save button as already href exists, thus changing cancel to exit
+function cookies_update() {
+  pos = 'Side Feeding';
+  ready = 'Open Mouth';
+  select = 'A picture of plate';
+  choose = 'Name';
+  interact = 'Voice';
+  vid = 'ON';
+  locator = 'ON';
+}
+
+// if active buttons change, those are updated in let temp buttons through change functions
+// only if save button is clicked, cookies true and created => setCookie
+// next boot up in settings, load setActive from last cookie do => checkCookie & getCookie 
+// in next change in settings, another new cookie created => setCookie with different session name
+*/
 
 function ToggleGroupPositions() {
+    // The first value active is our current state.
+    // The second value setActive is the function that is used to update our state.
+    // Lastly, we set the initial state to the first postion: useState(positions[0])
     const [active, setActive] = useState(positions[0]);
     return (
       <ButtonGroup>
@@ -47,13 +88,18 @@ function ToggleGroupPositions() {
           <ButtonToggle
             key={type}
             active={active === type}
-            onClick={() => setActive(type)}
+            onClick={() => changePos(type, setActive)}
           >
             {type}
           </ButtonToggle>
         ))}
       </ButtonGroup>
     );
+  }
+
+  function changePos(type, setActive) {
+    setActive(type); 
+    pos = type;
   }
 
   function ToggleGroupReadiness() {
@@ -218,8 +264,8 @@ const Settings = () => {
                 <ToggleGroupPlate />
             </Row>
              
-            <button type="button" class="btn btn-success" style={{"margin-left": '28%', "fontSize": "30px", "margin-right": '3%', "margin-down": '30px'}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Save</a></button>
-            <button type="button" class="btn btn-danger" style={{"fontSize": "30px"}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Cancel</a></button>
+            <button type="button" class="btn btn-success" style={{"margin-left": '28%', "fontSize": "30px", "margin-right": '3%', "margin-down": '30px'}}>Save</button>
+            <button type="button" class="btn btn-danger" style={{"fontSize": "30px"}}><a href="/" style={{"textDecoration": 'none', "color": 'white'}}>Exit</a></button>
             
         </div>
     );
