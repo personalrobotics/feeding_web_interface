@@ -16,7 +16,7 @@ import ROSLIB from "roslib";
 
 
 const debug = true;
-let food = ["Apple", "Banana", "Carrot", "Cucumber", "Lettuce", "Mango", "Orange", "Pumpkin"];
+let food = ["1", "2", "3", "4"];
 
 var listener = [];
 function Home() {
@@ -307,13 +307,15 @@ function Home() {
             <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
                 {isConnected ? <div style={{ "display": "inline-block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "inline-block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
                 <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>🍽️ Plate Locator</h1>
-                <iframe src={`http://localhost:8080/stream?topic=/camera/color/image_raw&default_transport=compressed&width=${Math.round(getWidthHeight().width) - 30}&height=${Math.round(getWidthHeight().height)}&quality=20`}
+                <p align="center">
+                <iframe width="360" height="215"
+                    src='https://www.youtube.com/embed/7Br3Y1NRbAo'
                     frameborder='0'
                     allow='autoplay; encrypted-media'
                     allowfullscreen
                     title='video'
-                    style={{ "width": getWidthHeight().width, "height": getWidthHeight().height }}
                 />
+                </p>
                 <div class="container">
                     <div class="row">
                         <div class="col">
@@ -392,21 +394,32 @@ function Home() {
             <div style={{ "overflow-x": "hidden", "overflow-y": "auto" }} className="outer">
                 <h1 className="text-center txt-huge" style={{ "font-size": "40px" }}>Food Item Selection</h1>
                 {isConnected ? <div style={{ "display": "block" }}><p class="connectedDiv" style={{ "font-size": "24px" }}>🔌 connected</p></div> : <div style={{ "display": "block" }}><p class="notConnectedDiv" style={{ "font-size": "24px" }}>⛔ not connected</p></div>}
-
+                <p align="center">
+                <iframe width="360" height="215"
+                    src='https://www.youtube.com/embed/7Br3Y1NRbAo'
+                    frameborder='0'
+                    allow='autoplay; encrypted-media'
+                    allowfullscreen
+                    title='video'
+                />
+                </p>
                 <div style={{ "display": "block" }}>
-                    <Button className="doneBut" style={{ "font-size": "24px", "margin-top": "0px", "marginRight": "10px", "marginLeft": "auto", "display": "block" }} onClick={() => changeState(constants.States[10])}>🍽️ Locate Plate</Button>
+                    <Button className="doneBut" style={{ "font-size": "24px", "margin-top": "0px", "marginRight": "10px", "marginLeft": "auto", "display": "block" }} onClick={() => changeState(constants.States[10])}>🥘Take Another Bite</Button>
                     <Button className="doneBut" style={{ "font-size": "24px", "margin-top": "0px", "marginRight": "10px", "marginLeft": "auto", "display": "block" }} onClick={() => changeState(constants.States[9])}>✅ Done Eating</Button>
                 </div>
-
-                <p class="transmessage" style={{ "margin-bottom": "0px" }}>Choose from one of the following food items.</p>
-
-                <Row xs={3} s={2} md={3} lg={4} className="justify-content-center mx-auto my-2" style={{ paddingBottom: '35vh' }}>
+                <p class="transmessage" style={{ "margin-bottom": "0px" }}>Choose from one of the following food items:</p>
+                <Row xs={3} s={2} md={3} lg={4} className="justify-content-center mx-auto my-2" style={{ paddingBottom: '5vh' }}>
                     {food.map((value, i) => (
-                        <Button key={i} variant="primary" className="mx-1 mb-1" style={{ paddingLeft: "0px", paddingRight: "0px", marginLeft: "0px", marginRight: "0px", "font-size": "25px" }} value={value} size="lg" onClick={(e) => { setFoodTrying(e); food_item_clicked(e) }}>{value}</Button>
+                        <Button key={i} variant="primary" className="mx-1 mb-1" style={{ paddingLeft: "0px", paddingRight: "0px", marginLeft: "0px", marginRight: "0px", "font-size": "28px", fontWeight: "bold"}} value={value} size="lg" onClick={(e) => { setFoodTrying(e); food_item_clicked(e) }}>{value}</Button>
                     ))
                     }
                 </Row>
+                <div style={{ "display": "block", paddingBottom: '25vh' }}>
+                    <Button className="doneBut" style={{ "font-size": "24px", "margin-top": "0px", "marginRight": "10px", "marginLeft": "auto", "display": "block" }} onClick={() => changeState(constants.States[10])}>🥘Take Another Bite</Button>
+                    <Button className="doneBut" style={{ "font-size": "24px", "margin-top": "0px", "marginRight": "10px", "marginLeft": "auto", "display": "block" }} onClick={() => changeState(constants.States[9])}>✅ Done Eating</Button>
+                </div>
                 <Footer />
+                
             </div>
         );
     }
