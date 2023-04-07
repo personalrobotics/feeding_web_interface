@@ -59,8 +59,8 @@ let vid = 'ON';
 let locator = 'ON';
 
 // if save clicked, update global values from above and activate buttons accordingly, keep that going until next save click
-// cookies won't be lost until a expire date
-// not sure if onclick will work in save button as already href exists, thus changing cancel to exit
+// cookies won't be lost until an expire date
+// changed cancel to exit, added onclick to save for:
 function cookies_update() {
   pos = 'Side Feeding';
   ready = 'Open Mouth';
