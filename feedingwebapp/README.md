@@ -22,8 +22,8 @@ The overall user flow for this robot can be seen below.
 3. Install all dependencies: `npm install`
 
 ### Usage
-1. Start the app: `npm start`
-  - Note that if you're not running the robot code alongside the app, set [`debug = true` in `App.jsx`](https://github.com/personalrobotics/feeding_web_interface/blob/b8f5d970628bbaac43b8b9c7dbc4349ada2f32d7/feedingwebapp/src/App.jsx#L17) to be able to move past screens where the app is waiting on the robot.
+1. Start the app: `npm start`. (You may need to run `npm install` before this if the dependencies changed e.g., if you switched to a new branch.)
+    1. Note that if you're not running the robot code alongside the app, set [`debug = true` in `App.jsx`](https://github.com/personalrobotics/feeding_web_interface/blob/b8f5d970628bbaac43b8b9c7dbc4349ada2f32d7/feedingwebapp/src/App.jsx#L17) to be able to move past screens where the app is waiting on the robot.
 2. Use a web browser to navigate to `localhost:3000` to see the application.
 
 ## Contributing
