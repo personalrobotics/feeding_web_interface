@@ -19,7 +19,7 @@ The overall user flow for this robot can be seen below.
 ### Installation
 1. Clone the repo: `git clone git@github.com:personalrobotics/feeding_web_interface.git` using SSH, or `git clone https://github.com/personalrobotics/feeding_web_interface.git` using HTTPS
 2. `cd {PATH TO feeding_web_interface}/feedingwebapp`
-3. Install all dependencies: `npm install`
+3. Install all dependencies: `npm install --legacy-peer-deps`
 
 ### Usage
 1. Start the app: `npm start`. (You may need to run `npm install` before this if the dependencies changed e.g., if you switched to a new branch.)
