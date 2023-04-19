@@ -35,6 +35,10 @@ const MovingToStagingLocation = (props) => {
   return (
     <>
       {/* TODO: Consider vertically centering this element */}
+      {/**
+       * TODO: Determine the right user-facing name to give this position.
+       * "staging position"? "ready position?" what is most clear?
+       */}
       <Row className='justify-content-center mx-auto my-2 w-75'>
         <div>
           <h1 id={MEAL_STATE.R_MovingAbovePlate} className='waitingMsg'>

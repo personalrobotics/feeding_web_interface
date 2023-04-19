@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button'
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 import { REALSENSE_WIDTH, REALSENSE_HEIGHT } from '../../Constants'
-import { scaleWidthHeightToWindow } from '../../../helpers'
+import { convertRemToPixels, scaleWidthHeightToWindow } from '../../../helpers'
 
 /**
  * The PlateLocator component appears if the user decides to adjust the position
@@ -41,7 +41,8 @@ const PlateLocator = () => {
   }
 
   // Get the size of the robot's live video stream.
-  let { width, height } = scaleWidthHeightToWindow(REALSENSE_WIDTH, REALSENSE_HEIGHT)
+  const margin = convertRemToPixels(1)
+  let { width, height } = scaleWidthHeightToWindow(REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
 
   // Render the component
   return (
@@ -49,16 +50,17 @@ const PlateLocator = () => {
       {/**
        * Display the live stream from the robot's camera.
        */}
-      <iframe
-        src={`http://localhost:8080/stream?topic=/camera/color/image_raw&default_transport=compressed&width=${
-          Math.round(width) - 30 // TODO: remove hardcoded value of 30, give it a descriptive name
-        }&height=${Math.round(height)}&quality=20`}
-        frameBorder='0'
-        allow='autoplay; encrypted-media'
-        allowFullScreen
-        title='video'
-        style={{ width: width, height: height }}
-      />
+      <center>
+        <iframe
+          src={`http://localhost:8080/stream?topic=/camera/color/image_raw&default_transport=compressed&width=${Math.round(
+            width
+          )}&height=${Math.round(height)}&quality=20`}
+          allow='autoplay; encrypted-media'
+          allowFullScreen
+          title='video'
+          style={{ width: width, height: height, display: 'block', margin: '1rem' }}
+        />
+      </center>
 
       {/**
        * An array of buttons for the user to teleoperate the robot, and a

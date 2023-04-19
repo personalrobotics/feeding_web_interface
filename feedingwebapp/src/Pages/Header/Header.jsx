@@ -1,5 +1,5 @@
 // React imports
-import React from 'react'
+import React, { useState } from 'react'
 // The NavBar is the navigation toolbar at the top
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
@@ -19,7 +19,7 @@ import LiveVideoModal from './LiveVideoModal'
  */
 const Header = () => {
   // Create a local state variable to toggle on/off the video
-  const [videoShow, setVideoShow] = React.useState(false)
+  const [videoShow, setVideoShow] = useState(false)
 
   // Get the relevant global state variables
   const mealState = useGlobalState((state) => state.mealState)

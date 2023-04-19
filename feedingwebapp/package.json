@@ -38,8 +38,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint:fix": "eslint  \"{,!(node_modules)/**/}*.jsx\" --fix",
-    "prettier:fix": "prettier \"{,!(node_modules)/**/}*.jsx\" --write --config ./.prettierrc",
+    "lint:fix": "eslint  \"{,!(node_modules)/**/}*.{js,jsx}\" --fix",
+    "prettier:fix": "prettier \"{,!(node_modules)/**/}*.{js,jsx,css}\" --write --config ./.prettierrc",
     "format": "npm run prettier:fix && npm run lint:fix"
   },
   "eslintConfig": {

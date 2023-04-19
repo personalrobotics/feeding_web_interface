@@ -17,30 +17,8 @@ const Settings = () => {
   return (
     <div>
       {/**
-       * Configure the style.
-       *
-       * TODO: Should this be set in a CSS file instead?
+       * The title of the page.
        */}
-      <style type='text/css'>
-        {`
-                @media screen and (max-width: 1000px) and (min-height: 550px) {
-                    .btn-huge {
-                        padding: 15% 20%;
-                        font-size: 200%;
-                    }
-                }
-                @media screen and (min-width: 1000px) {
-                    .btn-huge {
-                        padding: 5% 15%;
-                        font-size: 150%;
-                    }
-                }
-                .txt-huge {
-                    font-size: 300%;
-                }
-
-                `}
-      </style>
       <h1 style={{ textAlign: 'center', fontSize: '40px' }} className='txt-huge'>
         ⚙ Settings
       </h1>

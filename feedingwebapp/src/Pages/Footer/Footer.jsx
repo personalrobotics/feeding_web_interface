@@ -1,5 +1,5 @@
 // React imports
-import React from 'react'
+import React, { useState } from 'react'
 import { MDBFooter } from 'mdb-react-ui-kit'
 import Button from 'react-bootstrap/Button'
 
@@ -12,7 +12,7 @@ import PauseModal from './PauseModal'
  */
 const Footer = () => {
   // Create a local state variable for whether the robot is paused
-  const [pause, setPause] = React.useState(false)
+  const [pause, setPause] = useState(false)
 
   /**
    * When the resume button is clicked, close the modal and resume robot motion.
