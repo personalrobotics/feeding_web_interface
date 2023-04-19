@@ -79,7 +79,7 @@ const PlateLocator = () => {
               value='forward'
               variant='primary'
             >
-              ⬆️
+              ⬆
             </Button>
           </div>
 
@@ -87,7 +87,7 @@ const PlateLocator = () => {
 
           <div className='col-3'>
             <Button onClick={cartesianControlCommandReceived} style={{ fontSize: '25px', marginLeft: '2%' }} value='left' variant='primary'>
-              ⬅️
+              ⬅
             </Button>
           </div>
 
@@ -98,7 +98,7 @@ const PlateLocator = () => {
               value='right'
               variant='primary'
             >
-              ➡️
+              ➡
             </Button>
           </div>
 
@@ -110,7 +110,7 @@ const PlateLocator = () => {
               value='back'
               variant='primary'
             >
-              ⬇️
+              ⬇
             </Button>
           </div>
           <div className='col'>
