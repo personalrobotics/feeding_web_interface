@@ -3,10 +3,10 @@ import React from 'react'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
-import { useROS } from 'react-ros'
 
 // Local imports
 import './Home.css'
+import { connectToROS } from '../../ros/ros_helpers'
 import { useGlobalState, MEAL_STATE } from '../GlobalState'
 import BiteAcquisition from './MealStates/BiteAcquisition'
 import BiteAcquisitionCheck from './MealStates/BiteAcquisitionCheck'
@@ -66,9 +66,8 @@ function Home(props) {
   // Get the meal state
   const mealState = useGlobalState((state) => state.mealState)
 
-  // useROS  gives us access to functions to configure and interact with ROS.
-  // TODO (amaln): Actually connect this web app to ROS!
-  let { /* ros,*/ isConnected /*, topics, services, toggleConnection, createListener */ } = useROS()
+  // Connect to ROS, if not already connected
+  let { isConnected } = connectToROS()
 
   // Render the component
   return (
