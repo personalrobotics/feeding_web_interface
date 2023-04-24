@@ -6,6 +6,8 @@ import Nav from 'react-bootstrap/Nav'
 // Toast generates a temporary pop-up with a timeout.
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+// ROS imports
+import { useROS } from 'react-ros'
 
 // Local imports
 import { useGlobalState, APP_PAGE, MEAL_STATE } from '../GlobalState'
@@ -45,9 +47,11 @@ const Header = () => {
     }
   }
 
-  // Render the component
-  // TODO: Find a way to make the NavBar fixed even as we vertically scroll the
-  // contents of the Home/Settings page.
+  // useROS  gives us access to functions to configure and interact with ROS.
+  // TODO (amaln): Actually connect this web app to ROS!
+  let { /* ros,*/ isConnected /*, topics, services, toggleConnection, createListener */ } = useROS()
+
+  // Render the component. The NavBar will stay fixed even as we vertically scroll.
   return (
     <>
       {/**
@@ -59,7 +63,7 @@ const Header = () => {
        * The NavBar has two elements, Home and Settings, on the left side and one
        * element, Video, on the right side.
        */}
-      <Navbar collapseOnSelect expand='lg' bg='dark' variant='dark'>
+      <Navbar collapseOnSelect expand='lg' bg='dark' variant='dark' sticky='top'>
         <Navbar id='responsive-navbar-nav'>
           <Nav className='me-auto'>
             <Nav.Link
@@ -77,6 +81,22 @@ const Header = () => {
               Settings
             </Nav.Link>
           </Nav>
+          {/**
+           * Show the connection status of the robot.
+           */}
+          {isConnected ? (
+            <div>
+              <p className='connectedDiv' style={{ fontSize: '24px' }}>
+                🔌 connected
+              </p>
+            </div>
+          ) : (
+            <div>
+              <p className='notConnectedDiv' style={{ fontSize: '24px' }}>
+                ⛔ not connected
+              </p>
+            </div>
+          )}
           <Nav>
             <Nav.Link
               onClick={() => setVideoShow(true)}
