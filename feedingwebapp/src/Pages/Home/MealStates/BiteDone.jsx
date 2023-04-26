@@ -39,13 +39,6 @@ const BiteDone = () => {
   // Render the component
   return (
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
-      {/* Give the user the option to retrun to staging position */}
-      <Row className='justify-content-center mx-auto my-2 w-75'>
-        <Button variant='danger' className='mx-2 mb-2 btn-huge' size='lg' onClick={cancelBite} style={{ width: '250px', height: '180px' }}>
-          <img src={staging} />
-        </Button>
-      </Row>
-
       {/* Ask the user whether they're ready for the bite */}
       <Row className='justify-content-center mx-auto my-2 w-75'>
         <Button
@@ -56,6 +49,13 @@ const BiteDone = () => {
           style={{ width: '250px', height: '150px', fontSize: '35px' }}
         >
           Done with Bite
+        </Button>
+      </Row>
+
+      {/* Give the user the option to retrun to staging position */}
+      <Row className='justify-content-center mx-auto my-2 w-75'>
+        <Button variant='danger' className='mx-2 mb-2 btn-huge' size='lg' onClick={cancelBite} style={{ width: '250px', height: '180px' }}>
+          <img src={staging} />
         </Button>
       </Row>
     </div>
