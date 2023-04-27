@@ -66,30 +66,9 @@ function Home(props) {
   // Get the meal state
   const mealState = useGlobalState((state) => state.mealState)
 
-  // Connect to ROS, if not already connected
-  let { isConnected } = connectToROS()
-
   // Render the component
   return (
     <div>
-      {/**
-       * Regardless of the mealState, always display whether the web app is
-       * connected to the robot.
-       */}
-      {isConnected ? (
-        <div>
-          <p className='connectedDiv' style={{ fontSize: '24px' }}>
-            🔌 connected
-          </p>
-        </div>
-      ) : (
-        <div>
-          <p className='notConnectedDiv' style={{ fontSize: '24px' }}>
-            ⛔ not connected
-          </p>
-        </div>
-      )}
-
       {/**
        * The main contents of the screen depends on the mealState.
        */}
