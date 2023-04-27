@@ -6,7 +6,6 @@ import PropTypes from 'prop-types'
 
 // Local imports
 import './Home.css'
-import { connectToROS } from '../../ros/ros_helpers'
 import { useGlobalState, MEAL_STATE } from '../GlobalState'
 import BiteAcquisition from './MealStates/BiteAcquisition'
 import BiteAcquisitionCheck from './MealStates/BiteAcquisitionCheck'

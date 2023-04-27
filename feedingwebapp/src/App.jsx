@@ -31,19 +31,17 @@ function getComponentByAppPage(appPage, debug) {
     case APP_PAGE.Home:
       // Must wrap a component in ROS tags for it to be able to connect to ROS
       return (
-        <>
+        <ROS>
           <Header />
-          <ROS>
-            <Home debug={debug} />
-          </ROS>
-        </>
+          <Home debug={debug} />
+        </ROS>
       )
     case APP_PAGE.Settings:
       return (
-        <>
+        <ROS>
           <Header />
           <Settings />
-        </>
+        </ROS>
       )
   }
 }
