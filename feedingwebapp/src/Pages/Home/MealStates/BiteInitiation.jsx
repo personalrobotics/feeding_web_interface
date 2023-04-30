@@ -6,6 +6,8 @@ import Row from 'react-bootstrap/Row'
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
+import plate from '../../../plate.svg'
+import mouth from '../../../mouth.svg'
 
 /**
  * The BiteInitiation component appears after the robot has moved to the staging
@@ -37,26 +39,17 @@ const BiteInitiation = () => {
   // Render the component
   return (
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
-      {/* Give the user the option to cancel this bite */}
-      <div style={{ display: 'inline' }}>
-        <Button className='cancelButton' style={{ fontSize: '24px' }} onClick={cancelBite}>
-          🗑 Cancel Bite
-        </Button>
-      </div>
-
       {/* Ask the user whether they're ready for the bite */}
-      <p className='transitionMessage' style={{ marginBottom: '0px' }}>
-        Click the below button when you are ready for the bite.
-      </p>
       <Row className='justify-content-center mx-auto my-2 w-75'>
-        <Button
-          variant='primary'
-          className='mx-2 mb-2 btn-huge'
-          size='lg'
-          onClick={readyForBite}
-          style={{ width: '75%', fontSize: '35px' }}
-        >
-          Ready for a Bite
+        <Button variant='light' className='mx-2 mb-2 btn-huge' size='lg' onClick={readyForBite} style={{ width: '250px', height: '200px' }}>
+          <img src={mouth} />
+        </Button>
+      </Row>
+
+      {/* Give the user the option to move robot over plate*/}
+      <Row className='justify-content-center mx-auto my-2 w-75'>
+        <Button variant='light' className='mx-2 mb-2 btn-huge' size='lg' onClick={cancelBite} style={{ width: '250px', height: '200px' }}>
+          <img src={plate} />
         </Button>
       </Row>
     </div>
