@@ -7,6 +7,9 @@ import Modal from 'react-bootstrap/Modal'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
+// local imports
+import { state_dict } from '../Constants'
+import { useGlobalState } from '../GlobalState'
 
 /**
  * The PauseModal gives the user the option to resume the robot when they are
@@ -14,6 +17,35 @@ import PropTypes from 'prop-types'
  */
 function PauseModal(props) {
   const ref = useRef(null)
+  // check which meal state we are currently at
+  var meal_state = useGlobalState((state) => state.mealState)
+  console.log(meal_state)
+  // function to set a meal state
+  var setMealState = useGlobalState((state) => state.setMealState)
+  console.log(setMealState)
+  var text1 = '◀️ Return to '
+  var text2 = '▶️ Proeed to '
+  // access current meal state info from dictionary in constants.js
+  var state_info_list = state_dict[meal_state]
+  var prev_text = state_info_list[0]
+  var next_text = state_info_list[1]
+  var prev_state = state_info_list[2]
+  text1 = text1 + prev_text
+  text2 = text2 + next_text
+  console.log(text1)
+  console.log(text2)
+  console.log(prev_state)
+
+  /**
+   * Callback function for if the user decides to cancel the bite.
+   *
+   * TODO: Think more carefully about what cancelBite at this stage should do!
+   * Maybe replace with a more descriptive button (e.g., "return to staging.")
+   */
+  function priorState() {
+    console.log('prior state')
+    setMealState(prev_state)
+  }
   return (
     <>
       {/**
@@ -43,11 +75,19 @@ function PauseModal(props) {
           </p>
           <Button
             className='bg-warning rounded btn-hugeE'
-            style={{ fontSize: '50px', marginLeft: '8%' }}
+            style={{ fontSize: '35px', marginLeft: '8%', fontWeight: 'bold', marginBottom: '8%' }}
+            size='lg'
+            onClick={priorState}
+          >
+            {text1}
+          </Button>
+          <Button
+            className='bg-warning rounded btn-hugeE'
+            style={{ fontSize: '35px', marginLeft: '8%', fontWeight: 'bold', marginBottom: '8%' }}
             size='lg'
             onClick={props.resumeClicked}
           >
-            ▶️ Resume
+            {text2}
           </Button>
         </Modal.Body>
       </Modal>
