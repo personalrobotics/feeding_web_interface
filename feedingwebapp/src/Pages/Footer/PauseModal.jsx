@@ -8,8 +8,8 @@ import Modal from 'react-bootstrap/Modal'
 // Component
 import PropTypes from 'prop-types'
 // local imports
-import { move_above_plate_dict, bite_acquistion_dict, move_to_staging_dict, move_to_mouth_dict, stow_arm_dict } from '../Constants'
-import { MEAL_STATE, useGlobalState } from '../GlobalState'
+import { state_dict } from '../Constants'
+import { useGlobalState } from '../GlobalState'
 
 /**
  * The PauseModal gives the user the option to resume the robot when they are
@@ -17,9 +17,10 @@ import { MEAL_STATE, useGlobalState } from '../GlobalState'
  */
 function PauseModal(props) {
   const ref = useRef(null)
+  // check which meal state we are currently at
   var meal_state = useGlobalState((state) => state.mealState)
   console.log(meal_state)
-  //var current_meal_state_text = feeding_dict[meal_state]
+  // function to set a meal state
   var setMealState = useGlobalState((state) => state.setMealState)
   console.log(setMealState)
   var prev_text = ''
@@ -27,28 +28,11 @@ function PauseModal(props) {
   var text1 = '◀️ Return to '
   var text2 = '▶️ Proeed to '
   var prev_state = null
-  if (meal_state == MEAL_STATE.R_MovingAbovePlate) {
-    prev_text = move_above_plate_dict.prev_text
-    next_text = move_above_plate_dict.next_text
-    prev_state = move_above_plate_dict.prev_state
-  } else if (meal_state == MEAL_STATE.R_BiteAcquisition) {
-    prev_text = bite_acquistion_dict.prev_text
-    next_text = bite_acquistion_dict.next_text
-    prev_state = bite_acquistion_dict.prev_state
-  } else if (meal_state == MEAL_STATE.R_MovingToStagingLocation) {
-    prev_text = move_to_staging_dict.prev_text
-    next_text = move_to_staging_dict.next_text
-    prev_state = move_to_staging_dict.prev_state
-  } else if (meal_state == MEAL_STATE.R_MovingToMouth) {
-    prev_text = move_to_mouth_dict.prev_text
-    next_text = move_to_mouth_dict.next_text
-    prev_state = move_to_mouth_dict.prev_state
-  } else {
-    // meal_state == MEAL_STATE.R_Stowing_Arm
-    prev_text = stow_arm_dict.prev_text
-    next_text = stow_arm_dict.next_text
-    prev_state = stow_arm_dict.prev_state
-  }
+  // access current meal state info from dictionary in constants.js
+  var state_info_list = state_dict[meal_state]
+  prev_text = state_info_list[0]
+  next_text = state_info_list[1]
+  prev_state = state_info_list[2]
   text1 = text1 + prev_text
   text2 = text2 + next_text
   console.log(text1)
