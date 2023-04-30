@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import Row from 'react-bootstrap/Row'
 
 // Local Imports
-import Footer from '../../Footer/MouthFooter'
+import Footer from '../../Footer/Footer'
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 

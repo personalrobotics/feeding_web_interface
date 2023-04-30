@@ -7,9 +7,10 @@ import PropTypes from 'prop-types'
 import Row from 'react-bootstrap/Row'
 
 // Local Imports
-import Footer from '../../Footer/BiteAcquisitionFooter'
+import Footer from '../../Footer/Footer'
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
+import plate from '../../../plate.svg'
 
 /**
  * The BiteAcquisition component tells the user that the robot is currently
@@ -42,12 +43,6 @@ const BiteAcquisition = (props) => {
   // Render the component
   return (
     <>
-      {/* Give the user the option to cancel this bite */}
-      <div style={{ display: 'inline-block' }}>
-        <Button className='cancelButton' style={{ fontSize: '24px', marginTop: '0px' }} onClick={cancelBite}>
-          🗑 Cancel Bite
-        </Button>
-      </div>
       {/* TODO: Consider vertically centering this element */}
       <Row className='justify-content-center mx-auto my-2 w-75'>
         <div>
@@ -62,6 +57,18 @@ const BiteAcquisition = (props) => {
             <></>
           )}
         </div>
+      </Row>
+      {/* Give the user the option to move robot over plate*/}
+      <Row className='justify-content-center mx-auto my-2 w-75'>
+        <Button
+          variant='light'
+          className='justify-content-center mx-2 mb-2 btn-huge'
+          size='lg'
+          onClick={cancelBite}
+          style={{ width: '250px', height: '200px' }}
+        >
+          <img src={plate} />
+        </Button>
       </Row>
       {/**
        * Display the footer with the Pause button.
