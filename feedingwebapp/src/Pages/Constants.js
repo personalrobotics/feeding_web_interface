@@ -1,10 +1,7 @@
-// The RealSense's default video stream is 640x480
 import { MEAL_STATE } from './GlobalState'
-//import MovingAbovePlate from './MealStates/MovingAbovePlate'
-
+// The RealSense's default video stream is 640x480
 export const REALSENSE_WIDTH = 640
 export const REALSENSE_HEIGHT = 480
-
 export const state_dict = {
   R_MovingAbovePlate: ['Pre Meal', 'Bite Selection', MEAL_STATE.U_PreMeal],
   R_BiteAcquisition: ['Bite Selection', 'Bite Acquisition Check', MEAL_STATE.U_BiteSelection],

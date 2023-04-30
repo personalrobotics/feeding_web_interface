@@ -23,16 +23,13 @@ function PauseModal(props) {
   // function to set a meal state
   var setMealState = useGlobalState((state) => state.setMealState)
   console.log(setMealState)
-  var prev_text = ''
-  var next_text = ''
   var text1 = '◀️ Return to '
   var text2 = '▶️ Proeed to '
-  var prev_state = null
   // access current meal state info from dictionary in constants.js
   var state_info_list = state_dict[meal_state]
-  prev_text = state_info_list[0]
-  next_text = state_info_list[1]
-  prev_state = state_info_list[2]
+  var prev_text = state_info_list[0]
+  var next_text = state_info_list[1]
+  var prev_state = state_info_list[2]
   text1 = text1 + prev_text
   text2 = text2 + next_text
   console.log(text1)
