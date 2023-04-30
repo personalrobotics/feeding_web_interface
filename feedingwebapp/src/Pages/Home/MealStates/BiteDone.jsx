@@ -54,7 +54,7 @@ const BiteDone = () => {
 
       {/* Give the user the option to retrun to staging position */}
       <Row className='justify-content-center mx-auto my-2 w-75'>
-        <Button variant='danger' className='mx-2 mb-2 btn-huge' size='lg' onClick={cancelBite} style={{ width: '250px', height: '180px' }}>
+        <Button variant='light' className='mx-2 mb-2 btn-huge' size='lg' onClick={cancelBite} style={{ width: '250px', height: '180px' }}>
           <img src={staging} />
         </Button>
       </Row>
