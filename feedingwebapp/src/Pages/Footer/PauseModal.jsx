@@ -8,7 +8,7 @@ import Modal from 'react-bootstrap/Modal'
 // Component
 import PropTypes from 'prop-types'
 // local imports
-import { state_dict } from '../Constants'
+import { pause_modal_state_info_dict } from '../Constants'
 import { useGlobalState } from '../GlobalState'
 
 /**
@@ -19,32 +19,24 @@ function PauseModal(props) {
   const ref = useRef(null)
   // check which meal state we are currently at
   var meal_state = useGlobalState((state) => state.mealState)
-  console.log(meal_state)
   // function to set a meal state
   var setMealState = useGlobalState((state) => state.setMealState)
-  console.log(setMealState)
-  var text1 = '◀️ Return to '
-  var text2 = '▶️ Proeed to '
+  var return_text = '◀️ Return to '
+  var proceed_text = '▶️ Proceed to '
   // access current meal state info from dictionary in constants.js
-  var state_info_list = state_dict[meal_state]
-  var prev_text = state_info_list[0]
-  var next_text = state_info_list[1]
-  var prev_state = state_info_list[2]
-  text1 = text1 + prev_text
-  text2 = text2 + next_text
-  console.log(text1)
-  console.log(text2)
-  console.log(prev_state)
+  var state_info_list = pause_modal_state_info_dict[meal_state]
+  var prev_text_from_dict = state_info_list[0]
+  var next_text_from_dict = state_info_list[1]
+  var prev_state_from_dict = state_info_list[2]
+  return_text = return_text + prev_text_from_dict
+  proceed_text = proceed_text + next_text_from_dict
 
   /**
-   * Callback function for if the user decides to cancel the bite.
-   *
-   * TODO: Think more carefully about what cancelBite at this stage should do!
-   * Maybe replace with a more descriptive button (e.g., "return to staging.")
+   * Function to return to previous meal state from the current
+   * meal state, if user selects "Return to....." option in the pause modal.
    */
-  function priorState() {
-    console.log('prior state')
-    setMealState(prev_state)
+  function returnButtonCallback() {
+    setMealState(prev_state_from_dict)
   }
   return (
     <>
@@ -77,9 +69,9 @@ function PauseModal(props) {
             className='bg-warning rounded btn-hugeE'
             style={{ fontSize: '35px', marginLeft: '8%', fontWeight: 'bold', marginBottom: '8%' }}
             size='lg'
-            onClick={priorState}
+            onClick={returnButtonCallback}
           >
-            {text1}
+            {return_text}
           </Button>
           <Button
             className='bg-warning rounded btn-hugeE'
@@ -87,7 +79,7 @@ function PauseModal(props) {
             size='lg'
             onClick={props.resumeClicked}
           >
-            {text2}
+            {proceed_text}
           </Button>
         </Modal.Body>
       </Modal>

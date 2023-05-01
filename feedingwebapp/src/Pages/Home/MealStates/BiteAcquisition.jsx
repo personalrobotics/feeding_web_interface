@@ -10,7 +10,7 @@ import Row from 'react-bootstrap/Row'
 import Footer from '../../Footer/Footer'
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import plate from '../../../plate.svg'
+import above_plate_position_img from '../robot_state_imgs/above_plate_position.svg'
 
 /**
  * The BiteAcquisition component tells the user that the robot is currently
@@ -27,8 +27,7 @@ const BiteAcquisition = (props) => {
   /**
    * Callback function for if the user decides to cancel the bite.
    */
-  function cancelBite() {
-    console.log('cancelBite')
+  function moveAbovePlate() {
     setMealState(MEAL_STATE.R_MovingAbovePlate)
   }
 
@@ -57,17 +56,21 @@ const BiteAcquisition = (props) => {
             <></>
           )}
         </div>
+        {/* Ask the user whether they want to move to above plate position */}
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
+          Move to above plate position.
+        </p>
+        {/* Icon to move above plate */}
       </Row>
-      {/* Give the user the option to move robot over plate*/}
       <Row className='justify-content-center mx-auto my-2 w-75'>
         <Button
-          variant='light'
+          variant='danger'
           className='justify-content-center mx-2 mb-2 btn-huge'
           size='lg'
-          onClick={cancelBite}
-          style={{ width: '250px', height: '200px' }}
+          onClick={moveAbovePlate}
+          style={{ width: '200px', height: '130px' }}
         >
-          <img src={plate} />
+          <img src={above_plate_position_img} />
         </Button>
       </Row>
       {/**
