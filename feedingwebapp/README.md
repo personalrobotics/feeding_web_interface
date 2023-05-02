@@ -24,6 +24,7 @@ The overall user flow for this robot can be seen below.
 4. Source the directory: `source install/setup.bash`
 5. Navigate to the web app folder: `cd feeding_web_interface/feedingwebapp`
 6. Install web app dependencies: `npm install --legacy-peer-deps`
+* Consider checking out the [Troubleshooting](## Troubleshooting) section if there are errors in this process. 
 
 ### Usage (Web App)
 1. Navigate to the web app folder: `cd {path/to/feeding_web_interface}/feedingwebapp`
@@ -89,3 +90,6 @@ Note that we use `npm`, not `yarn`, to manage dependencies for this project.
 - Before creating a Pull Request, run `npm format` and address any warnings or errors.
 - Create a Pull Request to merge your branch into `main`. You need at least one approving review to merge.
 - Squash all commits on your branch before merging into `main` to ensure a straightforward commit history.
+
+## Troubleshooting
+* While installing, if you run into an error about `PUPPETEER`, the 
