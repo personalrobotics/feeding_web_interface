@@ -1,6 +1,10 @@
 // React Imports
 import React from 'react'
 import Button from 'react-bootstrap/Button'
+// React Bootstrap Imports
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
 // Local Imports
 import '../Home.css'
@@ -70,9 +74,9 @@ const PlateLocator = () => {
        * TODO: The values for margins should not be hardcoded. Bootstrap's
        * grid should be able to get alignment without fine-tuning of margins.
        */}
-      <div className='container'>
-        <div className='row'>
-          <div className='col'>
+      <Container>
+        <Row>
+          <Col>
             <Button
               onClick={cartesianControlCommandReceived}
               style={{ fontSize: '25px', marginLeft: '15%' }}
@@ -81,28 +85,31 @@ const PlateLocator = () => {
             >
               ⬆
             </Button>
-          </div>
+          </Col>
+        </Row>
 
-          <div className='w-100'></div>
+        <div className='w-100'></div>
 
-          <div className='col-3'>
+        <Row>
+          <Col>
             <Button onClick={cartesianControlCommandReceived} style={{ fontSize: '25px', marginLeft: '2%' }} value='left' variant='primary'>
               ⬅
             </Button>
-          </div>
+          </Col>
 
-          <div className='col'>
+          <Col>
             <Button
               onClick={cartesianControlCommandReceived}
-              style={{ fontSize: '25px', marginLeft: '3%' }}
+              style={{ fontSize: '25px', marginLeft: '2%' }}
               value='right'
               variant='primary'
             >
               ➡
             </Button>
-          </div>
+          </Col>
+        </Row>
 
-          <div className='w-100'></div>
+        <Row>
           <div className='col'>
             <Button
               onClick={cartesianControlCommandReceived}
@@ -113,7 +120,7 @@ const PlateLocator = () => {
               ⬇
             </Button>
           </div>
-          <div className='col'>
+          <Col>
             <Button
               variant='success'
               onClick={doneClicked}
@@ -121,9 +128,9 @@ const PlateLocator = () => {
             >
               ✅ Done
             </Button>
-          </div>
-        </div>
-      </div>
+          </Col>
+        </Row>
+      </Container>
     </div>
   )
 }
