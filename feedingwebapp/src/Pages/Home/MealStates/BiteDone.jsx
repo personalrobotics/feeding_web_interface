@@ -6,8 +6,6 @@ import Row from 'react-bootstrap/Row'
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import move_to_staging_position_img from '../robot_state_imgs/move_to_staging_position.svg'
-import above_plate_position_img from '../robot_state_imgs/above_plate_position.svg'
 
 /**
  * The BiteDone component appears after the robot has moved to the user's mouth,
@@ -38,24 +36,24 @@ const BiteDone = () => {
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
       {/* Ask the user whether they want to move to above plate position */}
       <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
-        Move to above plate position.
+        Finished bite? Move above plate.
       </p>
       {/* Icon to move above plate */}
       <Row className='justify-content-center mx-auto my-2 w-75'>
         <Button
-          variant='danger'
+          variant='info'
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={moveAbovePlate}
           style={{ width: '200px', height: '130px' }}
         >
-          <img src={above_plate_position_img} />
+          <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' />
         </Button>
       </Row>
 
       {/* Ask the user whether they want to move to staging position */}
       <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
-        Move to staging position.
+        Cancel bite? Move to staging.
       </p>
       {/* Icon to move to staging position */}
       <Row className='justify-content-center mx-auto my-2 w-75'>
@@ -66,7 +64,7 @@ const BiteDone = () => {
           onClick={moveToStagingPosition}
           style={{ width: '200px', height: '130px' }}
         >
-          <img src={move_to_staging_position_img} />
+          <img src='/robot_state_imgs/move_to_staging_position.svg' alt='move_to_staging_image' />
         </Button>
       </Row>
     </div>

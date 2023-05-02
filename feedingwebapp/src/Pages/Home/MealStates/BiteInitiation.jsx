@@ -6,8 +6,6 @@ import Row from 'react-bootstrap/Row'
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import above_plate_position_img from '../robot_state_imgs/above_plate_position.svg'
-import move_to_mouth_position_img from '../robot_state_imgs/move_to_mouth_position.svg'
 
 /**
  * The BiteInitiation component appears after the robot has moved to the staging
@@ -36,7 +34,7 @@ const BiteInitiation = () => {
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
       {/* Ask the user whether they want to move to mouth position */}
       <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
-        Move to mouth position.
+        Ready for bite? Move to mouth.
       </p>
       {/* Icon to move to mouth */}
       {/* Ask the user whether they're ready for the bite */}
@@ -48,25 +46,25 @@ const BiteInitiation = () => {
           onClick={readyForBite}
           style={{ width: '200px', height: '130px' }}
         >
-          <img src={move_to_mouth_position_img} />
+          <img src='/robot_state_imgs/move_to_mouth_position.svg' alt='move_to_mouth_image' />
         </Button>
       </Row>
 
       {/* Ask the user whether they want to move to above plate position */}
       <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
-        Move to above plate position.
+        Cancel bite? Move above plate.
       </p>
       {/* Icon to move above plate */}
       {/* Give the user the option to move robot over plate*/}
       <Row className='justify-content-center mx-auto my-2 w-75'>
         <Button
-          variant='danger'
+          variant='info'
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={moveAbovePlate}
           style={{ width: '200px', height: '130px' }}
         >
-          <img src={above_plate_position_img} />
+          <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' />
         </Button>
       </Row>
     </div>

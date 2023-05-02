@@ -6,6 +6,8 @@ import Row from 'react-bootstrap/Row'
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
+import { REALSENSE_WIDTH, REALSENSE_HEIGHT } from '../../Constants'
+import { convertRemToPixels, scaleWidthHeightToWindow } from '../../../helpers'
 
 // TODO: Replace the list of items with a view of the camera feed that the user
 // can click on.
@@ -48,9 +50,27 @@ const BiteSelection = () => {
     setMealState(MEAL_STATE.R_BiteAcquisition)
   }
 
+  // Get the size of the robot's live video stream.
+  const margin = convertRemToPixels(1)
+  let { width, height } = scaleWidthHeightToWindow(REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
+
   // Render the component
   return (
-    <>
+    <div style={{ overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
+      {/**
+       * Display the live stream from the robot's camera.
+       */}
+      <center>
+        <iframe
+          src={`http://localhost:8080/stream?topic=/camera/color/image_raw&default_transport=compressed&width=${Math.round(
+            width
+          )}&height=${Math.round(height)}&quality=20`}
+          allow='autoplay; encrypted-media'
+          allowFullScreen
+          title='video'
+          style={{ width: width, height: height, display: 'block', margin: '1rem' }}
+        />
+      </center>
       {/**
        * In addition to selecting their desired food item, the user has two
        * other options on this page:
@@ -99,7 +119,7 @@ const BiteSelection = () => {
           </Button>
         ))}
       </Row>
-    </>
+    </div>
   )
 }
 
