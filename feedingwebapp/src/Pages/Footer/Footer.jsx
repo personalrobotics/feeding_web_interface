@@ -29,8 +29,13 @@ const Footer = () => {
       <MDBFooter bgColor='dark' className='text-center text-lg-left fixed-bottom'>
         <div className='text-center p-3' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
           {
-            <Button className='bg-warning rounded btn-hugeE' style={{ fontSize: '50px' }} size='lg' onClick={() => setPause(true)}>
-              ⏸️ Pause
+            <Button
+              className='bg-warning rounded btn-hugeE'
+              style={{ fontSize: '25px', fontWeight: 'bold' }}
+              size='lg'
+              onClick={() => setPause(true)}
+            >
+              Pause (⏸️) or Cancel (🗑️)
             </Button>
           }
         </div>

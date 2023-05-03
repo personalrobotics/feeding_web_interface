@@ -21,8 +21,8 @@ function PauseModal(props) {
   var meal_state = useGlobalState((state) => state.mealState)
   // function to set a meal state
   var setMealState = useGlobalState((state) => state.setMealState)
-  var return_text = '◀️ Return to '
-  var proceed_text = '▶️ Proceed to '
+  var return_text = '◀️ Return by '
+  var proceed_text = '▶️ Continue with '
   // access current meal state info from dictionary in constants.js
   var state_info_list = pause_modal_state_info_dict[meal_state]
   var prev_text_from_dict = state_info_list[0]

@@ -31,13 +31,6 @@ const MovingToStagingLocation = (props) => {
     setMealState(MEAL_STATE.U_BiteInitiation)
   }
 
-  /**
-   * Callback function for if the user decides to cancel the bite.
-   */
-  function moveAbovePlate() {
-    setMealState(MEAL_STATE.R_MovingAbovePlate)
-  }
-
   // Render the component
   return (
     <>
@@ -59,22 +52,6 @@ const MovingToStagingLocation = (props) => {
             <></>
           )}
         </div>
-        {/* Ask the user whether they want to move to above plate position */}
-        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
-          Cancel bite? Move above plate.
-        </p>
-        {/* Icon to move above plate */}
-      </Row>
-      <Row className='justify-content-center mx-auto my-2 w-75'>
-        <Button
-          variant='info'
-          className='justify-content-center mx-2 mb-2 btn-huge'
-          size='lg'
-          onClick={moveAbovePlate}
-          style={{ width: '200px', height: '130px' }}
-        >
-          <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' />
-        </Button>
       </Row>
       {/**
        * Display the footer with the Pause button.
