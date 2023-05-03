@@ -33,7 +33,7 @@ const BiteInitiation = () => {
   return (
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
       {/* Ask the user whether they want to move to mouth position */}
-      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
+      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%', fontWeight: 'bold' }}>
         Ready for bite? Move to mouth.
       </p>
       {/* Icon to move to mouth */}
@@ -46,13 +46,13 @@ const BiteInitiation = () => {
           onClick={readyForBite}
           style={{ width: '200px', height: '130px' }}
         >
-          <img src='/robot_state_imgs/move_to_mouth_position.svg' alt='move_to_mouth_image' />
+          <img src='/robot_state_imgs/move_to_mouth_position.svg' alt='move_to_mouth_image' className='center' />
         </Button>
       </Row>
 
       {/* Ask the user whether they want to move to above plate position */}
-      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
-        Cancel bite? Move above plate.
+      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '120%' }}>
+        Cancel bite and move above plate.
       </p>
       {/* Icon to move above plate */}
       {/* Give the user the option to move robot over plate*/}
@@ -62,9 +62,9 @@ const BiteInitiation = () => {
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={moveAbovePlate}
-          style={{ width: '200px', height: '130px' }}
+          style={{ width: '110px', height: '71.5px' }}
         >
-          <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' />
+          <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' className='center' />
         </Button>
       </Row>
     </div>

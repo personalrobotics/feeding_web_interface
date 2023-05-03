@@ -35,8 +35,8 @@ const BiteDone = () => {
   return (
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
       {/* Ask the user whether they want to move to above plate position */}
-      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
-        Finished bite? Move above plate.
+      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%', fontWeight: 'bold' }}>
+        Bite finished? Move above plate.
       </p>
       {/* Icon to move above plate */}
       <Row className='justify-content-center mx-auto my-2 w-75'>
@@ -47,13 +47,13 @@ const BiteDone = () => {
           onClick={moveAbovePlate}
           style={{ width: '200px', height: '130px' }}
         >
-          <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' />
+          <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' className='center' />
         </Button>
       </Row>
 
       {/* Ask the user whether they want to move to staging position */}
-      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
-        Cancel bite? Move to staging.
+      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '120%' }}>
+        Cancel bite and move to ready position.
       </p>
       {/* Icon to move to staging position */}
       <Row className='justify-content-center mx-auto my-2 w-75'>
@@ -62,9 +62,9 @@ const BiteDone = () => {
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={moveToStagingPosition}
-          style={{ width: '200px', height: '130px' }}
+          style={{ width: '110px', height: '71.5px' }}
         >
-          <img src='/robot_state_imgs/move_to_staging_position.svg' alt='move_to_staging_image' />
+          <img src='/robot_state_imgs/move_to_staging_position.svg' alt='move_to_staging_image' className='center' />
         </Button>
       </Row>
     </div>
