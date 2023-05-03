@@ -63,7 +63,7 @@ function PauseModal(props) {
         </Modal.Header>
         <Modal.Body style={{ paddingLeft: '10px', overflow: 'hidden' }}>
           <p className='transitionMessage' style={{ marginBottom: '10px', marginTop: '0px', fontSize: '24px' }}>
-            Resume the feeding session when you are ready.
+            Resume the feeding session.
           </p>
           <Button
             className='bg-warning rounded btn-hugeE'
