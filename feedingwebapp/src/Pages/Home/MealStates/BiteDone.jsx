@@ -53,7 +53,7 @@ const BiteDone = () => {
 
       {/* Ask the user whether they want to move to staging position */}
       <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '120%' }}>
-        Cancel bite and move to ready position.
+        Take another bite? Move to &quot;ready&quot; position.
       </p>
       {/* Icon to move to staging position */}
       <Row className='justify-content-center mx-auto my-2 w-75'>
