@@ -58,6 +58,9 @@ export const MEAL_STATE = {
   U_PostMeal: 'U_PostMeal'
 }
 
+// variable to store the previous state when current meal state changes
+export var previous_meal_state = null
+
 /**
  * The parameters that users can set (keys) and a list of human-readable values
  * they can take on.
@@ -99,6 +102,7 @@ export const useGlobalState = create(
       // Setters for global state
       setMealState: (mealState) =>
         set(() => ({
+          previous_meal_state: null,
           mealState: mealState
         })),
       setAppPage: (appPage) =>

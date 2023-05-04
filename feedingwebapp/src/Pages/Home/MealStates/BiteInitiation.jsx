@@ -32,37 +32,37 @@ const BiteInitiation = () => {
   // Render the component
   return (
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
-      {/* Ask the user whether they want to move to mouth position */}
-      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%', fontWeight: 'bold' }}>
-        Ready for bite? Move to mouth.
-      </p>
-      {/* Icon to move to mouth */}
-      {/* Ask the user whether they're ready for the bite */}
-      <Row className='justify-content-center mx-auto my-2 w-75'>
+      <Row className='justify-content-center mx-auto my-2'>
+        {/* Ask the user whether they want to move to mouth position */}
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%', fontWeight: 'bold' }}>
+          Ready for bite? Move to mouth.
+        </p>
+        {/* Icon to move to mouth */}
+        {/* Ask the user whether they're ready for the bite */}
         <Button
           variant='success'
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={readyForBite}
-          style={{ width: '200px', height: '130px' }}
+          style={{ width: '230px', height: '150px' }}
         >
           <img src='/robot_state_imgs/move_to_mouth_position.svg' alt='move_to_mouth_image' className='center' />
         </Button>
       </Row>
-
-      {/* Ask the user whether they want to move to above plate position */}
-      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '120%' }}>
-        Cancel bite and move above plate.
-      </p>
-      {/* Icon to move above plate */}
-      {/* Give the user the option to move robot over plate*/}
-      <Row className='justify-content-center mx-auto my-2 w-75'>
+      {/* Add empty space */}
+      <div className='justify-content-center mx-auto my-5 row'>&nbsp;</div>
+      <Row className='justify-content-center mx-auto mt-5'>
+        {/* Ask the user whether they want to move to above plate position */}
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
+          Cancel bite and move above plate.
+        </p>
+        {/* Icon to move above plate */}
         <Button
-          variant='info'
+          variant='danger'
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={moveAbovePlate}
-          style={{ width: '110px', height: '71.5px' }}
+          style={{ width: '230px', height: '150px' }}
         >
           <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' className='center' />
         </Button>

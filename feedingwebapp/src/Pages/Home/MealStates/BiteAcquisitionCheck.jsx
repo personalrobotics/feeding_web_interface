@@ -30,7 +30,7 @@ const BiteAcquisitionCheck = () => {
    */
   function acquisitionFailure() {
     console.log('acquisitionFailure')
-    setMealState(MEAL_STATE.R_BiteAcquisition)
+    setMealState(MEAL_STATE.R_MovingAbovePlate)
   }
 
   // Render the component
@@ -42,24 +42,32 @@ const BiteAcquisitionCheck = () => {
       <p className='transitionMessage' style={{ marginBottom: '0px' }}>
         Is there food on the fork?
       </p>
-      <Row className='justify-content-center mx-auto my-2 w-75'>
-        <Button
-          variant='primary'
-          className='mx-2 mb-2 btn-huge'
-          size='lg'
-          onClick={acquisitionSuccess}
-          style={{ width: '75%', fontSize: '35px' }}
-        >
-          Yes, proceed
+      {/* Ask the user whether they want to move to "ready" position */}
+      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '150%' }}>
+        Yes, proceed
+      </p>
+      {/* Icon to move to staging position */}
+      <Row className='justify-content-center mx-auto mb-3 w-75'>
+        <Button variant='warning' onClick={acquisitionSuccess} style={{ width: '230px', height: '150px' }}>
+          <img src='/robot_state_imgs/move_to_staging_position.svg' alt='move_to_staging_image' className='center' />
         </Button>
+      </Row>
+      {/* Add empty space */}
+      <div className='justify-content-center mx-auto my-3 row'>&nbsp;</div>
+      <Row className='justify-content-center mx-auto mt-3'>
+        {/* Ask the user whether they want to try again */}
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '150%' }}>
+          No, try again
+        </p>
+        {/* Icon to move above plate */}
         <Button
-          variant='primary'
+          variant='info'
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={acquisitionFailure}
-          style={{ width: '75%', fontSize: '35px' }}
+          style={{ width: '230px', height: '150px' }}
         >
-          No, try again
+          <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' className='center' />
         </Button>
       </Row>
     </div>
