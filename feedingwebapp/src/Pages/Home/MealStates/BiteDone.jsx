@@ -41,7 +41,7 @@ const BiteDone = () => {
       {/* Icon to move above plate */}
       <Row className='justify-content-center mx-auto mb-2 w-75'>
         <Button
-          variant='info'
+          variant='success'
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={moveAbovePlate}

@@ -48,7 +48,7 @@ const BiteAcquisitionCheck = () => {
       </p>
       {/* Icon to move to staging position */}
       <Row className='justify-content-center mx-auto mb-2 w-75'>
-        <Button variant='warning' onClick={acquisitionSuccess} style={{ width: '300px', height: '200px' }}>
+        <Button variant='success' onClick={acquisitionSuccess} style={{ width: '300px', height: '200px' }}>
           <img src='/robot_state_imgs/move_to_staging_position.svg' alt='move_to_staging_image' className='center' />
         </Button>
       </Row>
@@ -61,7 +61,7 @@ const BiteAcquisitionCheck = () => {
         </p>
         {/* Icon to move above plate */}
         <Button
-          variant='info'
+          variant='warning'
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={acquisitionFailure}
