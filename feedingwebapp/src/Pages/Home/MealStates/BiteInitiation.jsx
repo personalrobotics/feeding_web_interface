@@ -44,13 +44,13 @@ const BiteInitiation = () => {
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={readyForBite}
-          style={{ width: '230px', height: '150px' }}
+          style={{ width: '300px', height: '200px' }}
         >
           <img src='/robot_state_imgs/move_to_mouth_position.svg' alt='move_to_mouth_image' className='center' />
         </Button>
       </Row>
       {/* Add empty space */}
-      <div className='justify-content-center mx-auto my-5 row'>&nbsp;</div>
+      <div className='justify-content-center mx-auto my-3 row'>&nbsp;</div>
       <Row className='justify-content-center mx-auto mt-5'>
         {/* Ask the user whether they want to move to above plate position */}
         <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
@@ -62,7 +62,7 @@ const BiteInitiation = () => {
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={moveAbovePlate}
-          style={{ width: '230px', height: '150px' }}
+          style={{ width: '300px', height: '200px' }}
         >
           <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' className='center' />
         </Button>
