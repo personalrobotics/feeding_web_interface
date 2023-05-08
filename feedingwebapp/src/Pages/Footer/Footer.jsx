@@ -44,7 +44,7 @@ const Footer = () => {
       {/**
        * The footer has a pause button. A resume button and a back button are shown when the pause button is clicked.
        */}
-      <MDBFooter bgColor='dark' className='text-center text-lg-left fixed-bottom' >
+      <MDBFooter bgColor='dark' className='text-center text-lg-left fixed-bottom'>
         <div className='text-center p-3' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
           {pause_button_visible ? (
             <Row className='justify-content-center mx-auto'>
