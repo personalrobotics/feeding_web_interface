@@ -11,19 +11,21 @@ import { useGlobalState } from '../GlobalState'
 
 /**
  * The Footer shows a pause button. When users click it, the app tells the robot
- * to immediately pause and displays a model that gives them the option to resume.
+ * to immediately pause and displays a back button that allows them to return to 
+ * previous state and a resume button that allows them to resume current state.
+ * 
+ * TODO: Update previous meal state logic to get the back button rendering the ideal 
+ * state behavior and icon image
  */
 const Footer = () => {
   // Set the current meal state
   const setMealState = useGlobalState((state) => state.setMealState)
   // Get the current meal state
   const mealState = useGlobalState((state) => state.mealState)
-  console.log(mealState)
-  // Get the previous meal state
-  const previousMealState = useGlobalState((state) => state.previousMealState)
-  console.log(previousMealState)
+  // TODO: define a variable for previous meal state
   // Create a local variable for storing previous state icon image
-  var previous_state_image = robot_moving_state_icon_image_dict[previousMealState]
+  // TODO: change mealState to a variable indicating previous meal state
+  var previous_state_image = robot_moving_state_icon_image_dict[mealState]
   // Create a local variable for storing current state icon image
   var current_state_image = robot_moving_state_icon_image_dict[mealState]
   // Local state variable to track of visibility of pause button
@@ -34,7 +36,8 @@ const Footer = () => {
    */
   function backButtonClicked() {
     // set meal state to previous state
-    setMealState(previousMealState)
+    // TODO: change mealState to a variable indicating previous meal state
+    setMealState(mealState)
     // we call setPauseButtonVisible with a new value. React will re-render the Footer component.
     setPauseButtonVisible(true)
   }
@@ -42,7 +45,7 @@ const Footer = () => {
   return (
     <>
       {/**
-       * The footer has a pause button. A resume button and a back button are shown when the pause button is clicked.
+       * The footer shows a pause button first. A resume button and a back button are shown when the pause button is clicked.
        */}
       <MDBFooter bgColor='dark' className='text-center text-lg-left fixed-bottom'>
         <div className='text-center p-3' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>

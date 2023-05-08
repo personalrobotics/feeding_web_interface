@@ -88,7 +88,6 @@ export const useGlobalState = create(
   persist(
     (set) => ({
       // Values stored in global state
-      previousMealState: null,
       mealState: MEAL_STATE.U_PreMeal,
       appPage: APP_PAGE.Home,
       desiredFoodItem: null,
@@ -100,7 +99,6 @@ export const useGlobalState = create(
       // Setters for global state
       setMealState: (mealState) =>
         set(() => ({
-          previousMealState: mealState,
           mealState: mealState
         })),
       setAppPage: (appPage) =>
