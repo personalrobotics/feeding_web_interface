@@ -33,7 +33,7 @@ const Footer = () => {
    * When the back button is clicked, go back to previous state.
    */
   function backButtonClicked() {
-    // set meal state to paused state
+    // set meal state to previous state
     setMealState(previousMealState)
     // we call setPauseButtonVisible with a new value. React will re-render the Footer component.
     setPauseButtonVisible(true)

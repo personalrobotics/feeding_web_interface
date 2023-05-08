@@ -59,7 +59,7 @@ const BiteAcquisitionCheck = () => {
         <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '150%' }}>
           No, try again
         </p>
-        {/* Icon to move above plate */}
+        {/* Icon for bite acquisition */}
         <Button
           variant='warning'
           className='mx-2 mb-2 btn-huge'
