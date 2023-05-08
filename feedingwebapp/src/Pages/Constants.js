@@ -3,23 +3,13 @@ import { MEAL_STATE } from './GlobalState'
 export const REALSENSE_WIDTH = 640
 export const REALSENSE_HEIGHT = 480
 /**
- * A dictionary containing information for the meal states where the robot moves.
- * The meal states are used as keys.
- * Each key is paired with a value of an array that has 3 elements in it.
- * First 2 array elements contain the text used in pause modal for previous and next meal state of current meal state.
- * The 3rd array element contains the previous meal state of current meal state.
+ * A dictionary containing images for icons of the meal states where the robot moves.
+ * Those meal states are used as keys.
+ * Each key is paired with a value of an svg image.
  */
-export const pause_modal_state_info_dict = {}
-pause_modal_state_info_dict[MEAL_STATE.R_MovingAbovePlate] = ['stowing the arm', 'moving above plate', MEAL_STATE.R_StowingArm]
-pause_modal_state_info_dict[MEAL_STATE.R_BiteAcquisition] = ['moving above plate', 'acquiring bite', MEAL_STATE.R_MovingAbovePlate]
-pause_modal_state_info_dict[MEAL_STATE.R_MovingToStagingLocation] = [
-  'moving above plate',
-  'moving to ready position',
-  MEAL_STATE.R_MovingAbovePlate
-]
-pause_modal_state_info_dict[MEAL_STATE.R_MovingToMouth] = [
-  'moving to ready position',
-  'moving to mouth',
-  MEAL_STATE.R_MovingToStagingLocation
-]
-pause_modal_state_info_dict[MEAL_STATE.R_StowingArm] = ['moving above plate', 'stowing the arm', MEAL_STATE.R_MovingAbovePlate]
+let robot_moving_state_icon_image_dict = {}
+robot_moving_state_icon_image_dict[MEAL_STATE.R_MovingAbovePlate] = '/robot_state_imgs/move_above_plate_position.svg'
+robot_moving_state_icon_image_dict[MEAL_STATE.R_BiteAcquisition] = '/robot_state_imgs/move_to_bite_acquisition_position.svg'
+robot_moving_state_icon_image_dict[MEAL_STATE.R_MovingToStagingLocation] = '/robot_state_imgs/move_to_staging_position_footer.svg'
+robot_moving_state_icon_image_dict[MEAL_STATE.R_MovingToMouth] = '/robot_state_imgs/move_to_mouth_position.svg'
+export { robot_moving_state_icon_image_dict }
