@@ -35,7 +35,7 @@ const BiteDone = () => {
   return (
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
       {/* Ask the user whether they want to move to above plate position */}
-      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
+      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
         Bite finished? Move above plate.
       </p>
       {/* Icon to move above plate */}

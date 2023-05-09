@@ -43,7 +43,7 @@ const BiteAcquisitionCheck = () => {
         Is there food on the fork?
       </p>
       {/* Ask the user whether they want to move to "ready" position */}
-      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '150%' }}>
+      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
         Yes, proceed
       </p>
       {/* Icon to move to staging position */}
@@ -62,7 +62,7 @@ const BiteAcquisitionCheck = () => {
       <div className='justify-content-center mx-auto mb-1 row'>&nbsp;</div>
       <Row className='justify-content-center mx-auto mb-2'>
         {/* Ask the user whether they want to try again */}
-        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '150%' }}>
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
           No, try again
         </p>
         {/* Icon for move above plate */}

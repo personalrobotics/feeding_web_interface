@@ -34,7 +34,7 @@ const BiteInitiation = () => {
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
       <Row className='justify-content-center mx-auto my-2'>
         {/* Ask the user whether they're ready for a bite and if they want to move to mouth position */}
-        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
           Ready for bite? Move to mouth.
         </p>
         {/* Icon to move to mouth */}
