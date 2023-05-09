@@ -35,7 +35,7 @@ const BiteDone = () => {
   return (
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
       {/* Ask the user whether they want to move to above plate position */}
-      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%', fontWeight: 'bold' }}>
+      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '148%' }}>
         Bite finished? Move above plate.
       </p>
       {/* Icon to move above plate */}
@@ -58,7 +58,13 @@ const BiteDone = () => {
           Take another bite? Move to &quot;ready&quot; position.
         </p>
         {/* Icon to move to staging position */}
-        <Button variant='warning' onClick={moveToStagingPosition} style={{ width: '300px', height: '200px' }}>
+        <Button
+          variant='warning'
+          className='mx-2 mb-2 btn-huge'
+          size='lg'
+          onClick={moveToStagingPosition}
+          style={{ width: '300px', height: '200px' }}
+        >
           <img src='/robot_state_imgs/move_to_staging_position.svg' alt='move_to_staging_image' className='center' />
         </Button>
       </Row>

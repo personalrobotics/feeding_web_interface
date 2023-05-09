@@ -30,7 +30,7 @@ const BiteAcquisitionCheck = () => {
    */
   function acquisitionFailure() {
     console.log('acquisitionFailure')
-    setMealState(MEAL_STATE.R_BiteAcquisition)
+    setMealState(MEAL_STATE.R_MovingAbovePlate)
   }
 
   // Render the component
@@ -47,19 +47,25 @@ const BiteAcquisitionCheck = () => {
         Yes, proceed
       </p>
       {/* Icon to move to staging position */}
-      <Row className='justify-content-center mx-auto mb-2 w-75'>
-        <Button variant='success' onClick={acquisitionSuccess} style={{ width: '300px', height: '200px' }}>
+      <Row className='justify-content-center mx-auto w-75'>
+        <Button
+          variant='success'
+          className='mx-2 mb-2 btn-huge'
+          size='lg'
+          onClick={acquisitionSuccess}
+          style={{ width: '300px', height: '200px' }}
+        >
           <img src='/robot_state_imgs/move_to_staging_position.svg' alt='move_to_staging_image' className='center' />
         </Button>
       </Row>
       {/* Add empty space */}
-      <div className='justify-content-center mx-auto my-2 row'>&nbsp;</div>
-      <Row className='justify-content-center mx-auto mt-2'>
+      <div className='justify-content-center mx-auto mb-1 row'>&nbsp;</div>
+      <Row className='justify-content-center mx-auto mb-2'>
         {/* Ask the user whether they want to try again */}
         <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '150%' }}>
           No, try again
         </p>
-        {/* Icon for bite acquisition */}
+        {/* Icon for move above plate */}
         <Button
           variant='warning'
           className='mx-2 mb-2 btn-huge'
@@ -67,7 +73,7 @@ const BiteAcquisitionCheck = () => {
           onClick={acquisitionFailure}
           style={{ width: '300px', height: '200px' }}
         >
-          <img src='/robot_state_imgs/move_to_bite_acquisition_position.svg' alt='bite_acquisition_move_image' className='center' />
+          <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' className='center' />
         </Button>
       </Row>
     </div>

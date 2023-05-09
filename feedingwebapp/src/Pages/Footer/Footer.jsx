@@ -6,39 +6,49 @@ import { View } from 'react-native'
 import Row from 'react-bootstrap/Row'
 
 // Local imports
-import { robot_moving_state_icon_image_dict } from '../Constants'
+import { FOOTER_STATE_ICON_DICT } from '../Constants'
 import { useGlobalState } from '../GlobalState'
 
 /**
  * The Footer shows a pause button. When users click it, the app tells the robot
- * to immediately pause and displays a back button that allows them to return to 
+ * to immediately pause and displays a back button that allows them to return to
  * previous state and a resume button that allows them to resume current state.
- * 
- * TODO: Update previous meal state logic to get the back button rendering the ideal 
- * state behavior and icon image
+ *
+ * TODO: Update previous meal state logic to get the "Back" button to function
+ * correctly and render the correct icon.
  */
 const Footer = () => {
   // Set the current meal state
   const setMealState = useGlobalState((state) => state.setMealState)
   // Get the current meal state
   const mealState = useGlobalState((state) => state.mealState)
-  // TODO: define a variable for previous meal state
-  // Create a local variable for storing previous state icon image
-  // TODO: change mealState to a variable indicating previous meal state
-  var previous_state_image = robot_moving_state_icon_image_dict[mealState]
+  // TODO: define a variable for previous meal state that will be used in back button click
+  // Create a local variable for storing back icon image
+  // TODO: set this to the actual back icon, not the same as resume
+  var backIcon = FOOTER_STATE_ICON_DICT[mealState]
   // Create a local variable for storing current state icon image
-  var current_state_image = robot_moving_state_icon_image_dict[mealState]
+  var resumeIcon = FOOTER_STATE_ICON_DICT[mealState]
   // Local state variable to track of visibility of pause button
-  const [pause_button_visible, setPauseButtonVisible] = useState(true)
+  const [pauseButtonVisible, setPauseButtonVisible] = useState(true)
 
   /**
    * When the back button is clicked, go back to previous state.
    */
   function backButtonClicked() {
-    // set meal state to previous state
+    // Set meal state to previous meal state
     // TODO: change mealState to a variable indicating previous meal state
     setMealState(mealState)
-    // we call setPauseButtonVisible with a new value. React will re-render the Footer component.
+    // We call setPauseButtonVisible with a new value to make pause button visible again.
+    // React will re-render the Footer component.
+    setPauseButtonVisible(true)
+  }
+
+  /**
+   * When the resume button is clicked, continue with the current meal state.
+   */
+  function resumeButtonClicked() {
+    // We call setPauseButtonVisible with a new value to make pause button visible again.
+    // React will re-render the Footer component.
     setPauseButtonVisible(true)
   }
 
@@ -49,7 +59,7 @@ const Footer = () => {
        */}
       <MDBFooter bgColor='dark' className='text-center text-lg-left fixed-bottom'>
         <div className='text-center p-3' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
-          {pause_button_visible ? (
+          {pauseButtonVisible ? (
             <Row className='justify-content-center mx-auto'>
               <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
                 ⏸️ Pause
@@ -63,7 +73,7 @@ const Footer = () => {
                 <img
                   style={{ width: '135px', height: '90px' }}
                   src='/robot_state_imgs/pause_button_icon.svg'
-                  alt='pause_button_image'
+                  alt='pause_icon_img'
                   className='center'
                 />
               </Button>
@@ -80,12 +90,7 @@ const Footer = () => {
                   onClick={backButtonClicked}
                   style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
                 >
-                  <img
-                    style={{ width: '450px', height: '270px' }}
-                    src={previous_state_image}
-                    alt='previous_state_icon_img'
-                    className='center'
-                  />
+                  <img style={{ width: '450px', height: '270px' }} src={backIcon} alt='back_icon_img' className='center' />
                 </Button>
               </View>
               <View>
@@ -95,15 +100,10 @@ const Footer = () => {
                 {/* Icon to resume */}
                 <Button
                   variant='success'
-                  onClick={() => setPauseButtonVisible(true)}
+                  onClick={resumeButtonClicked}
                   style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
                 >
-                  <img
-                    style={{ width: '450px', height: '270px' }}
-                    src={current_state_image}
-                    alt='current_state_icon_img'
-                    className='center'
-                  />
+                  <img style={{ width: '450px', height: '270px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
                 </Button>
               </View>
             </View>
