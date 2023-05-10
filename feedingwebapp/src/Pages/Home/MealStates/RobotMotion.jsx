@@ -1,5 +1,5 @@
 // React Imports
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
@@ -22,18 +22,23 @@ import {
 } from '../../Constants'
 
 /**
- * The MovingAbovePlate component tells the user that the robot is currently
- * moving above the plate. It waits for the robot to complete the motion before
- * moving to the next state.
+ * The RobotMotion component is a generic component that tells the user the
+ * robot is moving (with customizable text), calls the ROS action corresponding
+ * to that motion, displays the progress, and moves to the next state when the
+ * action is completed.
  *
- * @params {object} props - contains any properties passed to this Component
+ * @param {boolean} debug - whether to run it in debug mode (e.g., if you aren't
+ *        simulatenously running the robot) or not
+ * @param {string} mealState - the meal state corresponding with the motion the
+ *         robot is executing
+ * @param {string} nextMealState - the meal state to transition to once the
+ *        robot finishes executing
+ * @param {object} actionInput - the input to provide to the ROS action
+ * @param {string} waitingText - the static text to display while the robot is
+ *        executing the action
  */
-const MovingAbovePlate = (props) => {
-  // Get the relevant global variables
-  const setMealState = useGlobalState((state) => state.setMealState)
-
-  // Create a local state variable for whether the robot is paused and another
-  // to store the status of the action
+const RobotMotion = (props) => {
+  // Create a local state variable for whether the robot is paused.
   const [paused, setPaused] = useState(false)
   // NOTE: We slightly abuse the ROS_ACTION_STATUS values in this local state
   // variable, by using it as a proxy for whether the robot is executing, has
@@ -43,17 +48,28 @@ const MovingAbovePlate = (props) => {
     actionStatus: null
   })
 
+  // Get the relevant global variables
+  const mealState = useGlobalState((state) => state.mealState)
+  const setMealState = useGlobalState((state) => state.setMealState)
+
   // Connect to ROS, if not already connected. Put this in local state to avoid
   // re-connecting upon every re-render.
-  const ros = useState(connectToROS().ros)[0]
-
-  // Create the ROS Action Client. This is created in local state to avoid
-  // re-creating it upon every re-render.
-  let { actionName, messageType } = ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingAbovePlate]
-  let moveAbovePlateAction = useState(createROSActionClient(ros, actionName, messageType))[0]
+  const ros = useRef(connectToROS().ros)
 
   /**
-   * Callback function for when the action sends feedback. It updates the
+   * Create the ROS Action Client. This is re-created every time props.mealState
+   * changes. Note that we use props here because there is sometimes a race
+   * condition where the mealState has changed but this component is still
+   * rendering, so we need to use the meal state intended for this component,
+   * even if it momentarily differs from the global mealState.
+   */
+  let robotMotionAction = useMemo(() => {
+    let { actionName, messageType } = ROS_ACTIONS_NAMES[props.mealState]
+    return createROSActionClient(ros.current, actionName, messageType)
+  }, [props.mealState])
+
+  /**
+   * Callback function for when the action setns feedback. It updates the
    * actionStatus local state variable.
    *
    * @param {object} feedbackMsg - the feedback message sent by the action
@@ -69,13 +85,13 @@ const MovingAbovePlate = (props) => {
   )
 
   /**
-   * Callback function for when the robot has finished moving above the plate.
-   * It moves on to the next meal state.
+   * Callback function for when the robot has finished moving to its staging
+   * location.
    */
-  const movingAbovePlateDone = useCallback(() => {
-    console.log('movingAbovePlateDone')
-    setMealState(MEAL_STATE.U_BiteSelection)
-  }, [setMealState])
+  const robotMotionDone = useCallback(() => {
+    console.log('robotMotionDone')
+    setMealState(props.nextMealState)
+  }, [setMealState, props.nextMealState])
 
   /**
    * Callback function for when the action sends a response. It updates the
@@ -94,7 +110,7 @@ const MovingAbovePlate = (props) => {
         setActionStatus({
           actionStatus: ROS_ACTION_STATUS_SUCCEED
         })
-        movingAbovePlateDone()
+        robotMotionDone()
       } else {
         if (
           response.response_type == 'cancel' ||
@@ -111,7 +127,7 @@ const MovingAbovePlate = (props) => {
         }
       }
     },
-    [movingAbovePlateDone, setActionStatus]
+    [robotMotionDone, setActionStatus]
   )
 
   /**
@@ -119,8 +135,9 @@ const MovingAbovePlate = (props) => {
    * action.
    */
   const pauseCallback = useCallback(() => {
-    cancelROSAction(moveAbovePlateAction)
-  }, [moveAbovePlateAction])
+    setPaused(true)
+    cancelROSAction(robotMotionAction)
+  }, [robotMotionAction, setPaused])
 
   /**
    * Function to call the ROS action. Note that every time this function
@@ -132,16 +149,16 @@ const MovingAbovePlate = (props) => {
    * @param {function} responseCb - the callback function for when the action
    * sends a response
    */
-  const callMoveAbovePlate = useCallback(
+  const callRobotMotionAction = useCallback(
     (feedbackCb, responseCb) => {
       if (!paused) {
         setActionStatus({
           actionStatus: ROS_ACTION_STATUS_EXECUTE
         })
-        callROSAction(moveAbovePlateAction, {}, feedbackCb, responseCb)
+        callROSAction(robotMotionAction, props.actionInput, feedbackCb, responseCb)
       }
     },
-    [moveAbovePlateAction, setActionStatus]
+    [robotMotionAction, props.actionInput, setActionStatus]
   )
   /**
    * Calls the action the first time this component is rendered, but not upon
@@ -149,22 +166,52 @@ const MovingAbovePlate = (props) => {
    * achieves this goal: https://stackoverflow.com/a/69264685
    */
   useEffect(() => {
-    callMoveAbovePlate(feedbackCallback, responseCallback)
+    callRobotMotionAction(feedbackCallback, responseCallback)
     // In practice, because the values passed in in the second argument of
     // useEffect will not change on re-renders, this return statement will
     // only be called when the component unmounts.
     return () => {
-      destroyActionClient(moveAbovePlateAction)
+      destroyActionClient(robotMotionAction)
     }
-  }, [callMoveAbovePlate, moveAbovePlateAction, feedbackCallback, responseCallback])
+  }, [callRobotMotionAction, robotMotionAction, feedbackCallback, responseCallback])
 
   /**
    * Callback function for when the resume button is pressed. It calls the
    * action once again.
+   *
+   * Note that BiteAcquistiion won't have a "Resume" button, since if the robot
+   * has already touched the food then it may have shifted, which means the
+   * previously-selected food mask may no longer be a valid goal.
    */
   const resumeCallback = useCallback(() => {
-    callMoveAbovePlate(null, null) // don't re-register the callbacks
-  }, [callMoveAbovePlate])
+    setPaused(false)
+    callRobotMotionAction(null, null) // don't re-register the callbacks
+  }, [callRobotMotionAction, setPaused])
+
+  /**
+   * Callback function for when the back button is clicked. Regardless of the
+   * state, all pressed of "back" will revert to the "Moving Above Plate" state.
+   * - BiteAcquisition: In this case, pressing "back" should let the user
+   *   reselect the bite, which requires the robot to move above plate.
+   * - MoveToStagingLocation: In this case, pressing "back" should move the
+   *   robot back to the plate. Although the user may not always want to
+   *   reselect the bite, from `BiteSelection` they have the option to skip
+   *   BiteAcquisition and move straight to staging location (when they are ready).
+   * - MoveToMouth: Although in some cases the user may want "back" to move to
+   *   the staging location, since we will be removing the staging location
+   *   (Issue #45) it makes most sense to move the robot back to the plate.
+   * - StowingArm: In this case, if the user presses back they likely want to
+   *   eat another bite, hence moving above the plate makes sense.
+   * - MovingAbovePlate: Although the user may want to press "back" to move
+   *   the robot to the staging location, they can also go forward to
+   *   BiteSelection and then move the robot to the staging location.
+   *   Hence, in this case we don't have a "back" button.
+   */
+  const backMealState = useRef(MEAL_STATE.R_MovingAbovePlate)
+  const backCallback = useCallback(() => {
+    setPaused(false)
+    setMealState(backMealState.current)
+  }, [setPaused, setMealState, backMealState])
 
   /**
    * Get the action status text to render. Note that once Issue #22 is addressed,
@@ -173,12 +220,12 @@ const MovingAbovePlate = (props) => {
    *
    * @returns {JSX.Element} the action status text to render
    */
-  let actionStatusText = function () {
+  const actionStatusText = useCallback((actionStatus) => {
     switch (actionStatus.actionStatus) {
       case ROS_ACTION_STATUS_EXECUTE:
         if (actionStatus.feedback) {
+          let progress = 1 - actionStatus.feedback.motion_curr_distance / actionStatus.feedback.motion_initial_distance
           if (!actionStatus.feedback.is_planning) {
-            let progress = 1 - actionStatus.feedback.motion_curr_distance / actionStatus.feedback.motion_initial_distance
             return (
               <>
                 <h3>Robot is moving...</h3>
@@ -212,7 +259,7 @@ const MovingAbovePlate = (props) => {
       default:
         return <h3></h3>
     }
-  }
+  }, [])
 
   // Render the component
   return (
@@ -221,10 +268,10 @@ const MovingAbovePlate = (props) => {
       <Row className='justify-content-center mx-auto my-2 w-75'>
         <div>
           <h1 id={MEAL_STATE.R_MovingAbovePlate} className='waitingMsg'>
-            Waiting for the robot to move above the plate...
+            {props.waitingText}
           </h1>
           {props.debug ? (
-            <Button variant='secondary' className='justify-content-center mx-2 mb-2' size='lg' onClick={movingAbovePlateDone}>
+            <Button variant='secondary' className='justify-content-center mx-2 mb-2' size='lg' onClick={robotMotionDone}>
               Continue (Debug Mode)
             </Button>
           ) : (
@@ -238,27 +285,34 @@ const MovingAbovePlate = (props) => {
            * the page, we should visually show a progress bar. This will also
            * negate the need for the `actionStatusText` function.
            */}
-          {actionStatusText()}
+          {actionStatusText(actionStatus)}
         </div>
       </Row>
       {/**
-       * Display the footer with the Pause button. MoveAbovePlate has no back
-       * button, because the user can go "forward" to any state with similar
-       * ease as they could go "backwards" to the same state.
+       * Display the footer with the Pause button.
        */}
       <Footer
         pauseCallback={pauseCallback}
-        backCallback={null}
-        backMealState={null}
-        resumeCallback={resumeCallback}
+        backCallback={mealState == MEAL_STATE.R_MovingAbovePlate ? null : backCallback}
+        backMealState={backMealState.current}
+        resumeCallback={mealState == MEAL_STATE.R_BiteAcquisition ? null : resumeCallback}
         paused={paused}
-        setPaused={setPaused}
       />
     </>
   )
 }
-MovingAbovePlate.propTypes = {
-  debug: PropTypes.bool.isRequired
+RobotMotion.propTypes = {
+  // Whether to run it in debug mode (e.g., if you aren't simulatenously running
+  // the robot) or not
+  debug: PropTypes.bool.isRequired,
+  // The meal state corresponding with the motion the robot is executing
+  mealState: PropTypes.string.isRequired,
+  // The meal state to transition to once the robot finishes executing
+  nextMealState: PropTypes.string.isRequired,
+  // The input to provide to the ROS action
+  actionInput: PropTypes.object.isRequired,
+  // The static text to display while the robot is executing the action
+  waitingText: PropTypes.string.isRequired
 }
 
-export default MovingAbovePlate
+export default RobotMotion
