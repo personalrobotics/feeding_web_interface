@@ -20,7 +20,7 @@ const Footer = () => {
   // Get the current meal state
   const mealState = useGlobalState((state) => state.mealState)
   // A local variable for storing back icon image
-  var backIcon = '/robot_state_imgs/move_above_plate_position.svg'
+  var backIcon = FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate]
   // A local variable for storing current state icon image
   var resumeIcon = FOOTER_STATE_ICON_DICT[mealState]
   // Local state variable to track of visibility of pause button
@@ -84,7 +84,7 @@ const Footer = () => {
                   onClick={resumeButtonClicked}
                   style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
                 >
-                  <img style={{ width: '450px', height: '270px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
+                  <img style={{ width: '120px', height: '72px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
                 </Button>
               </View>
             </View>
@@ -100,7 +100,7 @@ const Footer = () => {
                   onClick={backButtonClicked}
                   style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
                 >
-                  <img style={{ width: '450px', height: '270px' }} src={backIcon} alt='back_icon_img' className='center' />
+                  <img style={{ width: '120px', height: '72px' }} src={backIcon} alt='back_icon_img' className='center' />
                 </Button>
               </View>
             </View>
@@ -116,7 +116,7 @@ const Footer = () => {
                   onClick={backButtonClicked}
                   style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
                 >
-                  <img style={{ width: '450px', height: '270px' }} src={backIcon} alt='back_icon_img' className='center' />
+                  <img style={{ width: '120px', height: '72px' }} src={backIcon} alt='back_icon_img' className='center' />
                 </Button>
               </View>
               <View>
@@ -129,7 +129,7 @@ const Footer = () => {
                   onClick={resumeButtonClicked}
                   style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
                 >
-                  <img style={{ width: '450px', height: '270px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
+                  <img style={{ width: '120px', height: '72px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
                 </Button>
               </View>
             </View>

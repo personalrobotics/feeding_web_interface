@@ -30,10 +30,10 @@ const BiteSelection = () => {
   }
 
   /**
-   * Callback function for when the user wants to move above plate.
+   * Callback function for when the user wants to move to staging position.
    */
-  function moveAbovePlate() {
-    setMealState(MEAL_STATE.R_MovingAbovePlate)
+  function moveToStagingPosition() {
+    setMealState(MEAL_STATE.R_MovingToStagingLocation)
   }
 
   /**
@@ -101,7 +101,7 @@ const BiteSelection = () => {
       <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
         {/* Ask the user whether they want to continue without acquisition by moving to above plate position */}
         <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
-          Continue without acquiring bite? Move above plate.
+          Continue without acquiring bite? Move to staging position.
         </p>
         {/* Icon to move above plate */}
         <Row className='justify-content-center mx-auto mb-2 w-75'>
@@ -109,10 +109,10 @@ const BiteSelection = () => {
             variant='warning'
             className='mx-2 mb-2 btn-huge'
             size='lg'
-            onClick={moveAbovePlate}
+            onClick={moveToStagingPosition}
             style={{ width: '300px', height: '200px' }}
           >
-            <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' className='center' />
+            <img src='/robot_state_imgs/move_to_staging_position.svg' alt='move_above_plate_image' className='center' />
           </Button>
         </Row>
       </div>
