@@ -1,5 +1,5 @@
 // React imports
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
@@ -31,20 +31,23 @@ function Home(props) {
   const mealStateTransitionTime = useGlobalState((state) => state.mealStateTransitionTime)
   const setMealState = useGlobalState((state) => state.setMealState)
 
+  // Implement time-based transition of states. This is so that after the user
+  // finishes a meal, when they start the next meal the app starts in PreMeal.
+  // The `useEffect` with these parameters ensures that it it called when
+  // reloading the page or when transitioning mealStates, but not when re-rendering.
+  useEffect(() => {
+    if (Date.now() - mealStateTransitionTime >= TIME_TO_RESET_MS) {
+      console.log('Reverting to PreMeal due to too much elapsed time in one state.')
+      setMealState(MEAL_STATE.U_PreMeal)
+    }
+  }, [mealStateTransitionTime, setMealState])
+
   /**
    * Determines what screen to render based on the meal state.
    *
    */
   const getComponentByMealState = useCallback(() => {
     console.log('getComponentByMealState', mealState, mealStateTransitionTime, props.debug)
-
-    // Implement time-based transition of states. This is so that after the user
-    // finishes a meal, when they start the next meal the app starts in PreMeal.
-    if (Date.now() - mealStateTransitionTime >= TIME_TO_RESET_MS) {
-      console.log('Reverting to PreMeal due to too much elapsed time in one state.')
-      setMealState(MEAL_STATE.U_PreMeal)
-    }
-
     switch (mealState) {
       case MEAL_STATE.U_PreMeal:
         return <PreMeal debug={props.debug} />
