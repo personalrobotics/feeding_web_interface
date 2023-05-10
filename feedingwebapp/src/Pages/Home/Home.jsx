@@ -1,5 +1,5 @@
 // React imports
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
@@ -22,6 +22,43 @@ import StowingArm from './MealStates/StowingArm'
 import { TIME_TO_RESET_MS } from '../Constants'
 
 /**
+ * Determines what screen to render based on the meal state.
+ *
+ * @param {MEAL_STATE} mealState - The current meal state. Must be one of the
+ *        states specified in MEAL_STATE.
+ * @param {bool} debug - Whether to run it in debug mode or not.
+ */
+function getComponentByMealState(mealState, debug) {
+  console.log('getComponentByMealState', mealState, debug)
+  switch (mealState) {
+    case MEAL_STATE.U_PreMeal:
+      return <PreMeal debug={debug} />
+    case MEAL_STATE.R_MovingAbovePlate:
+      return <MovingAbovePlate debug={debug} />
+    case MEAL_STATE.U_BiteSelection:
+      return <BiteSelection debug={debug} />
+    case MEAL_STATE.U_PlateLocator:
+      return <PlateLocator debug={debug} />
+    case MEAL_STATE.R_BiteAcquisition:
+      return <BiteAcquisition debug={debug} />
+    case MEAL_STATE.U_BiteAcquisitionCheck:
+      return <BiteAcquisitionCheck debug={debug} />
+    case MEAL_STATE.R_MovingToStagingLocation:
+      return <MovingToStagingLocation debug={debug} />
+    case MEAL_STATE.U_BiteInitiation:
+      return <BiteInitiation debug={debug} />
+    case MEAL_STATE.R_MovingToMouth:
+      return <MovingToMouth debug={debug} />
+    case MEAL_STATE.U_BiteDone:
+      return <BiteDone debug={debug} />
+    case MEAL_STATE.R_StowingArm:
+      return <StowingArm debug={debug} />
+    case MEAL_STATE.U_PostMeal:
+      return <PostMeal debug={debug} />
+  }
+}
+
+/**
  * The Home component displays the state of the meal, solicits user input as
  * needed, and communicates with the robot (TODO (amaln)).
  */
@@ -42,47 +79,13 @@ function Home(props) {
     }
   }, [mealStateTransitionTime, setMealState])
 
-  /**
-   * Determines what screen to render based on the meal state.
-   *
-   */
-  const getComponentByMealState = useCallback(() => {
-    console.log('getComponentByMealState', mealState, mealStateTransitionTime, props.debug)
-    switch (mealState) {
-      case MEAL_STATE.U_PreMeal:
-        return <PreMeal debug={props.debug} />
-      case MEAL_STATE.R_MovingAbovePlate:
-        return <MovingAbovePlate debug={props.debug} />
-      case MEAL_STATE.U_BiteSelection:
-        return <BiteSelection debug={props.debug} />
-      case MEAL_STATE.U_PlateLocator:
-        return <PlateLocator debug={props.debug} />
-      case MEAL_STATE.R_BiteAcquisition:
-        return <BiteAcquisition debug={props.debug} />
-      case MEAL_STATE.U_BiteAcquisitionCheck:
-        return <BiteAcquisitionCheck debug={props.debug} />
-      case MEAL_STATE.R_MovingToStagingLocation:
-        return <MovingToStagingLocation debug={props.debug} />
-      case MEAL_STATE.U_BiteInitiation:
-        return <BiteInitiation debug={props.debug} />
-      case MEAL_STATE.R_MovingToMouth:
-        return <MovingToMouth debug={props.debug} />
-      case MEAL_STATE.U_BiteDone:
-        return <BiteDone debug={props.debug} />
-      case MEAL_STATE.R_StowingArm:
-        return <StowingArm debug={props.debug} />
-      case MEAL_STATE.U_PostMeal:
-        return <PostMeal debug={props.debug} />
-    }
-  }, [mealState, mealStateTransitionTime, setMealState])
-
   // Render the component
   return (
     <div>
       {/**
        * The main contents of the screen depends on the mealState.
        */}
-      {getComponentByMealState()}
+      {getComponentByMealState(mealState, props.debug)}
     </div>
   )
 }
