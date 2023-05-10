@@ -66,8 +66,10 @@ const Footer = () => {
    * @returns {JSX.Element} the footer text and buttons
    */
   let footerTextAndButtons = function () {
-    // If the pause button is visible, regardless of the meal state 
-    // show a pause button taking the whole width of the footer screen.
+    /**
+     * If the pause button is visible, regardless of the meal state
+     * show a pause button taking the whole width of the footer screen.
+     */
     if (pauseButtonVisible) {
       return (
         <>
@@ -92,9 +94,10 @@ const Footer = () => {
         </>
       )
     } else {
-      // If the robot is moving above the plate and pause button is not visible,
-      // only show the resume button and no back button, since the user 
-      // can go "forward" to any other state as opposed to going back.
+      /** If the robot is moving above the plate and pause button is not visible,
+       *  only show the resume button and no back button, since the user 
+       * can go "forward" to any other state as opposed to going back.
+       */
       if (mealState === MEAL_STATE.R_MovingAbovePlate) {
         return (
           <>
@@ -117,11 +120,12 @@ const Footer = () => {
           </>
         )
       } else if (mealState === MEAL_STATE.R_BiteAcquisition) {
-      // If the robot is aquiring the bite and pause button is not visible,
-      // only show the back button and no resume button, since the user 
-      // can continue to acquiring bite again after moving above plate,
-      // but if they resume this state after aquiring bite, 
-      // the bite selection mask will no longer work
+        /** If the robot is aquiring the bite and pause button is not visible,
+         * only show the back button and no resume button, since the user 
+         * can continue to acquiring bite again after moving above plate,
+         * but if they resume this state after aquiring bite,
+         * the bite selection mask will no longer work
+         */
         return (
           <>
             <View>
@@ -143,10 +147,11 @@ const Footer = () => {
           </>
         )
       } else {
-        // If the robot is moving in the meal states (except the
-        // MoveAbovePlate state) of BiteAcquisition, MoveToStagingLocation,
-        // MoveToMouth, and StowingArm meal states and the pause button is not
-        // visible, then the footer shows both of the back and resume buttons 
+        /** If the robot is moving in the meal states (except the
+         *  MoveAbovePlate state) of BiteAcquisition, MoveToStagingLocation,
+         *  MoveToMouth, and StowingArm meal states and the pause button is not
+         *  visible, then the footer shows both of the back and resume buttons
+         */
         return (
           <>
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
