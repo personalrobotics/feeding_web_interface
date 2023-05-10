@@ -104,7 +104,7 @@ const BiteSelection = () => {
       <div style={{ display: 'block', width: '100%' }} className='outer'>
         {/* Ask the user whether they want to continue without acquisition by moving to above plate position */}
         <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '20px' }}>
-          Continue without acquiring bite? Move to staging position.
+          Continue without acquiring bite? Move to &quot;ready&quot; position.
         </p>
         {/* Icon to move above plate */}
         <Row className='justify-content-center mx-auto mb-2 w-75'>
