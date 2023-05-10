@@ -73,36 +73,38 @@ const Footer = () => {
               </Button>
             </Row>
           ) : mealState === MEAL_STATE.R_MovingAbovePlate ? (
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <View>
-                <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
-                  ▶️ Resume
-                </p>
-                {/* Icon to resume */}
-                <Button
-                  variant='success'
-                  onClick={resumeButtonClicked}
-                  style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
-                >
-                  <img style={{ width: '120px', height: '72px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
-                </Button>
-              </View>
+            <View>
+              <p
+                className='transitionMessage'
+                style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold', textAlign: 'right' }}
+              >
+                ▶️ Resume
+              </p>
+              {/* Icon to resume current state */}
+              <Button
+                variant='success'
+                onClick={resumeButtonClicked}
+                style={{ marginLeft: 225, marginRight: 10, width: '150px', height: '100px' }}
+              >
+                <img style={{ width: '120px', height: '72px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
+              </Button>
             </View>
           ) : mealState === MEAL_STATE.R_BiteAcquisition ? (
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <View>
-                <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
-                  ◀️ Back
-                </p>
-                {/* Icon to move to previous state */}
-                <Button
-                  variant='warning'
-                  onClick={backButtonClicked}
-                  style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
-                >
-                  <img style={{ width: '120px', height: '72px' }} src={backIcon} alt='back_icon_img' className='center' />
-                </Button>
-              </View>
+            <View>
+              <p
+                className='transitionMessage'
+                style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold', textAlign: 'left' }}
+              >
+                ◀️ Back
+              </p>
+              {/* Icon to move to previous state */}
+              <Button
+                variant='warning'
+                onClick={backButtonClicked}
+                style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
+              >
+                <img style={{ width: '120px', height: '72px' }} src={backIcon} alt='back_icon_img' className='center' />
+              </Button>
             </View>
           ) : (
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
