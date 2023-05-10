@@ -12,6 +12,7 @@ import BiteAcquisitionCheck from './MealStates/BiteAcquisitionCheck'
 import BiteDone from './MealStates/BiteDone'
 import BiteInitiation from './MealStates/BiteInitiation'
 import BiteSelection from './MealStates/BiteSelection'
+import BiteSelectionButtonOverlay from './MealStates/BiteSelectionButtonOverlay'
 import MovingAbovePlate from './MealStates/MovingAbovePlate'
 import MovingToMouth from './MealStates/MovingToMouth'
 import MovingToStagingLocation from './MealStates/MovingToStagingLocation'
@@ -35,7 +36,8 @@ function getComponentByMealState(mealState, debug) {
     case MEAL_STATE.R_MovingAbovePlate:
       return <MovingAbovePlate debug={debug} />
     case MEAL_STATE.U_BiteSelection:
-      return <BiteSelection debug={debug} />
+      // return <BiteSelection debug={debug} />
+      return <BiteSelectionButtonOverlay debug={debug} />
     case MEAL_STATE.U_PlateLocator:
       return <PlateLocator debug={debug} />
     case MEAL_STATE.R_BiteAcquisition:
