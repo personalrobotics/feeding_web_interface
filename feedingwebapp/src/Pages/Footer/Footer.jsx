@@ -95,7 +95,7 @@ const Footer = () => {
       )
     } else {
       /** If the robot is moving above the plate and pause button is not visible,
-       *  only show the resume button and no back button, since the user 
+       *  only show the resume button and no back button, since the user
        * can go "forward" to any other state as opposed to going back.
        */
       if (mealState === MEAL_STATE.R_MovingAbovePlate) {
@@ -121,7 +121,7 @@ const Footer = () => {
         )
       } else if (mealState === MEAL_STATE.R_BiteAcquisition) {
         /** If the robot is aquiring the bite and pause button is not visible,
-         * only show the back button and no resume button, since the user 
+         * only show the back button and no resume button, since the user
          * can continue to acquiring bite again after moving above plate,
          * but if they resume this state after aquiring bite,
          * the bite selection mask will no longer work
