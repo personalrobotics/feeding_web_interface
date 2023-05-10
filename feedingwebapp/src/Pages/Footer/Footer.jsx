@@ -7,26 +7,21 @@ import Row from 'react-bootstrap/Row'
 
 // Local imports
 import { FOOTER_STATE_ICON_DICT } from '../Constants'
-import { useGlobalState } from '../GlobalState'
+import { useGlobalState, MEAL_STATE } from '../GlobalState'
 
 /**
  * The Footer shows a pause button. When users click it, the app tells the robot
  * to immediately pause and displays a back button that allows them to return to
  * previous state and a resume button that allows them to resume current state.
- *
- * TODO: Update previous meal state logic to get the "Back" button to function
- * correctly and render the correct icon.
  */
 const Footer = () => {
   // Set the current meal state
   const setMealState = useGlobalState((state) => state.setMealState)
   // Get the current meal state
   const mealState = useGlobalState((state) => state.mealState)
-  // TODO: define a variable for previous meal state that will be used in back button click
-  // Create a local variable for storing back icon image
-  // TODO: set this to the actual back icon, not the same as resume
-  var backIcon = FOOTER_STATE_ICON_DICT[mealState]
-  // Create a local variable for storing current state icon image
+  // A local variable for storing back icon image
+  var backIcon = '/robot_state_imgs/move_above_plate_position.svg'
+  // A local variable for storing current state icon image
   var resumeIcon = FOOTER_STATE_ICON_DICT[mealState]
   // Local state variable to track of visibility of pause button
   const [pauseButtonVisible, setPauseButtonVisible] = useState(true)
@@ -35,9 +30,8 @@ const Footer = () => {
    * When the back button is clicked, go back to previous state.
    */
   function backButtonClicked() {
-    // Set meal state to previous meal state
-    // TODO: change mealState to a variable indicating previous meal state
-    setMealState(mealState)
+    // Set meal state to move above plate
+    setMealState(MEAL_STATE.R_MovingAbovePlate)
     // We call setPauseButtonVisible with a new value to make pause button visible again.
     // React will re-render the Footer component.
     setPauseButtonVisible(true)
@@ -78,6 +72,38 @@ const Footer = () => {
                 />
               </Button>
             </Row>
+          ) : mealState === MEAL_STATE.R_MovingAbovePlate ? (
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <View>
+                <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
+                  ▶️ Resume
+                </p>
+                {/* Icon to resume */}
+                <Button
+                  variant='success'
+                  onClick={resumeButtonClicked}
+                  style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
+                >
+                  <img style={{ width: '450px', height: '270px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
+                </Button>
+              </View>
+            </View>
+          ) : mealState === MEAL_STATE.R_BiteAcquisition ? (
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <View>
+                <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
+                  ◀️ Back
+                </p>
+                {/* Icon to move to previous state */}
+                <Button
+                  variant='warning'
+                  onClick={backButtonClicked}
+                  style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
+                >
+                  <img style={{ width: '450px', height: '270px' }} src={backIcon} alt='back_icon_img' className='center' />
+                </Button>
+              </View>
+            </View>
           ) : (
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
               <View>

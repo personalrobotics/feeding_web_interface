@@ -9,7 +9,7 @@ import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 
 // TODO: Replace the list of items with a view of the camera feed that the user
 // can click on.
-let food = ['Apple', 'Banana', 'Carrot', 'Cucumber', 'Lettuce', 'Mango', 'Orange', 'Pumpkin']
+let food = ['Apple', 'Banana', 'Carrot', 'Cucumber']
 
 /**
  * The BiteSelection component appears after the robot has moved above the plate,
@@ -27,6 +27,13 @@ const BiteSelection = () => {
   function locatePlateClicked() {
     console.log('locatePlateClicked')
     setMealState(MEAL_STATE.U_PlateLocator)
+  }
+
+  /**
+   * Callback function for when the user wants to move above plate.
+   */
+  function moveAbovePlate() {
+    setMealState(MEAL_STATE.R_MovingAbovePlate)
   }
 
   /**
@@ -59,19 +66,11 @@ const BiteSelection = () => {
        *   - Instead of selecting their next bite, the user can indicate that
        *     they are done eating.
        */}
-      <div style={{ display: 'block' }}>
-        <Button
-          className='doneButton'
-          style={{ fontSize: '24px', marginTop: '0px', marginRight: '10px', marginLeft: 'auto', display: 'block' }}
-          onClick={locatePlateClicked}
-        >
+      <div style={{ display: 'block', textAlign: 'center' }}>
+        <Button className='doneButton' style={{ fontSize: '21px', marginTop: '10px' }} onClick={locatePlateClicked}>
           🍽️ Locate Plate
         </Button>
-        <Button
-          className='doneButton'
-          style={{ fontSize: '24px', marginTop: '0px', marginRight: '10px', marginLeft: 'auto', display: 'block' }}
-          onClick={doneEatingClicked}
-        >
+        <Button className='doneButton' style={{ fontSize: '21px', marginTop: '10px' }} onClick={doneEatingClicked}>
           ✅ Done Eating
         </Button>
       </div>
@@ -81,16 +80,16 @@ const BiteSelection = () => {
        * TODO: Replace this with an image of the plate where users can click on
        * their desired food item.
        */}
-      <p className='transitionMessage' style={{ marginBottom: '0px' }}>
+      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '20px' }}>
         Choose from one of the following food items.
       </p>
-      <Row xs={3} s={2} md={3} lg={4} className='justify-content-center mx-auto my-2' style={{ paddingBottom: '35vh' }}>
+      <Row xs={3} s={2} md={3} lg={4} className='justify-content-center mx-auto my-2' style={{ paddingBottom: '5vh' }}>
         {food.map((value, i) => (
           <Button
             key={i}
             variant='primary'
             className='mx-1 mb-1'
-            style={{ paddingLeft: '0px', paddingRight: '0px', marginLeft: '0px', marginRight: '0px', fontSize: '25px' }}
+            style={{ paddingLeft: '0px', paddingRight: '0px', marginLeft: '0px', marginRight: '0px', fontSize: '22px' }}
             value={value}
             size='lg'
             onClick={foodItemClicked}
@@ -99,6 +98,24 @@ const BiteSelection = () => {
           </Button>
         ))}
       </Row>
+      <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
+        {/* Ask the user whether they want to continue without acquisition by moving to above plate position */}
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
+          Continue without acquiring bite? Move above plate.
+        </p>
+        {/* Icon to move above plate */}
+        <Row className='justify-content-center mx-auto mb-2 w-75'>
+          <Button
+            variant='warning'
+            className='mx-2 mb-2 btn-huge'
+            size='lg'
+            onClick={moveAbovePlate}
+            style={{ width: '300px', height: '200px' }}
+          >
+            <img src='/robot_state_imgs/move_above_plate_position.svg' alt='move_above_plate_image' className='center' />
+          </Button>
+        </Row>
+      </div>
     </>
   )
 }
