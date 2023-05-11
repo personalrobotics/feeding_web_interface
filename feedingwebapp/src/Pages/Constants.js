@@ -3,7 +3,7 @@ import { MEAL_STATE } from './GlobalState'
 export const REALSENSE_WIDTH = 640
 export const REALSENSE_HEIGHT = 480
 /**
- * A dictionary containing icon images for the resume button of the footer.
+ * A dictionary containing the icon associated with each "robot motion" state.
  * The keys are the meal states where the robot moves.
  * Each key is paired with a value of an svg icon image of that meal state.
  */

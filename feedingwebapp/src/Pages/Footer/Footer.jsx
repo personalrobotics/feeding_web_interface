@@ -19,19 +19,23 @@ const Footer = () => {
   const setMealState = useGlobalState((state) => state.setMealState)
   // Get the current meal state
   const mealState = useGlobalState((state) => state.mealState)
-  /** The backIcon is used in all meal states where the robot moves (except the
-   * MoveAbovePlate state) which include BiteAcquisition, MoveToStagingLocation,
-   * MoveToMouth, and StowingArm meal states. For the reasons why the users may
-   * press “Back” in these states can potentially entail acquiring wrong item,
-   * food falling off the fork, changing mind for being done with eating or food
-   * item choice, waiting in the staging location, and avoiding accidents (e.g.,
-   * hitting some objects, piercing their cheek). In all these scenarios, it
-   * makes most sense to go back to the MoveAbovePlate state from where users
-   * can indicate preference for different bite selection, being done with eating,
-   * continuing without acquisition, or waiting in the staging location.
-   * Thus, the backIcon always contains the MoveAbovePlate icon image.
-   * The MoveAbovePlate state itself does not have any backIcon as it automatically
-   * goes to the bite selection page which has the above mentioned options.
+  /**
+   * Regardless of the state, the back button should revert to MoveAbovePlate.
+   *   - BiteAcquisition: In this case, pressing "back" should let the user
+   *     reselect the bite, which requires the robot to move above plate.
+   *   - MoveToStagingLocation: In this case, pressing "back" should move the
+   *     robot back to the plate. Although the user may not always want to
+   *     reselect the bite, from `BiteSelection` they have the option to skip
+   *     BiteAcquisition and move straight to staging location (when they are ready).
+   *   - MoveToMouth: Although in some cases the user may want "back" to move to
+   *     the staging location, since we will be removing the staging location
+   *     (Issue #45) it makes most sense to move the robot back to the plate.
+   *   - StowingArm: In this case, if the user presses back they likely want to
+   *     eat another bite, hence moving above the plate makes sense.
+   *   - MovingAbovePlate: Although the user may want to press "back" to move
+   *     the robot to the staging location, they can also go forward to
+   *     BiteSelection and then move the robot to the staging location.
+   *     Hence, in this case we don't have a "back" button.
    */
   // A local variable for storing back icon image
   var backIcon = FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate]
@@ -39,6 +43,9 @@ const Footer = () => {
   var resumeIcon = FOOTER_STATE_ICON_DICT[mealState]
   // Local state variable to track of visibility of pause button
   const [pauseButtonVisible, setPauseButtonVisible] = useState(true)
+  // width of Back and Resume buttons
+  let backResumeButtonWidth = '150px'
+  let footerButtonHight = '100px'
 
   /**
    * When the back button is clicked, go back to previous state.
@@ -81,7 +88,7 @@ const Footer = () => {
             <Button
               variant='danger'
               onClick={() => setPauseButtonVisible(false)}
-              style={{ marginLeft: '10', marginRight: '10', marginTop: '0', width: '350px', height: '100px' }}
+              style={{ marginLeft: '10', marginRight: '10', marginTop: '0', width: '350px', height: { footerButtonHight } }}
             >
               <img
                 style={{ width: '135px', height: '90px' }}
@@ -101,21 +108,24 @@ const Footer = () => {
       if (mealState === MEAL_STATE.R_MovingAbovePlate) {
         return (
           <>
-            <View>
-              <p
-                className='transitionMessage'
-                style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold', textAlign: 'right' }}
-              >
-                ▶️ Resume
-              </p>
-              {/* Icon to resume current state */}
-              <Button
-                variant='success'
-                onClick={resumeButtonClicked}
-                style={{ marginLeft: 225, marginRight: 10, width: '150px', height: '100px' }}
-              >
-                <img style={{ width: '120px', height: '72px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
-              </Button>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ width: { backResumeButtonWidth } }}></View>
+              <View>
+                <p
+                  className='transitionMessage'
+                  style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold', textAlign: 'right' }}
+                >
+                  ▶️ Resume
+                </p>
+                {/* Icon to resume current state */}
+                <Button
+                  variant='success'
+                  onClick={resumeButtonClicked}
+                  style={{ marginLeft: 190, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHight } }}
+                >
+                  <img style={{ width: '120px', height: '72px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
+                </Button>
+              </View>
             </View>
           </>
         )
@@ -123,34 +133,36 @@ const Footer = () => {
         /** If the robot is aquiring the bite and pause button is not visible,
          * only show the back button and no resume button, since the user
          * can continue to acquiring bite again after moving above plate,
-         * but if they resume this state after aquiring bite,
-         * the bite selection mask will no longer work
+         * but if they resume this state after aquiring bite, bite selection
+         * mask may no longer work because the food may have shifted
          */
         return (
           <>
-            <View>
-              <p
-                className='transitionMessage'
-                style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold', textAlign: 'left' }}
-              >
-                ◀️ Back
-              </p>
-              {/* Icon to move to previous state */}
-              <Button
-                variant='warning'
-                onClick={backButtonClicked}
-                style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
-              >
-                <img style={{ width: '120px', height: '72px' }} src={backIcon} alt='back_icon_img' className='center' />
-              </Button>
+            <View style={{ flexDirection: 'row' }}>
+              <View>
+                <p
+                  className='transitionMessage'
+                  style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold', textAlign: 'left' }}
+                >
+                  ◀️ Back
+                </p>
+                {/* Icon to move to previous state */}
+                <Button
+                  variant='warning'
+                  onClick={backButtonClicked}
+                  style={{ marginLeft: 10, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHight } }}
+                >
+                  <img style={{ width: '120px', height: '72px' }} src={backIcon} alt='back_icon_img' className='center' />
+                </Button>
+              </View>
+              <View style={{ width: { backResumeButtonWidth } }}></View>
             </View>
           </>
         )
       } else {
-        /** If the robot is moving in the meal states (except the
-         *  MoveAbovePlate state) of BiteAcquisition, MoveToStagingLocation,
-         *  MoveToMouth, and StowingArm meal states and the pause button is not
-         *  visible, then the footer shows both of the back and resume buttons
+        /** For any other meal state (e.g., MoveToStagingLocation, MoveToMouth,
+         * and StowingArm), if the pause button is not visible, then the footer
+         * shows both the back and resume buttons
          */
         return (
           <>
@@ -163,7 +175,7 @@ const Footer = () => {
                 <Button
                   variant='warning'
                   onClick={backButtonClicked}
-                  style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
+                  style={{ marginLeft: 10, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHight } }}
                 >
                   <img style={{ width: '120px', height: '72px' }} src={backIcon} alt='back_icon_img' className='center' />
                 </Button>
@@ -176,7 +188,7 @@ const Footer = () => {
                 <Button
                   variant='success'
                   onClick={resumeButtonClicked}
-                  style={{ marginLeft: 10, marginRight: 10, width: '150px', height: '100px' }}
+                  style={{ marginLeft: 10, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHight } }}
                 >
                   <img style={{ width: '120px', height: '72px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
                 </Button>
