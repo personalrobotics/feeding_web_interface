@@ -1,8 +1,5 @@
 // React Imports
 import React, { useEffect, useRef, useState } from 'react'
-import ReactDOM from 'react-dom/client'
-import { Button } from 'react-bootstrap'
-import { RoundedRect } from 'react-svg-path'
 import { scaleWidthHeightToWindow } from '../../../helpers'
 
 import '../Button.css'
@@ -20,11 +17,6 @@ const ImageWithButton = (props) => {
         setHeight(scaledWHS.height)
         setScaleFactor(scaledWHS.scaleFactor)
     })
-
-    // function clickRect(foodItemSelected) {
-    //     console.log(foodItemSelected)
-    //     setSelectedFood(foodItemSelected)
-    // }
 
     return (
         <>

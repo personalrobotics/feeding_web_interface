@@ -1,16 +1,11 @@
 // React Imports
 import React, {useState} from 'react'
 import Button from 'react-bootstrap/Button'
-import Row from 'react-bootstrap/Row'
 
 // Local Imports
 import '../Home.css'
-import ImageWithButton from './ImageWithButton'
+import ImageWithButton from './ImageWithButtonOverlay'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-
-// TODO: Replace the list of items with a view of the camera feed that the user
-// can click on.
-let food = ['Apple', 'Banana', 'Carrot', 'Cucumber', 'Lettuce', 'Mango', 'Orange', 'Pumpkin']
 
 /**
  * The BiteSelection component appears after the robot has moved above the plate,
@@ -20,7 +15,6 @@ const BiteSelectionButtonOverlay = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
   const setDesiredFoodItem = useGlobalState((state) => state.setDesiredFoodItem)
-  const [selectedFood, setSelectedFood] = useState("")
 
   /**
    * Callback function for when the user indicates that they want to move the
@@ -40,16 +34,6 @@ const BiteSelectionButtonOverlay = () => {
     setMealState(MEAL_STATE.R_StowingArm)
   }
 
-  /**
-   * Callback function for when the user clicks the button for a food item.
-   */
-  function foodItemClicked(event) {
-    let foodName = event.target.value
-    console.log('foodItemClicked', foodName)
-    setDesiredFoodItem(foodName)
-    setMealState(MEAL_STATE.R_BiteAcquisition)
-  }
-
   // Render the component
   return (
     <>
@@ -66,6 +50,7 @@ const BiteSelectionButtonOverlay = () => {
           className='doneButton'
           style={{ fontSize: '24px', marginTop: '0px', marginRight: '10px', marginLeft: 'auto', display: 'block' }}
           onClick={locatePlateClicked}
+          disabled={true}
         >
           🍽️ Locate Plate
         </Button>
@@ -73,6 +58,7 @@ const BiteSelectionButtonOverlay = () => {
           className='doneButton'
           style={{ fontSize: '24px', marginTop: '0px', marginRight: '10px', marginLeft: 'auto', display: 'block' }}
           onClick={doneEatingClicked}
+          disabled={true}
         >
           ✅ Done Eating
         </Button>
