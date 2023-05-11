@@ -43,9 +43,46 @@ const Footer = () => {
   var resumeIcon = FOOTER_STATE_ICON_DICT[mealState]
   // Local state variable to track of visibility of pause button
   const [pauseButtonVisible, setPauseButtonVisible] = useState(true)
+  // Local state variable to track of visibility of back button
+  const [backButtonVisible, setBackButtonVisible] = useState(false)
+  // Local state variable to track of visibility of resume button
+  const [resumeButtonVisible, setResumeButtonVisible] = useState(false)
   // width of Back and Resume buttons
   let backResumeButtonWidth = '150px'
+  // height of all Footer buttons
   let footerButtonHight = '100px'
+
+  /**
+   * When the pause button is clicked, show back and/or resume buttons.
+   */
+  function pauseButtonClicked() {
+    /**  We call setPauseButtonVisible, setBackButtonVisible, and setResumeButtonVisible
+     * with new values to make pause button invisible and resume and/or back button visible.
+     * React will re-render the Footer component.
+     */
+    setPauseButtonVisible(false)
+    if (mealState === MEAL_STATE.R_BiteAcquisition) {
+      setBackButtonVisible(true)
+    } else if (mealState === MEAL_STATE.R_MovingAbovePlate) {
+      setResumeButtonVisible(true)
+    } else {
+      setBackButtonVisible(true)
+      setResumeButtonVisible(true)
+    }
+  }
+
+  /**
+   * When the resume button is clicked, continue with the current meal state.
+   */
+  function resumeButtonClicked() {
+    /**  We call setPauseButtonVisible, setBackButtonVisible, and setResumeButtonVisible
+     * with new values to make pause button visible again.
+     * React will re-render the Footer component.
+     */
+    setPauseButtonVisible(true)
+    setBackButtonVisible(false)
+    setResumeButtonVisible(false)
+  }
 
   /**
    * When the back button is clicked, go back to previous state.
@@ -53,162 +90,157 @@ const Footer = () => {
   function backButtonClicked() {
     // Set meal state to move above plate
     setMealState(MEAL_STATE.R_MovingAbovePlate)
-    // We call setPauseButtonVisible with a new value to make pause button visible again.
-    // React will re-render the Footer component.
-    setPauseButtonVisible(true)
-  }
-
-  /**
-   * When the resume button is clicked, continue with the current meal state.
-   */
-  function resumeButtonClicked() {
-    // We call setPauseButtonVisible with a new value to make pause button visible again.
-    // React will re-render the Footer component.
-    setPauseButtonVisible(true)
-  }
-
-  /**
-   * Get the footer text and buttons to render.
-   *
-   * @returns {JSX.Element} the footer text and buttons
-   */
-  let footerTextAndButtons = function () {
-    /**
-     * If the pause button is visible, regardless of the meal state
-     * show a pause button taking the whole width of the footer screen.
+    /**  We call setPauseButtonVisible, setBackButtonVisible, and setResumeButtonVisible
+     * with new values to make pause button visible again.
+     * React will re-render the Footer component.
      */
-    if (pauseButtonVisible) {
-      return (
-        <>
-          <Row className='justify-content-center mx-auto'>
-            <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
-              ⏸️ Pause
-            </p>
-            {/* Icon to pause */}
-            <Button
-              variant='danger'
-              onClick={() => setPauseButtonVisible(false)}
-              style={{ marginLeft: '10', marginRight: '10', marginTop: '0', width: '350px', height: { footerButtonHight } }}
-            >
-              <img
-                style={{ width: '135px', height: '90px' }}
-                src='/robot_state_imgs/pause_button_icon.svg'
-                alt='pause_icon_img'
-                className='center'
-              />
-            </Button>
-          </Row>
-        </>
-      )
-    } else {
-      /** If the robot is moving above the plate and pause button is not visible,
-       *  only show the resume button and no back button, since the user
-       * can go "forward" to any other state as opposed to going back.
-       */
-      if (mealState === MEAL_STATE.R_MovingAbovePlate) {
-        return (
-          <>
-            <View style={{ flexDirection: 'row' }}>
-              <View style={{ width: { backResumeButtonWidth } }}></View>
-              <View>
-                <p
-                  className='transitionMessage'
-                  style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold', textAlign: 'right' }}
-                >
-                  ▶️ Resume
-                </p>
-                {/* Icon to resume current state */}
-                <Button
-                  variant='success'
-                  onClick={resumeButtonClicked}
-                  style={{ marginLeft: 190, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHight } }}
-                >
-                  <img style={{ width: '120px', height: '72px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
-                </Button>
-              </View>
-            </View>
-          </>
-        )
-      } else if (mealState === MEAL_STATE.R_BiteAcquisition) {
-        /** If the robot is aquiring the bite and pause button is not visible,
-         * only show the back button and no resume button, since the user
-         * can continue to acquiring bite again after moving above plate,
-         * but if they resume this state after aquiring bite, bite selection
-         * mask may no longer work because the food may have shifted
-         */
-        return (
-          <>
-            <View style={{ flexDirection: 'row' }}>
-              <View>
-                <p
-                  className='transitionMessage'
-                  style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold', textAlign: 'left' }}
-                >
-                  ◀️ Back
-                </p>
-                {/* Icon to move to previous state */}
-                <Button
-                  variant='warning'
-                  onClick={backButtonClicked}
-                  style={{ marginLeft: 10, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHight } }}
-                >
-                  <img style={{ width: '120px', height: '72px' }} src={backIcon} alt='back_icon_img' className='center' />
-                </Button>
-              </View>
-              <View style={{ width: { backResumeButtonWidth } }}></View>
-            </View>
-          </>
-        )
-      } else {
-        /** For any other meal state (e.g., MoveToStagingLocation, MoveToMouth,
-         * and StowingArm), if the pause button is not visible, then the footer
-         * shows both the back and resume buttons
-         */
-        return (
-          <>
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <View>
-                <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
-                  ◀️ Back
-                </p>
-                {/* Icon to move to previous state */}
-                <Button
-                  variant='warning'
-                  onClick={backButtonClicked}
-                  style={{ marginLeft: 10, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHight } }}
-                >
-                  <img style={{ width: '120px', height: '72px' }} src={backIcon} alt='back_icon_img' className='center' />
-                </Button>
-              </View>
-              <View>
-                <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
-                  ▶️ Resume
-                </p>
-                {/* Icon to resume */}
-                <Button
-                  variant='success'
-                  onClick={resumeButtonClicked}
-                  style={{ marginLeft: 10, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHight } }}
-                >
-                  <img style={{ width: '120px', height: '72px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
-                </Button>
-              </View>
-            </View>
-          </>
-        )
-      }
-    }
+    resumeButtonClicked()
+  }
+
+  /**
+   * Get the pause text and button to render in footer.
+   *
+   * @returns {JSX.Element} the pause text and button
+   */
+  let pauseTextAndButton = function () {
+    return (
+      <>
+        <Row className='justify-content-center mx-auto'>
+          <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
+            ⏸️ Pause
+          </p>
+          {/* Icon to pause */}
+          <Button
+            variant='danger'
+            onClick={pauseButtonClicked}
+            style={{ marginLeft: '10', marginRight: '10', marginTop: '0', width: '350px', height: { footerButtonHight } }}
+          >
+            <img
+              style={{ width: '135px', height: '90px' }}
+              src='/robot_state_imgs/pause_button_icon.svg'
+              alt='pause_icon_img'
+              className='center'
+            />
+          </Button>
+        </Row>
+      </>
+    )
+  }
+
+  /**
+   * Get the back text and button to render in footer.
+   *
+   * @returns {JSX.Element} the back text and button
+   */
+  let backTextAndButton = function () {
+    return (
+      <>
+        <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
+          ◀️ Back
+        </p>
+        {/* Icon to move to previous state */}
+        <Button
+          variant='warning'
+          onClick={backButtonClicked}
+          style={{ marginLeft: 10, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHight } }}
+        >
+          <img style={{ width: '120px', height: '72px' }} src={backIcon} alt='back_icon_img' className='center' />
+        </Button>
+      </>
+    )
+  }
+
+  /**
+   * Get the resume text and button to render in footer.
+   *
+   * @returns {JSX.Element} the resume text and button
+   */
+  let resumeTextAndButton = function () {
+    return (
+      <>
+        <p
+          className='transitionMessage'
+          style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold', textAlign: 'right' }}
+        >
+          ▶️ Resume
+        </p>
+        {/* Icon to resume current state */}
+        <Button
+          variant='success'
+          onClick={resumeButtonClicked}
+          style={{ marginLeft: 10, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHight } }}
+        >
+          <img style={{ width: '120px', height: '72px' }} src={resumeIcon} alt='resume_icon_img' className='center' />
+        </Button>
+      </>
+    )
+  }
+
+  /**
+   * Get the phantom view to render in footer.
+   *
+   * @returns {JSX.Element} the phantom view
+   */
+  let phantomView = function () {
+    return (
+      <>
+        <Button
+          variant='ghost'
+          disabled='true'
+          style={{
+            backgroundColor: 'transparent',
+            border: 'none',
+            marginLeft: 10,
+            marginRight: 10,
+            width: { backResumeButtonWidth },
+            height: { footerButtonHight }
+          }}
+        >
+          <img
+            style={{ width: '120px', height: '72px' }}
+            src='/robot_state_imgs/phantom_view_image.svg'
+            alt='phantom_button_img'
+            className='center'
+          />
+        </Button>
+      </>
+    )
   }
 
   // Render the component
   return (
     <>
       {/**
-       * The footer shows a pause button first. A resume button and a back button are shown when the pause button is clicked.
+       * The footer shows a pause button first. A resume button and/or
+       * a back button are shown when the pause button is clicked.
+       *
+       * -  If the pause button is visible, regardless of the meal state
+       *    show a pause button taking the whole width of the footer screen.
+       *
+       * -  In Move Above Plate state, if pause button is not visible,
+       *    only show the resume button and no back button, since the user
+       *    can go "forward" to any other state as opposed to going back.
+       *
+       * -  In Bite Acquisition state, if pause button is not visible,
+       *    only show the back button and no resume button, since the user
+       *    can continue to acquiring bite again after moving above plate,
+       *    but if they resume this state after aquiring bite, bite selection
+       *    mask may no longer work because the food may have shifted
+       *
+       * -  For any other meal state (e.g., MoveToStagingLocation, MoveToMouth,
+       *    and StowingArm), if the pause button is not visible, then the footer
+       *    shows both the back and resume buttons
        */}
       <MDBFooter bgColor='dark' className='text-center text-lg-left fixed-bottom'>
         <div className='text-center p-3' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
-          {footerTextAndButtons()}
+          {pauseButtonVisible ? (
+            pauseTextAndButton()
+          ) : (
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <View>{backButtonVisible ? backTextAndButton() : phantomView()}</View>
+              <View>{resumeButtonVisible ? resumeTextAndButton() : phantomView()}</View>
+            </View>
+          )}
         </div>
       </MDBFooter>
     </>
