@@ -1,7 +1,5 @@
 // React imports
 import React, { useEffect } from 'react'
-// PropTypes is used to validate that the used props are in fact passed to this
-// Component
 import PropTypes from 'prop-types'
 
 // Local imports
@@ -68,10 +66,12 @@ function Home(props) {
   const mealStateTransitionTime = useGlobalState((state) => state.mealStateTransitionTime)
   const setMealState = useGlobalState((state) => state.setMealState)
 
-  // Implement time-based transition of states. This is so that after the user
-  // finishes a meal, when they start the next meal the app starts in PreMeal.
-  // The `useEffect` with these parameters ensures that it it called when
-  // reloading the page or when transitioning mealStates, but not when re-rendering.
+  /**
+   * Implement time-based transition of states. This is so that after the user
+   * finishes a meal, when they start the next meal the app starts in PreMeal.
+   * The `useEffect` with these parameters ensures that it is called when
+   * reloading the page or when transitioning mealStates, but not when re-rendering.
+   */
   useEffect(() => {
     if (Date.now() - mealStateTransitionTime >= TIME_TO_RESET_MS) {
       console.log('Reverting to PreMeal due to too much elapsed time in one state.')
