@@ -55,8 +55,10 @@ function Home(props) {
         return <PreMeal debug={props.debug} />
       }
       case MEAL_STATE.R_MovingAbovePlate: {
-        // We recreate currentMealState due to a race condition where sometimes
-        // the app is performing a re-rendering and *then* the state is updated.
+        /**
+         * We recreate currentMealState due to a race condition where sometimes
+         * the app is performing a re-rendering and *then* the state is updated.
+         */
         let currentMealState = MEAL_STATE.R_MovingAbovePlate
         let nextMealState = MEAL_STATE.U_BiteSelection
         let actionInput = {}
@@ -78,8 +80,10 @@ function Home(props) {
         return <PlateLocator debug={props.debug} />
       }
       case MEAL_STATE.R_BiteAcquisition: {
-        // We recreate currentMealState due to a race condition where sometimes
-        // the app is performing a re-rendering and *then* the state is updated.
+        /**
+         * We recreate currentMealState due to a race condition where sometimes
+         * the app is performing a re-rendering and *then* the state is updated.
+         */
         let currentMealState = MEAL_STATE.R_BiteAcquisition
         let nextMealState = MEAL_STATE.U_BiteAcquisitionCheck
         let actionInput = { detected_food: desiredFoodItem }
@@ -98,13 +102,17 @@ function Home(props) {
         return <BiteAcquisitionCheck debug={props.debug} />
       }
       case MEAL_STATE.R_MovingToStagingLocation: {
-        // We recreate currentMealState due to a race condition where sometimes
-        // the app is performing a re-rendering and *then* the state is updated.
+        /**
+         * We recreate currentMealState due to a race condition where sometimes
+         * the app is performing a re-rendering and *then* the state is updated.
+         */
         let currentMealState = MEAL_STATE.R_MovingToStagingLocation
         let nextMealState = MEAL_STATE.U_BiteInitiation
         let actionInput = {}
-        // TODO: Determine the right user-facing name to give this position.
-        // "staging position"? "ready position?" what is most clear?
+        /**
+         * TODO: Determine the right user-facing name to give this position.
+         * "staging position"? "ready position?" what is most clear?
+         */
         let waitingText = 'Waiting for the robot to move to the "ready" position...'
         return (
           <RobotMotion
@@ -120,8 +128,10 @@ function Home(props) {
         return <BiteInitiation debug={props.debug} />
       }
       case MEAL_STATE.R_MovingToMouth: {
-        // We recreate currentMealState due to a race condition where sometimes
-        // the app is performing a re-rendering and *then* the state is updated.
+        /**
+         * We recreate currentMealState due to a race condition where sometimes
+         * the app is performing a re-rendering and *then* the state is updated.
+         */
         let currentMealState = MEAL_STATE.R_MovingToMouth
         let nextMealState = MEAL_STATE.U_BiteDone
         let actionInput = { detected_mouth_center: detectedMouthCenter }
@@ -140,8 +150,10 @@ function Home(props) {
         return <BiteDone debug={props.debug} />
       }
       case MEAL_STATE.R_StowingArm: {
-        // We recreate currentMealState due to a race condition where sometimes
-        // the app is performing a re-rendering and *then* the state is updated.
+        /**
+         * We recreate currentMealState due to a race condition where sometimes
+         * the app is performing a re-rendering and *then* the state is updated.
+         */
         let currentMealState = MEAL_STATE.R_StowingArm
         let nextMealState = MEAL_STATE.U_PostMeal
         let actionInput = {}
@@ -173,8 +185,10 @@ function Home(props) {
   )
 }
 Home.propTypes = {
-  // Whether to run it in debug mode (e.g., if you aren't simulatenously running
-  // the robot) or not
+  /**
+   * Whether to run it in debug mode (e.g., if you aren't simulatenously running
+   * the robot) or not
+   */
   debug: PropTypes.bool
 }
 

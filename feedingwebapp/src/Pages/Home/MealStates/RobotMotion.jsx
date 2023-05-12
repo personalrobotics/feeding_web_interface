@@ -40,10 +40,12 @@ import {
 const RobotMotion = (props) => {
   // Create a local state variable for whether the robot is paused.
   const [paused, setPaused] = useState(false)
-  // NOTE: We slightly abuse the ROS_ACTION_STATUS values in this local state
-  // variable, by using it as a proxy for whether the robot is executing, has
-  // succeeded, has been canceled, or has had an error. This is to avoid
-  // creating an extra enum.
+  /**
+   * NOTE: We slightly abuse the ROS_ACTION_STATUS values in this local state
+   * variable, by using it as a proxy for whether the robot is executing, has
+   * succeeded, has been canceled, or has had an error. This is to avoid
+   * creating an extra enum.
+   */
   const [actionStatus, setActionStatus] = useState({
     actionStatus: null
   })
@@ -52,8 +54,10 @@ const RobotMotion = (props) => {
   const mealState = useGlobalState((state) => state.mealState)
   const setMealState = useGlobalState((state) => state.setMealState)
 
-  // Connect to ROS, if not already connected. Put this in local state to avoid
-  // re-connecting upon every re-render.
+  /**
+   * Connect to ROS, if not already connected. Put this in useRef to avoid
+   * re-connecting upon re-renders.
+   */
   const ros = useRef(connectToROS().ros)
 
   /**
@@ -167,9 +171,11 @@ const RobotMotion = (props) => {
    */
   useEffect(() => {
     callRobotMotionAction(feedbackCallback, responseCallback)
-    // In practice, because the values passed in in the second argument of
-    // useEffect will not change on re-renders, this return statement will
-    // only be called when the component unmounts.
+    /**
+     * In practice, because the values passed in in the second argument of
+     * useEffect will not change on re-renders, this return statement will
+     * only be called when the component unmounts.
+     */
     return () => {
       destroyActionClient(robotMotionAction)
     }
@@ -302,8 +308,10 @@ const RobotMotion = (props) => {
   )
 }
 RobotMotion.propTypes = {
-  // Whether to run it in debug mode (e.g., if you aren't simulatenously running
-  // the robot) or not
+  /**
+   * Whether to run it in debug mode (e.g., if you aren't simulatenously running
+   * the robot) or not
+   */
   debug: PropTypes.bool.isRequired,
   // The meal state corresponding with the motion the robot is executing
   mealState: PropTypes.string.isRequired,
