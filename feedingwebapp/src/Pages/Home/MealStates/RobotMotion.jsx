@@ -273,7 +273,7 @@ const RobotMotion = (props) => {
       {/* TODO: Consider vertically centering this element */}
       <Row className='justify-content-center mx-auto my-2 w-75'>
         <div>
-          <h1 id={MEAL_STATE.R_MovingAbovePlate} className='waitingMsg'>
+          <h1 id="Waiting for robot motion" className='waitingMsg'>
             {props.waitingText}
           </h1>
           {props.debug ? (
