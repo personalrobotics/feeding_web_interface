@@ -87,7 +87,7 @@ Note that we use `npm`, not `yarn`, to manage dependencies for this project.
   - Thoroughly test your feature, including all edge cases, to ensure it works as expected. This includes trying every combination of buttons/actions, even ones we don't expect users to use, to ensure there are no unaccounted for edge cases.
   - Ensure the [console](https://developer.chrome.com/docs/devtools/console/) has no errors.
   - Thoroughly test responsivity by changing browser/device size to ensure it renders as expected.
-- Before creating a Pull Request, run `npm format` and address any warnings or errors.
+- Before creating a Pull Request, run `npm run format` and address any warnings or errors.
 - Create a Pull Request to merge your branch into `main`. You need at least one approving review to merge.
 - Squash all commits on your branch before merging into `main` to ensure a straightforward commit history.
 
