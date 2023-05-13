@@ -3,7 +3,7 @@ import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { ROS } from 'react-ros'
+import { RosConnection } from 'rosreact'
 
 // Local imports
 import { useGlobalState, APP_PAGE } from './Pages/GlobalState'
@@ -11,12 +11,6 @@ import Header from './Pages/Header/Header'
 import Home from './Pages/Home/Home'
 import Settings from './Pages/Settings/Settings'
 import TestROS from './ros/TestROS'
-
-// Flag for whether to run the app in debug mode or not. When running in debug
-// mode, the app does not connect to ROS. Anytime where it would wait for the
-// robot to finish an action before continuing, the app instead displays a
-// button to continue.
-const debug = false
 
 /**
  * Determines what screen to render based on the app page specified in global
@@ -31,17 +25,17 @@ function getComponentByAppPage(appPage, debug) {
     case APP_PAGE.Home:
       // Must wrap a component in ROS tags for it to be able to connect to ROS
       return (
-        <ROS>
+        <RosConnection url={process.env.REACT_APP_ROSBRIDGE_SERVER_URL} autoConnect>
           <Header />
           <Home debug={debug} />
-        </ROS>
+        </RosConnection>
       )
     case APP_PAGE.Settings:
       return (
-        <ROS>
+        <RosConnection url={process.env.REACT_APP_ROSBRIDGE_SERVER_URL} autoConnect>
           <Header />
           <Settings />
-        </ROS>
+        </RosConnection>
       )
     default:
       return <div>Invalid app page</div>
@@ -61,14 +55,14 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route exact path='/' element={getComponentByAppPage(appPage, debug)} />
+          <Route exact path='/' element={getComponentByAppPage(appPage, process.env.REACT_APP_DEBUG === 'true')} />
           <Route
             exact
             path='/test_ros'
             element={
-              <ROS>
+              <RosConnection url={process.env.REACT_APP_ROSBRIDGE_SERVER_URL} autoConnect>
                 <TestROS />
-              </ROS>
+              </RosConnection>
             }
           />
         </Routes>

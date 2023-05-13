@@ -13,13 +13,14 @@
     "react-bootstrap": "^2.3.1",
     "react-dom": "^18.1.0",
     "react-native-web": "^0.19.4",
-    "react-ros": "^0.10.0",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "react-toastify": "^9.0.7",
     "roslib": "github:personalrobotics/roslibjs",
+    "rosreact": "^0.2.0",
     "styled-components": "^5.3.9",
     "web-vitals": "^2.1.4",
+    "webpack": "^5.82.1",
     "zustand": "^4.0.0-rc.1"
   },
   "scripts": {

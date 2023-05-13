@@ -1,19 +1,15 @@
 // React imports
-import { useROS as useROSReact } from 'react-ros'
+import { useRos as useRosReact } from 'rosreact'
 import ROSLIB from 'roslib'
 
 /**
- * Connects to ROS, if not already connected. Note that because this function
- * uses a hook (`useROS`), it must be called from within a React component.
+ * Connects to ROS, if not already connected.
  *
  * @returns {boolean} isConnected True if ROS is connected, false otherwise.
  * @returns {object} ros The ROSLIB.Ros object.
  */
 export function useROS() {
-  let { ros, toggleConnection } = useROSReact()
-  if (!ros.isConnected) {
-    toggleConnection()
-  }
+  let ros = useRosReact()
   return { isConnected: ros.isConnected, ros }
 }
 

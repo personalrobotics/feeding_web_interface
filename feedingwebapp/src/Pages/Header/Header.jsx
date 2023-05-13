@@ -1,5 +1,5 @@
 // React imports
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 // The NavBar is the navigation toolbar at the top
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { useROS } from '../../ros/ros_helpers'
 
 // Local imports
+import { ROS_CHECK_INTERVAL_MS } from '../Constants'
 import { useGlobalState, APP_PAGE, MEAL_STATE } from '../GlobalState'
 import LiveVideoModal from './LiveVideoModal'
 
@@ -25,6 +26,17 @@ const Header = () => {
   // continues showing even if the state changes. Is this desirable? Perhaps
   // it should close if the state changes?
   const [videoShow, setVideoShow] = useState(false)
+  // useROS gives us access to functions to configure and interact with ROS.
+  let { ros } = useROS()
+  const [isConnected, setIsConncected] = useState(ros.isConnected)
+
+  // Check ROS connection every ROS_CHECK_INTERVAL_MS milliseconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsConncected(ros.isConnected)
+    }, ROS_CHECK_INTERVAL_MS)
+    return () => clearInterval(interval)
+  }, [ros, setIsConncected])
 
   // Get the relevant global state variables
   const mealState = useGlobalState((state) => state.mealState)
@@ -49,10 +61,6 @@ const Header = () => {
       toast('Please complete or terminate the feeding process to access Settings.')
     }
   }
-
-  // useROS  gives us access to functions to configure and interact with ROS.
-  // TODO (amaln): Actually connect this web app to ROS!
-  let { isConnected } = useROS()
 
   // Render the component. The NavBar will stay fixed even as we vertically scroll.
   return (
