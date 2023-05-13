@@ -43,6 +43,8 @@ function getComponentByAppPage(appPage, debug) {
           <Settings />
         </ROS>
       )
+    default:
+      return <div>Invalid app page</div>
   }
 }
 

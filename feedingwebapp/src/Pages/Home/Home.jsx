@@ -171,8 +171,11 @@ function Home(props) {
       case MEAL_STATE.U_PostMeal: {
         return <PostMeal debug={props.debug} />
       }
+      default: {
+        return <div>Unknown meal state: {mealState}</div>
+      }
     }
-  }, [mealState])
+  }, [desiredFoodItem, detectedMouthCenter, mealState, props.debug])
 
   // Render the component
   return (

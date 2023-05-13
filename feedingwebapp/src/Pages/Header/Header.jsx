@@ -7,7 +7,7 @@ import Nav from 'react-bootstrap/Nav'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 // ROS imports
-import { connectToROS } from '../../ros/ros_helpers'
+import { useROS } from '../../ros/ros_helpers'
 
 // Local imports
 import { useGlobalState, APP_PAGE, MEAL_STATE } from '../GlobalState'
@@ -43,7 +43,7 @@ const Header = () => {
    * or terminate the meal because modifying settings.
    */
   function settingsClicked() {
-    if (mealState == MEAL_STATE.U_PreMeal || mealState == MEAL_STATE.U_PostMeal) {
+    if (mealState === MEAL_STATE.U_PreMeal || mealState === MEAL_STATE.U_PostMeal) {
       setAppPage(APP_PAGE.Settings)
     } else {
       toast('Please complete or terminate the feeding process to access Settings.')
@@ -52,7 +52,7 @@ const Header = () => {
 
   // useROS  gives us access to functions to configure and interact with ROS.
   // TODO (amaln): Actually connect this web app to ROS!
-  let { isConnected } = connectToROS()
+  let { isConnected } = useROS()
 
   // Render the component. The NavBar will stay fixed even as we vertically scroll.
   return (
