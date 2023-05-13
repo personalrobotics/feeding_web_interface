@@ -1,5 +1,5 @@
 // React Imports
-import React, {useState} from 'react'
+import React from 'react'
 import Button from 'react-bootstrap/Button'
 
 // Local Imports
@@ -14,7 +14,6 @@ import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 const BiteSelectionButtonOverlay = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
-  const setDesiredFoodItem = useGlobalState((state) => state.setDesiredFoodItem)
 
   /**
    * Callback function for when the user indicates that they want to move the
@@ -65,22 +64,20 @@ const BiteSelectionButtonOverlay = () => {
       </div>
       <div>
         <ImageWithButton
-          imgSrc='https://www.diabetesfoodhub.org/system/user_files/Images/1837-diabetic-pecan-crusted-chicken-breast_JulAug20DF_clean-simple_061720.jpg'
+          imgSrc={require('./images/food.jpg')}
           imgWidth={1021}
           imgHeight={779}
           buttonCenters={[
-            { name: "Salad", x: 300, y: 110 },
-            { name: "Salad", x: 490, y: 75 },
-            { name: "Salad", x: 580, y: 150 },
-            { name: "Chicken", x: 250, y: 350 },
-            { name: "Chicken", x: 390, y: 450 },
-            { name: "Chicken", x: 390, y: 580 },
-            { name: "Fries", x: 690, y: 450 },
-            { name: "Fries", x: 690, y: 350 },
-            { name: "Fries", x: 650, y: 550 },
+            { name: 'Salad', x: 330, y: 115, rectWidth: 130, rectHeight: 100 },
+            { name: 'Salad', x: 490, y: 210, rectWidth: 180, rectHeight: 100 },
+            { name: 'Salad', x: 540, y: 170, rectWidth: 130, rectHeight: 100 },
+            { name: 'Chicken', x: 250, y: 340, rectWidth: 290, rectHeight: 250 },
+            { name: 'Chicken', x: 360, y: 520, rectWidth: 250, rectHeight: 170 },
+            { name: 'Chicken', x: 450, y: 620, rectWidth: 200, rectHeight: 140 },
+            { name: 'Fries', x: 520, y: 350, rectWidth: 250, rectHeight: 185 },
+            { name: 'Fries', x: 750, y: 330, rectWidth: 120, rectHeight: 170 },
+            { name: 'Fries', x: 650, y: 640, rectWidth: 150, rectHeight: 100 }
           ]}
-          rectWidth={200}
-          rectHeight={100}
         />
       </div>
     </>

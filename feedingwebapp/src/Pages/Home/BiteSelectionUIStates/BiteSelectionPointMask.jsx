@@ -1,5 +1,5 @@
 // React Imports
-import React, {useState} from 'react'
+import React from 'react'
 import Button from 'react-bootstrap/Button'
 
 // Local Imports
@@ -14,7 +14,6 @@ import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 const BiteSelectionPointMask = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
-  const setDesiredFoodItem = useGlobalState((state) => state.setDesiredFoodItem)
 
   /**
    * Callback function for when the user indicates that they want to move the
@@ -64,11 +63,7 @@ const BiteSelectionPointMask = () => {
         </Button>
       </div>
       <div>
-        <ImageWithButton
-          imgSrc='https://www.diabetesfoodhub.org/system/user_files/Images/1837-diabetic-pecan-crusted-chicken-breast_JulAug20DF_clean-simple_061720.jpg'
-          imgWidth={1021}
-          imgHeight={779}
-        />
+        <ImageWithButton imgSrc={require('./images/food.jpg')} imgWidth={1021} imgHeight={779} />
       </div>
     </>
   )

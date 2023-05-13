@@ -72,30 +72,36 @@ function App() {
               </ROS>
             }
           />
-          <Route exact path='/test_bite-selection-ui' element={
-            <ROS>
-              <Header />
-              <BiteSelectionButtonOverlay debug={debug} />
-            </ROS>
-          } />
-          <Route exact path='/test_bite-selection-ui/button_overlay_selection' element={
-            <ROS>
-              <Header />
-              <BiteSelectionButtonOverlay debug={debug} />
-            </ROS>
-          } />
-          <Route exact path='/test_bite-selection-ui/point_mask_selection' element={
-            <ROS>
-              <Header />
-              <BiteSelectionPointMask debug={debug} />
-            </ROS>
-          } />
-          <Route exact path='/test_bite-selection-ui/food_name_selection' element={
-            <ROS>
-              <Header />
-              <BiteSelectionName debug={debug} />
-            </ROS>
-          } />
+          <Route
+            exact
+            path='/test_bite-selection-ui/button_overlay_selection'
+            element={
+              <ROS>
+                <Header />
+                <BiteSelectionButtonOverlay debug={debug} />
+              </ROS>
+            }
+          />
+          <Route
+            exact
+            path='/test_bite-selection-ui/point_mask_selection'
+            element={
+              <ROS>
+                <Header />
+                <BiteSelectionPointMask debug={debug} />
+              </ROS>
+            }
+          />
+          <Route
+            exact
+            path='/test_bite-selection-ui/food_name_selection'
+            element={
+              <ROS>
+                <Header />
+                <BiteSelectionName debug={debug} />
+              </ROS>
+            }
+          />
         </Routes>
       </Router>
     </>
