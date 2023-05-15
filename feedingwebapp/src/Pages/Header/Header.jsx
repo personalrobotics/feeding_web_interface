@@ -1,5 +1,5 @@
 // React imports
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 // The NavBar is the navigation toolbar at the top
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
@@ -45,22 +45,22 @@ const Header = () => {
   /**
    * When the Home button in the header is clicked, return to the Home page.
    */
-  function homeClicked() {
+  const homeClicked = useCallback(() => {
     setAppPage(APP_PAGE.Home)
-  }
+  }, [setAppPage])
 
   /**
    * When the Settings button in the header is clicked, if the meal has not yet
    * started, take the user to the settings menu. Else, ask them to complete
    * or terminate the meal because modifying settings.
    */
-  function settingsClicked() {
+  const settingsClicked = useCallback(() => {
     if (mealState === MEAL_STATE.U_PreMeal || mealState === MEAL_STATE.U_PostMeal) {
       setAppPage(APP_PAGE.Settings)
     } else {
       toast('Please complete or terminate the feeding process to access Settings.')
     }
-  }
+  }, [mealState, setAppPage])
 
   // Render the component. The NavBar will stay fixed even as we vertically scroll.
   return (

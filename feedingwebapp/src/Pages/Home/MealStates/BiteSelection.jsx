@@ -83,9 +83,9 @@ const BiteSelection = (props) => {
   /**
    * Callback function for when the user wants to move to staging position.
    */
-  function moveToStagingPosition() {
+  const moveToStagingPosition = useCallback(() => {
     setMealState(MEAL_STATE.R_MovingToStagingLocation)
-  }
+  }, [setMealState])
 
   /**
    * Callback function for when the user indicates that they are done with their
