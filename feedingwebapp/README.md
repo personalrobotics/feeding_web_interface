@@ -92,4 +92,4 @@ Note that we use `npm`, not `yarn`, to manage dependencies for this project.
 - Squash all commits on your branch before merging into `main` to ensure a straightforward commit history.
 
 ## Troubleshooting
-* While installing, if you run into an error about `PUPPETEER`, the 
+* While installing, if you run into an error about `PUPPETEER`, the fix is to just follow the instructions provided in console and to actually disable it. 

@@ -7,6 +7,18 @@ import { scaleWidthHeightToWindow } from '../../../helpers'
 
 import '../Button.css'
 
+/**
+ * Displays the plate pictures and allows users to select food items by selecting buttons
+ * on the screen
+ *
+ * @param {string} imgSrc - The local filepath for where the image is located
+ * @param {number} imgWidth - The width of the image that is being passed in from
+ *        the realsense camera
+ * @param {number} imgHeight - The height of the image that is being passed in from
+ *        the realsense camera
+ * @param {arrayOf(string)} foodItems - The list of food items present in the provided
+ *        image
+ */
 const ImageWithButtonName = (props) => {
   const width = scaleWidthHeightToWindow(props.imgWidth, props.imgHeight, 0, 0, 0, 0).width
   const height = scaleWidthHeightToWindow(props.imgWidth, props.imgHeight, 0, 0, 0, 0).height
@@ -18,7 +30,6 @@ const ImageWithButtonName = (props) => {
           <h1 style={{ background: '#FFC107' }}>Option C</h1>
         </div>
         <img src={props.imgSrc} style={{ width: width, height: height }} />
-        {console.log(props.foodItems)}
         <Row xs={3} s={2} md={3} lg={4} className='justify-content-center mx-auto my-2'>
           {props.foodItems.map((foodName, i) => {
             return (
@@ -64,7 +75,7 @@ ImageWithButtonName.propTypes = {
   imgSrc: PropTypes.string.isRequired,
   imgWidth: PropTypes.number.isRequired,
   imgHeight: PropTypes.number.isRequired,
-  foodItems: PropTypes.array.isRequired
+  foodItems: PropTypes.arrayOf(PropTypes.string).isRequired
 }
 
 export default ImageWithButtonName
