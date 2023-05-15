@@ -7,6 +7,16 @@ import PropTypes from 'prop-types'
 
 import '../Button.css'
 
+/**
+ * Displays the plate pictures and allows users to select food items by selecting a
+ * point on the image
+ *
+ * @param {string} imgSrc - The local filepath for where the image is located
+ * @param {number} imgWidth - The width of the image that is being passed in from
+ *        the realsense camera
+ * @param {number} imgHeight - The height of the image that is being passed in from
+ *        the realsense camera
+ */
 const ImageWithPointMask = (props) => {
   const width = scaleWidthHeightToWindow(props.imgWidth, props.imgHeight, 0, 0, 0, 0).width
   const height = scaleWidthHeightToWindow(props.imgWidth, props.imgHeight, 0, 0, 0, 0).height
@@ -135,7 +145,7 @@ const ImageWithPointMask = (props) => {
           }}
           size='lg'
         >
-          <a style={{ textDecoration: 'None', color: 'white' }} href='/test_bite-selection-ui/food_name_selection'>
+          <a style={{ textDecoration: 'None', color: 'white' }} href='/test_bite_selection_ui/food_name_selection'>
             Next
           </a>
         </Button>

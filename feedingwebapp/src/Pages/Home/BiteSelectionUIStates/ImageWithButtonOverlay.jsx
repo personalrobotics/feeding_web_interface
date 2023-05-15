@@ -83,7 +83,7 @@ const ImageWithButtonOverlay = (props) => {
           }}
           size='lg'
         >
-          <a style={{ textDecoration: 'None', color: 'white' }} href='/test_bite-selection-ui/point_mask_selection'>
+          <a style={{ textDecoration: 'None', color: 'white' }} href='/test_bite_selection_ui/point_mask_selection'>
             Next
           </a>
         </Button>

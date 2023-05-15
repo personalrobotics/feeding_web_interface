@@ -74,7 +74,7 @@ function App() {
           />
           <Route
             exact
-            path='/test_bite-selection-ui/button_overlay_selection'
+            path='/test_bite_selection_ui/button_overlay_selection'
             element={
               <ROS>
                 <Header />
@@ -84,7 +84,7 @@ function App() {
           />
           <Route
             exact
-            path='/test_bite-selection-ui/point_mask_selection'
+            path='/test_bite_selection_ui/point_mask_selection'
             element={
               <ROS>
                 <Header />
@@ -94,7 +94,7 @@ function App() {
           />
           <Route
             exact
-            path='/test_bite-selection-ui/food_name_selection'
+            path='/test_bite_selection_ui/food_name_selection'
             element={
               <ROS>
                 <Header />

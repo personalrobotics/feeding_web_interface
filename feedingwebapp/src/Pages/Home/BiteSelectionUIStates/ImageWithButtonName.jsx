@@ -62,7 +62,7 @@ const ImageWithButtonName = (props) => {
           }}
           size='lg'
         >
-          <a style={{ textDecoration: 'None', color: 'white' }} href='/test_bite-selection-ui/button_overlay_selection'>
+          <a style={{ textDecoration: 'None', color: 'white' }} href='/test_bite_selection_ui/button_overlay_selection'>
             Next
           </a>
         </Button>
