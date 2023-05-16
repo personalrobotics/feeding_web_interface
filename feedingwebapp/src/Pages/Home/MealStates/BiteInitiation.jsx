@@ -149,10 +149,9 @@ const BiteInitiation = (props) => {
       {/* Show the user the face detection result */}
       <center>
         <img
-          src={'http://localhost:8080/stream?topic='.concat(
-            FACE_DETECTION_IMG_TOPIC,
-            `&width=${Math.round(width)}&height=${Math.round(height)}&quality=20`
-          )}
+          src={`${props.webVideoServerURL}/stream?topic=${FACE_DETECTION_IMG_TOPIC}&width=${Math.round(width)}&height=${Math.round(
+            height
+          )}&quality=20`}
           alt='Live video feed from the robot'
           style={{ width: width, height: height, display: 'block' }}
         />
@@ -214,7 +213,9 @@ BiteInitiation.propTypes = {
    * Whether to run it in debug mode (e.g., if you aren't simulatenously running
    * the robot) or not
    */
-  debug: PropTypes.bool.isRequired
+  debug: PropTypes.bool.isRequired,
+  // The URL of the web video server
+  webVideoServerURL: PropTypes.string.isRequired
 }
 
 export default BiteInitiation

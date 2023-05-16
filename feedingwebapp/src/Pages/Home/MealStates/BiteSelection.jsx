@@ -164,6 +164,9 @@ const BiteSelection = (props) => {
   // Get the size of the robot's live video stream.
   const margin = convertRemToPixels(1)
   const { width, height, scaleFactor } = scaleWidthHeightToWindow(REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
+  const imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(width)}&height=${Math.round(
+    height
+  )}&quality=20`
 
   /**
    * Callback function for when the user clicks the image of the plate.
@@ -232,10 +235,6 @@ const BiteSelection = (props) => {
       case ROS_ACTION_STATUS_SUCCEED:
         if (actionResult && actionResult.detected_items && actionResult.detected_items.length > 0) {
           // Get the parameters to display the mask as buttons
-          let imgSrc = 'http://localhost:8080/stream?topic='.concat(
-            CAMERA_FEED_TOPIC,
-            `&width=${Math.round(width)}&height=${Math.round(height)}&quality=20`
-          )
           let imgSize = { width: width, height: height }
           let maskScaleFactor = scaleFactor
 
@@ -288,7 +287,7 @@ const BiteSelection = (props) => {
       default:
         return <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
     }
-  }, [actionStatus, actionResult, width, height, scaleFactor, foodItemClicked])
+  }, [actionStatus, actionResult, width, height, scaleFactor, foodItemClicked, imgSrc])
 
   // Render the component
   return (
@@ -316,10 +315,7 @@ const BiteSelection = (props) => {
       <center>
         <h3 style={{ textAlign: 'center' }}>Click the below image to indicate your desired food item.</h3>
         <img
-          src={'http://localhost:8080/stream?topic='.concat(
-            CAMERA_FEED_TOPIC,
-            `&width=${Math.round(width)}&height=${Math.round(height)}&quality=20`
-          )}
+          src={imgSrc}
           alt='Live video feed from the robot'
           style={{ width: width, height: height, display: 'block' }}
           onClick={imageClicked}
@@ -367,7 +363,9 @@ BiteSelection.propTypes = {
    * Whether to run it in debug mode (e.g., if you aren't simulatenously running
    * the robot) or not
    */
-  debug: PropTypes.bool.isRequired
+  debug: PropTypes.bool.isRequired,
+  // The URL of the web video server
+  webVideoServerURL: PropTypes.string.isRequired
 }
 
 export default BiteSelection

@@ -21,6 +21,8 @@ import { TIME_TO_RESET_MS } from '../Constants'
  *
  * @param {boolean} debug - whether to run it in debug mode (e.g., if you aren't
  *        simulatenously running the robot) or not
+ * @param {string} webVideoServerURL - the URL of the web video server
+ * @returns {JSX.Element}
  */
 function Home(props) {
   // Get the relevant values from global state
@@ -74,10 +76,10 @@ function Home(props) {
         )
       }
       case MEAL_STATE.U_BiteSelection: {
-        return <BiteSelection debug={props.debug} />
+        return <BiteSelection debug={props.debug} webVideoServerURL={props.webVideoServerURL} />
       }
       case MEAL_STATE.U_PlateLocator: {
-        return <PlateLocator debug={props.debug} />
+        return <PlateLocator debug={props.debug} webVideoServerURL={props.webVideoServerURL} />
       }
       case MEAL_STATE.R_BiteAcquisition: {
         /**
@@ -125,7 +127,7 @@ function Home(props) {
         )
       }
       case MEAL_STATE.U_BiteInitiation: {
-        return <BiteInitiation debug={props.debug} />
+        return <BiteInitiation debug={props.debug} webVideoServerURL={props.webVideoServerURL} />
       }
       case MEAL_STATE.R_MovingToMouth: {
         /**
@@ -175,7 +177,7 @@ function Home(props) {
         return <div>Unknown meal state: {mealState}</div>
       }
     }
-  }, [desiredFoodItem, detectedMouthCenter, mealState, props.debug])
+  }, [desiredFoodItem, detectedMouthCenter, mealState, props.debug, props.webVideoServerURL])
 
   // Render the component
   return (
@@ -192,7 +194,9 @@ Home.propTypes = {
    * Whether to run it in debug mode (e.g., if you aren't simulatenously running
    * the robot) or not
    */
-  debug: PropTypes.bool
+  debug: PropTypes.bool,
+  // The URL of the web video server
+  webVideoServerURL: PropTypes.string.isRequired
 }
 
 export default Home

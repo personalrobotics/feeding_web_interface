@@ -18,22 +18,24 @@ import TestROS from './ros/TestROS'
  *
  * @param {APP_PAGE} appPage - The current app page. Must be one of the
  *        states specified in APP_PAGE.
+ * @param {string} rosbridgeURL - The URL of the rosbridge server.
+ * @param {string} webVideoServerURL - The URL of the web_video_server.
  * @param {bool} debug - Whether to run it in debug mode or not.
  */
-function getComponentByAppPage(appPage, debug) {
+function getComponentByAppPage(appPage, rosbridgeURL, webVideoServerURL, debug) {
   switch (appPage) {
     case APP_PAGE.Home:
       // Must wrap a component in ROS tags for it to be able to connect to ROS
       return (
-        <RosConnection url={process.env.REACT_APP_ROSBRIDGE_SERVER_URL} autoConnect>
-          <Header />
-          <Home debug={debug} />
+        <RosConnection url={rosbridgeURL} autoConnect>
+          <Header webVideoServerURL={webVideoServerURL} />
+          <Home debug={debug} webVideoServerURL={webVideoServerURL} />
         </RosConnection>
       )
     case APP_PAGE.Settings:
       return (
-        <RosConnection url={process.env.REACT_APP_ROSBRIDGE_SERVER_URL} autoConnect>
-          <Header />
+        <RosConnection url={rosbridgeURL} autoConnect>
+          <Header webVideoServerURL={webVideoServerURL} />
           <Settings />
         </RosConnection>
       )
@@ -50,17 +52,26 @@ function App() {
   // Get the app page
   const appPage = useGlobalState((state) => state.appPage)
 
+  // Get the rosbridge URL
+  const rosbridgeURL = 'ws://'.concat(process.env.REACT_APP_ROS_SERVER_HOSTNAME, ':', process.env.REACT_APP_ROSBRIDGE_PORT)
+  // Get the web_video_server URL
+  const webVideoServerURL = 'http://'.concat(process.env.REACT_APP_ROS_SERVER_HOSTNAME, ':', process.env.REACT_APP_WEB_VIDEO_SERVER_PORT)
+
   // Render the component
   return (
     <>
       <Router>
         <Routes>
-          <Route exact path='/' element={getComponentByAppPage(appPage, process.env.REACT_APP_DEBUG === 'true')} />
+          <Route
+            exact
+            path='/'
+            element={getComponentByAppPage(appPage, rosbridgeURL, webVideoServerURL, process.env.REACT_APP_DEBUG === 'true')}
+          />
           <Route
             exact
             path='/test_ros'
             element={
-              <RosConnection url={process.env.REACT_APP_ROSBRIDGE_SERVER_URL} autoConnect>
+              <RosConnection url={rosbridgeURL} autoConnect>
                 <TestROS />
               </RosConnection>
             }
