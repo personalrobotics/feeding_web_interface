@@ -89,8 +89,10 @@ export const useGlobalState = create(
     (set) => ({
       // Values stored in global state
       mealState: MEAL_STATE.U_PreMeal,
+      mealStateTransitionTime: Date.now(),
       appPage: APP_PAGE.Home,
       desiredFoodItem: null,
+      detectedMouthCenter: null,
       // Settings values
       stagingPosition: SETTINGS.stagingPosition[0],
       biteInitiation: SETTINGS.biteInitiation[0],
@@ -99,7 +101,8 @@ export const useGlobalState = create(
       // Setters for global state
       setMealState: (mealState) =>
         set(() => ({
-          mealState: mealState
+          mealState: mealState,
+          mealStateTransitionTime: Date.now()
         })),
       setAppPage: (appPage) =>
         set(() => ({
@@ -108,6 +111,10 @@ export const useGlobalState = create(
       setDesiredFoodItem: (desiredFoodItem) =>
         set(() => ({
           desiredFoodItem: desiredFoodItem
+        })),
+      setDetectedMouthCenter: (detectedMouthCenter) =>
+        set(() => ({
+          detectedMouthCenter: detectedMouthCenter
         })),
       setStagingPosition: (stagingPosition) =>
         set(() => ({

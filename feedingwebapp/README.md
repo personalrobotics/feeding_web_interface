@@ -14,6 +14,10 @@ The overall user flow for this robot can be seen below.
 - [Node.js](https://nodejs.org/en/download/package-manager)
 - [ROS2 Humble](https://docs.ros.org/en/humble/Installation.html)
 - [PRL fork of rosbridge_suite](https://github.com/personalrobotics/rosbridge_suite). This fork enables rosbridge_suite to communicate with ROS2 actions.
+- [ada_feeding (branch: `ros2-devel`)](https://github.com/personalrobotics/ada_feeding/tree/ros2-devel).
+- [web_video_server (branch: `ros2`)](https://github.com/RobotWebTools/web_video_server/tree/ros2)
+    - Dependency: [async_web_server_cpp (branch: `ros2-develop`)](https://github.com/fkie/async_web_server_cpp)
+    - Dependency: [vision_opencv (branch: `humble` or your ROS2 version)](https://github.com/ros-perception/vision_opencv/tree/humble)
 
 ## Getting Started in Computer
 
@@ -29,8 +33,37 @@ The overall user flow for this robot can be seen below.
 ### Usage (Web App)
 1. Navigate to the web app folder: `cd {path/to/feeding_web_interface}/feedingwebapp`
 2. Start the app: `npm start`
-  - Note that if you're not running the robot code alongside the app, set [`debug = true` in `App.jsx`](https://github.com/personalrobotics/feeding_web_interface/tree/main/feedingwebapp/src/App.jsx#L17) to be able to move past screens where the app is waiting on the robot. Since the robot is not yet connected, the default is `debug = true`
+  - Note that if you're not running the robot code alongside the app, set [`debug = true` in `App.jsx`](https://github.com/personalrobotics/feeding_web_interface/tree/main/feedingwebapp/src/App.jsx#L17) to be able to move past screens where the app is waiting on the robot. The default is `debug = false`.
 3. Use a web browser to navigate to `localhost:3000` to see the application.
+
+#### Launching Dummy Nodes
+This repository includes several dummy nodes that match the interface that the robot nodes will use. By running the dummy nodes alongside the app, we can test the app's communication with the robot even without actual robot code running.
+
+1. Navigate to your ROS2 workspace: `cd {path/to/your/ros2/workspace}`
+2. Build your workspace: `colcon build`
+3. Launch the dummy nodes, rosbridge, and web_video_server: `source install/setup.bash; ros2 launch feeding_web_app_ros2_test feeding_web_app_dummy_nodes_launch.xml`
+4. In another terminal, navigate to the web app folder: `cd {path/to/feeding_web_interface}/feedingwebapp`
+5. Start the app: `npm start`
+6. Use a web browser to navigate to `localhost:3000`.
+
+You should now see that the web browser is connected to ROS. Further, you should see that when the `MoveAbovePlate` page starts, it should call the action (exactly once), and render feedback. "Pause" should cancel the action, and "Resume" should re-call it. Refreshing the page should cancel the action. When the action returns success, the app should automatically transition to the next page.
+
+### Usage (Test ROS)
+There is a special page in the app intended for developers to: (a) test that their setup of the app and ROS2 enables the two to communicate as expected; and (b) gain familiarity with the library of ROS helper functions we use in the web app (see [TechDocumentation.md](https://github.com/personalrobotics/feeding_web_interface/tree/main/feedingwebapp/TechDocumentation.md)). Below are instructions to use this page:
+1. Navigate to your ROS2 workspace: `cd {path/to/your/ros2/workspace}`
+2. Build your workspace: `colcon build`
+3. Source your workspace: `source install/setup.bash`
+4. Launch rosbridge: `ros2 launch rosbridge_server rosbridge_websocket_launch.xml`
+5. In another terminal, navigate to the web app folder: `cd {path/to/feeding_web_interface}/feedingwebapp`
+6. Start the app: `npm start`
+7. Use a web browser to navigate to `localhost:3000/test_ros`.
+
+The following are checks to ensure the app is interacting with ROS as expected. If any of them fails, you'll have to do additional troubleshooting to get the web app and ROS2 smoothly communicating with each other.
+1. First, check if the page says `Connected` at the top of the screen. If not, the web app is not communicating with ROS2.
+2. Then, use the web app to create a topic, in a terminal window run `ros2 topic echo /{topic_name}`, and then use the web app to publish a message on that topic. Ensure the message is echo-ed in your terminal.
+3. Then, use the web app to set a topic to subscribe to, and in a terminal window run `ros2 topic pub /{topic_name} std_msgs/String "{data: \"your_message_here\"}" -1`. The message should render on web app.
+4. Then, in a terminal window run `ros2 run feeding_web_app_ros2_test reverse_string`. In the web app, provide a string to reverse. The reversed string should render on the web app.
+5. Then, in a terminal window run `ros2 run feeding_web_app_ros2_test sort_by_character_frequency`. In the web app, enter a string and click "Call"; you should see feedback as it arrives, and the unique characters in the string sorted from most frequent to least after it is done. Then in the web app, enter another string, press "Call," and press "Cancel" before it is done. You should see that the action gets canceled. (Note that after receiving the message that the action is canceled, the web app may then receive the message that the action failed; that is known behavior.)
 
 ## Getting Started in Smartphone
 
@@ -46,22 +79,6 @@ The overall user flow for this robot can be seen below.
 4. Now, start ngrok by running this command `ngrok http 3000` in the terminal where `3000` is the port number for the app running on the computer with the localhost. 
 5. Get part of the Forwarding URL from the console UI shown in your terminal that is before the arrow sign as marked in the image below. Then, run it from your phone browser. You should now see the app ruuning on the phone. For more details on this, follow [this tutorial](https://ngrok.com/docs/getting-started/#step-4-start-ngrok). ![image below](./img/image.png)
 6. That URL can be accessed by anyone in the world. You can stop the ngrok agent with `ctrl+c`.
-
-### Usage (Test ROS)
-There is a special page in the app intended for developers to: (a) test that their setup of the app and ROS2 enables the two to communicate as expected; and (b) gain familiarity with the library of ROS helper functions we use in the web app (see [TechDocumentation.md](https://github.com/personalrobotics/feeding_web_interface/tree/main/feedingwebapp/TechDocumentation.md)). Below are instructions to use this page:
-1. Navigate to your ROS2 workspace: `cd {path/to/your/ros2/workspace}`
-2. Build your workspace: `colcon build`
-3. Launch rosbridge: `ros2 launch rosbridge_server rosbridge_websocket_launch.xml`
-4. In another terminal, navigate to the web app folder: `cd {path/to/feeding_web_interface}/feedingwebapp`
-5. Start the app: `npm start`
-6. Use a web browser to navigate to `localhost:3000/test_ros`.
-
-The following are checks to ensure the app is interacting with ROS as expected. If any of them fails, you'll have to do additional troubleshooting to get the web app and ROS2 smoothly communicating with each other.
-1. First, check if the page says `Connected` at the top of the screen. If not, the web app is not communicating with ROS2.
-2. Then, use the web app to create a topic, in a terminal window run `ros2 topic echo /{topic_name}`, and then use the web app to publish a message on that topic. Ensure the message is echo-ed in your terminal.
-3. Then, use the web app to set a topic to subscribe to, and in a terminal window run `ros2 topic pub /{topic_name} std_msgs/String "{data: \"your_message_here\"}" -1`. The message should render on web app.
-4. Then, in a terminal window run `ros2 run feeding_web_app_ros2_test reverse_string`. In the web app, provide a string to reverse. The reversed string should render on the web app.
-5. Then, in a terminal window run `ros2 run feeding_web_app_ros2_test sort_by_character_frequency`. In the web app, enter a string and click "Call"; you should see feedback as it arrives, and the unique characters in the string sorted from most frequent to least after it is done. Then in the web app, enter another string, press "Call," and press "Cancel" before it is done. You should see that the action gets canceled. (Note that after receiving the message that the action is canceled, the web app may then receive the message that the action failed; that is known behavior.)
 
 ## Contributing
 

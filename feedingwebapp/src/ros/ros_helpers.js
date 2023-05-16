@@ -76,6 +76,16 @@ export function subscribeToROSTopic(ros, topicName, topicType, callback) {
 }
 
 /**
+ * Unsubscribe from a ROS topic.
+ *
+ * @param {object} topic The ROSLIB.Topic.
+ * @param {function} callback The callback function to unsubscribe.
+ */
+export function unsubscribeFromROSTopic(topic, callback) {
+  topic.unsubscribe(callback)
+}
+
+/**
  * Create a ROS Service.
  *
  * @param {object} ros The ROSLIB.Ros object.
@@ -152,6 +162,15 @@ export function callROSAction(actionClient, goal, feedbackCallback, resultCallba
  * @param {object} actionClient The ROSLIB.ActionHandle object.
  */
 export function cancelROSAction(actionClient) {
-  console.log('Cancelling ROS action', actionClient)
   actionClient.cancelGoal()
+}
+
+/**
+ * Destroys an action client on the rosbridge end (e.g., so when the user returns
+ * to the same state, it doesn't create a second client for the same action.)
+ *
+ * @param {object} actionClient The ROSLIB.ActionHandle object.
+ */
+export function destroyActionClient(actionClient) {
+  actionClient.destroyClient()
 }

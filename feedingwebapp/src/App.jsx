@@ -19,7 +19,7 @@ import BiteSelectionPointMask from './Pages/Home/BiteSelectionUIStates/BiteSelec
 // mode, the app does not connect to ROS. Anytime where it would wait for the
 // robot to finish an action before continuing, the app instead displays a
 // button to continue.
-const debug = true
+const debug = false
 
 /**
  * Determines what screen to render based on the app page specified in global
