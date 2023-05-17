@@ -109,7 +109,6 @@ const Header = (props) => {
               </p>
             </div>
           )}
-          s
           <Nav>
             <Nav.Link
               onClick={() => setVideoShow(true)}
