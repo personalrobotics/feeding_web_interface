@@ -73,7 +73,7 @@ const RobotMotion = (props) => {
   }, [props.mealState])
 
   /**
-   * Callback function for when the action setns feedback. It updates the
+   * Callback function for when the action sends feedback. It updates the
    * actionStatus local state variable.
    *
    * @param {object} feedbackMsg - the feedback message sent by the action

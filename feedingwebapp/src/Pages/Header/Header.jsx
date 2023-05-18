@@ -108,12 +108,14 @@ const Header = (props) => {
                 style={{
                   marginLeft: 3,
                   marginRight: 3,
-                  width: '50px',
-                  height: '56px'
+                  width: '44px',
+                  height: '56px',
+                  '--bs-btn-padding-y': '0rem',
+                  '--bs-btn-padding-x': '0rem'
                 }}
               >
                 <img
-                  style={{ width: '120px', height: '72px' }}
+                  style={{ width: '44px', height: '50px' }}
                   src='/robot_state_imgs/lock_icon_image.svg'
                   alt='lock_icon_img'
                   className='center'
@@ -125,13 +127,13 @@ const Header = (props) => {
           )}
           {isConnected ? (
             <div>
-              <p className='connectedDiv' style={{ fontSize: '24px' }}>
+              <p className='connectedDiv' style={{ fontSize: '24px', margin: 3 }}>
                 🔌
               </p>
             </div>
           ) : (
             <div>
-              <p className='notConnectedDiv' style={{ fontSize: '24px' }}>
+              <p className='notConnectedDiv' style={{ fontSize: '24px', marginLeft: 3, marginRight: 3 }}>
                 ⛔
               </p>
             </div>
