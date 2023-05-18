@@ -3,6 +3,8 @@ import React, { useCallback, useEffect, useState } from 'react'
 // The NavBar is the navigation toolbar at the top
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
+// The Button is used for stop icon at the top
+import Button from 'react-bootstrap/Button'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
@@ -32,6 +34,8 @@ const Header = (props) => {
   // useROS gives us access to functions to configure and interact with ROS.
   let { ros } = useROS()
   const [isConnected, setIsConncected] = useState(ros.isConnected)
+  // Create a local state variable to track robot's stopped motion
+  const isStopped = true
 
   // Check ROS connection every ROS_CHECK_INTERVAL_MS milliseconds
   useEffect(() => {
@@ -96,6 +100,29 @@ const Header = (props) => {
               Settings
             </Nav.Link>
           </Nav>
+          {isStopped ? (
+            <div>
+              <Button
+                variant='danger'
+                disabled={true}
+                style={{
+                  marginLeft: 3,
+                  marginRight: 3,
+                  width: '50px',
+                  height: '56px'
+                }}
+              >
+                <img
+                  style={{ width: '120px', height: '72px' }}
+                  src='/robot_state_imgs/lock_icon_image.svg'
+                  alt='lock_icon_img'
+                  className='center'
+                />
+              </Button>
+            </div>
+          ) : (
+            <></>
+          )}
           {isConnected ? (
             <div>
               <p className='connectedDiv' style={{ fontSize: '24px' }}>
