@@ -15,7 +15,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { useROS } from '../../ros/ros_helpers'
 
 // Local imports
-import { ROS_CHECK_INTERVAL_MS } from '../Constants'
+import { ROS_CHECK_INTERVAL_MS, NON_MOVING_STATES } from '../Constants'
 import { useGlobalState, APP_PAGE, MEAL_STATE } from '../GlobalState'
 import LiveVideoModal from './LiveVideoModal'
 
@@ -34,8 +34,6 @@ const Header = (props) => {
   // useROS gives us access to functions to configure and interact with ROS.
   let { ros } = useROS()
   const [isConnected, setIsConncected] = useState(ros.isConnected)
-  // Create a local state variable to track robot's stopped motion
-  const isStopped = true
 
   // Check ROS connection every ROS_CHECK_INTERVAL_MS milliseconds
   useEffect(() => {
@@ -100,7 +98,7 @@ const Header = (props) => {
               Settings
             </Nav.Link>
           </Nav>
-          {isStopped ? (
+          {NON_MOVING_STATES.has(mealState) ? (
             <div>
               <Button
                 variant='danger'
