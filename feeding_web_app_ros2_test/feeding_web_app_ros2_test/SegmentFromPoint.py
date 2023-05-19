@@ -21,6 +21,7 @@ import os
 from segment_anything import sam_model_registry, SamPredictor
 from skimage.measure import regionprops
 
+
 class SegmentFromPointNode(Node):
     def __init__(self, sleep_time=2.0, send_feedback_hz=10):
         """
@@ -141,17 +142,18 @@ class SegmentFromPointNode(Node):
         with self.latest_img_msg_lock:
             latest_img_msg = self.latest_img_msg
         result.header = latest_img_msg.header
-        image = self.bridge.imgmsg_to_cv2(latest_img_msg, desired_encoding='bgr8')
+        image = self.bridge.imgmsg_to_cv2(latest_img_msg, desired_encoding="bgr8")
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        
+
         input_point = np.array(seed_point)
-        
+
         # Model parameters
-        device = 'cuda'
+        device = "cuda"
         model_type = "vit_b"
         sam_checkpoint = "sam_vit_b_01ec64.pth"
         if not os.path.isfile(sam_checkpoint):
             import urllib.request
+
             print("SAM model checkpoint not found. Downloading...")
             url = "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth"
             urllib.request.urlretrieve(url, sam_checkpoint)
@@ -179,10 +181,10 @@ class SegmentFromPointNode(Node):
             # compute the bounding box from the mask
             bbox = self.bbox_from_mask(mask)
             # crop the image and the mask
-            cropped_image, cropped_mask = self.crop_image_and_mask(image, mask, bbox) 
+            cropped_image, cropped_mask = self.crop_image_and_mask(image, mask, bbox)
             # save the cropped mask as an image
             mask_img = np.where(cropped_mask, 255, 0).astype(np.uint8)
-            
+
             # Create the message
             mask_msg = Mask()
             mask_msg.roi = RegionOfInterest(
