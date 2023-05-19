@@ -46,6 +46,7 @@ const Header = (props) => {
   // Get the relevant global state variables
   const mealState = useGlobalState((state) => state.mealState)
   const setAppPage = useGlobalState((state) => state.setAppPage)
+  const paused = useGlobalState((state) => state.paused)
 
   /**
    * When the Home button in the header is clicked, return to the Home page.
@@ -98,7 +99,7 @@ const Header = (props) => {
               Settings
             </Nav.Link>
           </Nav>
-          {NON_MOVING_STATES.has(mealState) ? (
+          {NON_MOVING_STATES.has(mealState) || paused === true ? (
             <div>
               <Button
                 variant='danger'

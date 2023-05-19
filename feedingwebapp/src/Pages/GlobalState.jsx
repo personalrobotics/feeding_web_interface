@@ -93,6 +93,7 @@ export const useGlobalState = create(
       appPage: APP_PAGE.Home,
       desiredFoodItem: null,
       detectedMouthCenter: null,
+      paused: false,
       // Settings values
       stagingPosition: SETTINGS.stagingPosition[0],
       biteInitiation: SETTINGS.biteInitiation[0],
@@ -115,6 +116,10 @@ export const useGlobalState = create(
       setDetectedMouthCenter: (detectedMouthCenter) =>
         set(() => ({
           detectedMouthCenter: detectedMouthCenter
+        })),
+      setPaused: (paused) =>
+        set(() => ({
+          paused: paused
         })),
       setStagingPosition: (stagingPosition) =>
         set(() => ({

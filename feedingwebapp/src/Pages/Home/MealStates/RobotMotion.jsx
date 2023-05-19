@@ -5,7 +5,6 @@ import Button from 'react-bootstrap/Button'
 // Component
 import PropTypes from 'prop-types'
 import Row from 'react-bootstrap/Row'
-
 // Local Imports
 import { useROS, createROSActionClient, callROSAction, cancelROSAction, destroyActionClient } from '../../../ros/ros_helpers'
 import Footer from '../../Footer/Footer'
@@ -38,8 +37,6 @@ import {
  *        executing the action
  */
 const RobotMotion = (props) => {
-  // Create a local state variable for whether the robot is paused.
-  const [paused, setPaused] = useState(false)
   /**
    * NOTE: We slightly abuse the ROS_ACTION_STATUS values in this local state
    * variable, by using it as a proxy for whether the robot is executing, has
@@ -53,6 +50,8 @@ const RobotMotion = (props) => {
   // Get the relevant global variables
   const mealState = useGlobalState((state) => state.mealState)
   const setMealState = useGlobalState((state) => state.setMealState)
+  const paused = useGlobalState((state) => state.paused)
+  const setPaused = useGlobalState((state) => state.setPaused)
 
   /**
    * Connect to ROS, if not already connected. Put this in useRef to avoid
