@@ -14,6 +14,12 @@ from shapely.geometry import MultiPoint
 import threading
 import time
 
+import torch
+import matplotlib.pyplot as plt
+import sys
+import os
+from segment_anything import sam_model_registry, SamPredictor
+from skimage.measure import regionprops
 
 class SegmentFromPointNode(Node):
     def __init__(self, sleep_time=2.0, send_feedback_hz=10):
@@ -105,11 +111,23 @@ class SegmentFromPointNode(Node):
         self.get_logger().info("Received cancel request, accepting")
         return CancelResponse.ACCEPT
 
+    def bbox_from_mask(mask):
+        # Find the bounding box coordinates from the mask
+        rows = np.any(mask, axis=1)
+        cols = np.any(mask, axis=0)
+        rmin, rmax = np.where(rows)[0][[0, -1]]
+        cmin, cmax = np.where(cols)[0][[0, -1]]
+        return rmin, cmin, rmax, cmax
+
+    def crop_image_and_mask(image, mask, bbox):
+        minr, minc, maxr, maxc = bbox
+        cropped_image = image[minr:maxr, minc:maxc]
+        cropped_mask = mask[minr:maxr, minc:maxc]
+        return cropped_image, cropped_mask
+
     def segment_image(self, seed_point, result, segmentation_success):
         """
-        Dummy segmentation function. Sleeps for `self.sleep_time` seconds, then
-        returns a result. In the resulting mask, pixels to keep (detected food)
-        are white (255) and pixels to remove (non-food) are black (0).
+        Segment image using the SAM model.
 
         Parameters
         ----------
@@ -123,60 +141,63 @@ class SegmentFromPointNode(Node):
         with self.latest_img_msg_lock:
             latest_img_msg = self.latest_img_msg
         result.header = latest_img_msg.header
-        width = latest_img_msg.width
-        height = latest_img_msg.height
+        image = self.bridge.imgmsg_to_cv2(latest_img_msg, desired_encoding='bgr8')
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        input_point = np.array(seed_point)
+        
+        # Model parameters
+        device = 'cuda'
+        model_type = "vit_b"
+        sam_checkpoint = "sam_vit_b_01ec64.pth"
+        if not os.path.isfile(sam_checkpoint):
+            import urllib.request
+            print("SAM model checkpoint not found. Downloading...")
+            url = "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth"
+            urllib.request.urlretrieve(url, sam_checkpoint)
+            print("Download complete! Model saved at {}".format(sam_checkpoint))
 
-        # Sleep (dummy segmentation)
-        time.sleep(self.sleep_time)
+        sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
+        sam.to(device=device)
 
-        # Return the result. Detects 3 random polygons around seed_point
-        cx, cy = seed_point
-        for i in range(3):
-            num_points = np.random.randint(3, 11)  # 3-10 points
-            points = MultiPoint(
-                [
-                    [x, y]
-                    for x, y in zip(
-                        np.random.uniform(
-                            max(cx - width / 8, 0),
-                            min(cx + width / 8, width),
-                            num_points,
-                        ),
-                        np.random.uniform(
-                            max(cy - height / 8, 0),
-                            min(cy + height / 8, height),
-                            num_points,
-                        ),
-                    )
-                ]
-            )
-            polygon = points.convex_hull
-            x_min, y_min, x_max, y_max = polygon.bounds
-            x_min = int(math.floor(x_min))
-            x_max = int(math.ceil(x_max))
-            y_min = int(math.floor(y_min))
-            y_max = int(math.ceil(y_max))
-            mask_img = np.zeros((y_max - y_min, x_max - x_min), dtype=np.uint8)
-            cv2.fillPoly(
-                mask_img,
-                [np.array(polygon.exterior.coords, dtype=np.int32) - (x_min, y_min)],
-                (255,),
-            )
+        predictor = SamPredictor(sam)
+        predictor.set_image(image)
+
+        input_label = np.array([1])
+
+        masks, scores, logits = predictor.predict(
+            point_coords=input_point,
+            point_labels=input_label,
+            multimask_output=True,
+        )
+
+        scored_masks = [(score, mask) for score, mask in zip(scores, masks)]
+        scored_masks_sorted = sorted(scored_masks, key=lambda x: x[0], reverse=True)
+
+        # After getting the masks
+        for i, (score, mask) in enumerate(scored_masks_sorted):
+            # compute the bounding box from the mask
+            bbox = self.bbox_from_mask(mask)
+            # crop the image and the mask
+            cropped_image, cropped_mask = self.crop_image_and_mask(image, mask, bbox) 
+            # save the cropped mask as an image
+            mask_img = np.where(cropped_mask, 255, 0).astype(np.uint8)
+            
             # Create the message
             mask_msg = Mask()
             mask_msg.roi = RegionOfInterest(
-                x_offset=x_min,
-                y_offset=y_min,
-                height=y_max - y_min,
-                width=x_max - x_min,
+                x_offset=int(bbox[1]),
+                y_offset=int(bbox[0]),
+                height=int(bbox[2] - bbox[0]),
+                width=int(bbox[3] - bbox[1]),
                 do_rectify=False,
             )
             mask_msg.mask = CompressedImage(
                 format="jpeg",
                 data=cv2.imencode(".jpg", mask_img)[1].tostring(),
             )
-            mask_msg.item_id = "dummy_food_id_%d" % (i)
-            mask_msg.confidence = np.random.random()
+            mask_msg.item_id = "food_id_%d" % (i)
+            mask_msg.confidence = score.item()
             result.detected_items.append(mask_msg)
 
         # Return Success
