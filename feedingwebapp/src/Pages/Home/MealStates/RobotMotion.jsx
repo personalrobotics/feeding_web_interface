@@ -8,6 +8,7 @@ import Row from 'react-bootstrap/Row'
 // Local Imports
 import { useROS, createROSActionClient, callROSAction, cancelROSAction, destroyActionClient } from '../../../ros/ros_helpers'
 import Footer from '../../Footer/Footer'
+import CircleProgress from './CircleProgress'
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 import {
@@ -163,6 +164,7 @@ const RobotMotion = (props) => {
     },
     [robotMotionAction, paused, props.actionInput, setActionStatus]
   )
+
   /**
    * Calls the action the first time this component is rendered, but not upon
    * any additional re-renders. See here for more details on how `useEffect`
@@ -235,6 +237,7 @@ const RobotMotion = (props) => {
               <>
                 <h3>Robot is moving...</h3>
                 <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Progress: {Math.round(progress * 100)}%</h3>
+                <CircleProgress />
               </>
             )
           } else {
