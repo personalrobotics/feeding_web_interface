@@ -8,7 +8,7 @@ import Row from 'react-bootstrap/Row'
 // Local Imports
 import { useROS, createROSActionClient, callROSAction, cancelROSAction, destroyActionClient } from '../../../ros/ros_helpers'
 import Footer from '../../Footer/Footer'
-import CircleProgress from './CircleProgress'
+import CircleProgressBar from './CircleProgressBar'
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 import {
@@ -233,11 +233,11 @@ const RobotMotion = (props) => {
         if (actionStatus.feedback) {
           let progress = 1 - actionStatus.feedback.motion_curr_distance / actionStatus.feedback.motion_initial_distance
           if (!actionStatus.feedback.is_planning) {
+            // Calling CircleProgessBar component to visualize robot motion of moving
             return (
               <>
                 <h3>Robot is moving...</h3>
-                <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Progress: {Math.round(progress * 100)}%</h3>
-                <CircleProgress />
+                <CircleProgressBar proportion={progress} />
               </>
             )
           } else {
