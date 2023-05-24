@@ -26,7 +26,17 @@ export default function CircleProgressBar(props) {
           // width of the stroke to be applied to the shape
           strokeWidth: 4,
           // width of the trail to be applied to the shape before stroke fills in
-          trailWidth: 1
+          trailWidth: 1,
+          // specifies text style
+          text: {
+            style: {
+              fontFamily: '"Raleway", Helvetica, sans-serif',
+              fontSize: '2rem',
+              position: 'absolute',
+              left: '35%',
+              top: '40%'
+            }
+          }
         })
       )
     } else {
@@ -34,10 +44,6 @@ export default function CircleProgressBar(props) {
       bar.set(props.proportion)
       // sets text to given a string.
       bar.setText(Math.round(props.proportion * 100) + '%')
-      // specifies font family
-      bar.text.style.fontFamily = '"Raleway", Helvetica, sans-serif'
-      // specifies font size
-      bar.text.style.fontSize = '2rem'
     }
     // everytime items in dependency array (the second argument) update, useEffect runs.
   }, [setBar, bar, props.proportion])
