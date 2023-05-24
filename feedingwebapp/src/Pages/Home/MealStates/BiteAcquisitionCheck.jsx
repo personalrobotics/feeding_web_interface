@@ -41,15 +41,9 @@ const BiteAcquisitionCheck = () => {
   // Render the component
   return (
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
-      {/**
-       * Ask the user whether the robot succeeded at picking up food or not.
-       */}
-      <p className='transitionMessage' style={{ marginBottom: '0px' }}>
-        Is there food on the fork?
-      </p>
       {/* Ask the user whether they want to move to mouth position */}
       <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
-        Yes, proceed
+        Ready for bite? Move to mouth.
       </p>
       {/* Icon to move to mouth position */}
       <Row className='justify-content-center mx-auto w-75'>
@@ -66,9 +60,9 @@ const BiteAcquisitionCheck = () => {
       {/* Add empty space */}
       <div className='justify-content-center mx-auto mb-1 row'>&nbsp;</div>
       <Row className='justify-content-center mx-auto mb-2'>
-        {/* Ask the user whether they want to try again */}
+        {/* Ask the user whether they want to try acquiring bite again */}
         <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
-          No, try again
+          Re-acquire bite? Move above plate.
         </p>
         {/* Icon for move above plate */}
         <Button
