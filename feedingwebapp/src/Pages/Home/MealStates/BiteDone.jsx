@@ -18,8 +18,8 @@ const BiteDone = () => {
   const setMealState = useGlobalState((state) => state.setMealState)
   // Get icon image for move above plate
   let moveAbovePlateImage = FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate]
-  // Get icon image for move to staging
-  let moveToStagingImage = FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingToStagingLocation]
+  // Get icon image for move to mouth
+  let moveToMouthImage = FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
 
   /**
    * Callback function for when the user wants to move above plate.
@@ -29,11 +29,11 @@ const BiteDone = () => {
   }, [setMealState])
 
   /**
-   * Callback function for if the user decides to move to staging position.
+   * Callback function for if the user decides to move to mouth position.
    *
    */
-  const moveToStagingPosition = useCallback(() => {
-    setMealState(MEAL_STATE.R_MovingToStagingLocation)
+  const moveToMouth = useCallback(() => {
+    setMealState(MEAL_STATE.R_MovingToMouth)
   }, [setMealState])
 
   // Render the component
@@ -60,17 +60,17 @@ const BiteDone = () => {
       <Row className='justify-content-center mx-auto mt-2'>
         {/* Ask the user whether they want to move to staging position */}
         <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
-          Take another bite? Move to &quot;ready&quot; position.
+          Take another bite? Move to mouth position.
         </p>
-        {/* Icon to move to staging position */}
+        {/* Icon to move to mouth position */}
         <Button
           variant='warning'
           className='mx-2 mb-2 btn-huge'
           size='lg'
-          onClick={moveToStagingPosition}
+          onClick={moveToMouth}
           style={{ width: '300px', height: '200px' }}
         >
-          <img src={moveToStagingImage} alt='move_to_staging_image' className='center' />
+          <img src={moveToMouthImage} alt='move_to_mouth_image' className='center' />
         </Button>
       </Row>
     </div>

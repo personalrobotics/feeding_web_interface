@@ -21,7 +21,6 @@ export const TIME_TO_RESET_MS = 3600000 // 1 hour in milliseconds
 let FOOTER_STATE_ICON_DICT = {}
 FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate] = '/robot_state_imgs/move_above_plate_position.svg'
 FOOTER_STATE_ICON_DICT[MEAL_STATE.R_BiteAcquisition] = '/robot_state_imgs/move_to_bite_acquisition_position.svg'
-FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingToStagingLocation] = '/robot_state_imgs/move_to_staging_position.svg'
 FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth] = '/robot_state_imgs/move_to_mouth_position.svg'
 FOOTER_STATE_ICON_DICT[MEAL_STATE.R_StowingArm] = '/robot_state_imgs/stowing_arm_position.svg'
 export { FOOTER_STATE_ICON_DICT }
@@ -49,10 +48,6 @@ ROS_ACTIONS_NAMES[MEAL_STATE.R_BiteAcquisition] = {
   actionName: 'AcquireFood',
   messageType: 'ada_feeding_msgs/action/AcquireFood'
 }
-ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingToStagingLocation] = {
-  actionName: 'MoveToStagingLocation',
-  messageType: 'ada_feeding_msgs/action/MoveTo'
-}
 ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingToMouth] = {
   actionName: 'MoveToMouth',
   messageType: 'ada_feeding_msgs/action/MoveToMouth'
@@ -68,7 +63,7 @@ export { ROS_ACTIONS_NAMES }
  * the service name and the message type
  */
 let ROS_SERVICE_NAMES = {}
-ROS_SERVICE_NAMES[MEAL_STATE.U_BiteInitiation] = {
+ROS_SERVICE_NAMES[MEAL_STATE.U_BiteAcquisitionCheck] = {
   serviceName: 'ToggleFaceDetection',
   messageType: 'ada_feeding_msgs/srv/ToggleFaceDetection'
 }

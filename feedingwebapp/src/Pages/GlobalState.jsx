@@ -32,10 +32,6 @@ export const APP_PAGE = {
  *     attempt.
  *   - U_BiteAcquisitionCheck: Waiting for the user to specify whether the
  *     bite acquisition was succesful or not.
- *   - R_MovingToStagingLocation: Waiting for the robot to move to the
- *     "staging location," where their face is in camera view.
- *   - U_BiteInitiation: Waiting for the user to initiate a bite with their
- *     preferred modalit(ies).
  *   - R_MovingToMouth: Waiting for the robot to finish moving to the user's
  *     mouth.
  *   - U_BiteDone: Waiting for the user to indicate that they are done eating
@@ -50,8 +46,6 @@ export const MEAL_STATE = {
   U_PlateLocator: 'U_PlateLocator',
   R_BiteAcquisition: 'R_BiteAcquisition',
   U_BiteAcquisitionCheck: 'U_BiteAcquisitionCheck',
-  R_MovingToStagingLocation: 'R_MovingToStagingLocation',
-  U_BiteInitiation: 'U_BiteInitiation',
   R_MovingToMouth: 'R_MovingToMouth',
   U_BiteDone: 'U_BiteDone',
   R_StowingArm: 'R_StowingArm',
@@ -61,8 +55,6 @@ export const MEAL_STATE = {
 /**
  * The parameters that users can set (keys) and a list of human-readable values
  * they can take on.
- *   - stagingPosition: Discrete options for where the robot should wait until
- *     the user is ready.
  *   - biteInitiation: Options for the modality the user wants to use to tell
  *     the robot they are ready for a bite.
  *       - TODO: Make these checkboxes instead -- users should be able to
@@ -74,7 +66,6 @@ export const MEAL_STATE = {
  * value options will have to have corresponding rosparam names and value options.
  */
 export const SETTINGS = {
-  stagingPosition: ['In Front of Me', 'On My Right Side'],
   biteInitiation: ['Open Mouth', 'Say "I am Ready"', 'Press Button'],
   biteSelection: ['Name of Food', 'Click on Food']
 }
@@ -94,7 +85,6 @@ export const useGlobalState = create(
       desiredFoodItem: null,
       detectedMouthCenter: null,
       // Settings values
-      stagingPosition: SETTINGS.stagingPosition[0],
       biteInitiation: SETTINGS.biteInitiation[0],
       biteSelection: SETTINGS.biteSelection[0],
 
@@ -115,10 +105,6 @@ export const useGlobalState = create(
       setDetectedMouthCenter: (detectedMouthCenter) =>
         set(() => ({
           detectedMouthCenter: detectedMouthCenter
-        })),
-      setStagingPosition: (stagingPosition) =>
-        set(() => ({
-          stagingPosition: stagingPosition
         })),
       setBiteInitiation: (biteInitiation) =>
         set(() => ({
