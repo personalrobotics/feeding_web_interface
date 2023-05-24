@@ -237,7 +237,9 @@ const RobotMotion = (props) => {
             return (
               <>
                 <h3>Robot is moving...</h3>
-                <CircleProgressBar proportion={progress} />
+                <center>
+                  <CircleProgressBar proportion={progress} />
+                </center>
               </>
             )
           } else {

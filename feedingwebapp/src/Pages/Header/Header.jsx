@@ -82,7 +82,7 @@ const Header = (props) => {
        * of the robot is placed in between Settings and Video.
        */}
       <Navbar collapseOnSelect expand='lg' bg='dark' variant='dark' sticky='top'>
-        <Navbar id='responsive-navbar-nav'>
+        <Navbar id='responsive-navbar-nav' bg='dark' variant='dark'>
           <Nav className='me-auto'>
             <Nav.Link
               onClick={homeClicked}
@@ -99,7 +99,7 @@ const Header = (props) => {
               Settings
             </Nav.Link>
           </Nav>
-          {NON_MOVING_STATES.has(mealState) || paused === true ? (
+          {NON_MOVING_STATES.has(mealState) || paused ? (
             <div>
               <Button
                 variant='danger'
@@ -109,6 +109,7 @@ const Header = (props) => {
                   marginRight: 3,
                   width: '44px',
                   height: '56px',
+                  opacity: 1,
                   '--bs-btn-padding-y': '0rem',
                   '--bs-btn-padding-x': '0rem'
                 }}
