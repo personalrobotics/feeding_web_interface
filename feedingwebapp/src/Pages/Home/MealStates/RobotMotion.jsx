@@ -231,23 +231,25 @@ const RobotMotion = (props) => {
     switch (actionStatus.actionStatus) {
       case ROS_ACTION_STATUS_EXECUTE:
         if (actionStatus.feedback) {
+          let moving_elapsed_time = actionStatus.feedback.motion_time.sec + actionStatus.feedback.motion_time.nanosec / 10 ** 9
           let progress = 1 - actionStatus.feedback.motion_curr_distance / actionStatus.feedback.motion_initial_distance
           if (!actionStatus.feedback.is_planning) {
             // Calling CircleProgessBar component to visualize robot motion of moving
             return (
               <>
                 <h3>Robot is moving...</h3>
+                <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
                 <center>
                   <CircleProgressBar proportion={progress} />
                 </center>
               </>
             )
           } else {
-            let elapsed_time = actionStatus.feedback.planning_time.sec + actionStatus.feedback.planning_time.nanosec / 10 ** 9
+            let planning_elapsed_time = actionStatus.feedback.planning_time.sec + actionStatus.feedback.planning_time.nanosec / 10 ** 9
             return (
               <>
                 <h3>Robot is thinking...</h3>
-                <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(elapsed_time * 100) / 100} sec</h3>
+                <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec</h3>
               </>
             )
           }
