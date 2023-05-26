@@ -227,52 +227,59 @@ const RobotMotion = (props) => {
    *
    * @returns {JSX.Element} the action status text to render
    */
-  const actionStatusText = useCallback((actionStatus) => {
-    switch (actionStatus.actionStatus) {
-      case ROS_ACTION_STATUS_EXECUTE:
-        if (actionStatus.feedback) {
-          let progress = 1 - actionStatus.feedback.motion_curr_distance / actionStatus.feedback.motion_initial_distance
-          if (!actionStatus.feedback.is_planning) {
-            let moving_elapsed_time = actionStatus.feedback.motion_time.sec + actionStatus.feedback.motion_time.nanosec / 10 ** 9
-            // Calling CircleProgessBar component to visualize robot motion of moving
-            return (
-              <>
-                <h3>Robot is moving...</h3>
-                <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
-                <center>
-                  <CircleProgressBar proportion={progress} />
-                </center>
-              </>
-            )
+  const actionStatusText = useCallback(
+    (actionStatus) => {
+      switch (actionStatus.actionStatus) {
+        case ROS_ACTION_STATUS_EXECUTE:
+          if (actionStatus.feedback) {
+            let progress = 1 - actionStatus.feedback.motion_curr_distance / actionStatus.feedback.motion_initial_distance
+            if (!actionStatus.feedback.is_planning) {
+              let moving_elapsed_time = actionStatus.feedback.motion_time.sec + actionStatus.feedback.motion_time.nanosec / 10 ** 9
+              // Calling CircleProgessBar component to visualize robot motion of moving
+              return (
+                <>
+                  <h3>Robot is moving...</h3>
+                  <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
+                  <center>
+                    <CircleProgressBar proportion={progress} />
+                  </center>
+                </>
+              )
+            } else {
+              let planning_elapsed_time = actionStatus.feedback.planning_time.sec + actionStatus.feedback.planning_time.nanosec / 10 ** 9
+              return (
+                <>
+                  <h3>Robot is thinking...</h3>
+                  <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec</h3>
+                </>
+              )
+            }
           } else {
-            let planning_elapsed_time = actionStatus.feedback.planning_time.sec + actionStatus.feedback.planning_time.nanosec / 10 ** 9
-            return (
-              <>
-                <h3>Robot is thinking...</h3>
-                <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec</h3>
-              </>
-            )
+            // If you haven't gotten feedback yet, assume the robot is planning
+            return <h3>Robot is thinking...</h3>
           }
-        } else {
-          // If you haven't gotten feedback yet, assume the robot is planning
-          return <h3>Robot is thinking...</h3>
-        }
-      case ROS_ACTION_STATUS_SUCCEED:
-        return <h3>Robot has finished</h3>
-      case ROS_ACTION_STATUS_ABORT:
-        /**
-         * TODO: Just displaying that the robot faced an error is not useful
-         * to the user. We should think more carefully about what different
-         * error cases might arise, and change the UI accordingly to instruct
-         * users on how to troubleshoot/fix it.
-         */
-        return <h3>Robot encountered an error</h3>
-      case ROS_ACTION_STATUS_CANCELED:
-        return <h3>Robot is paused</h3>
-      default:
-        return <h3>&nbsp;</h3>
-    }
-  }, [])
+        case ROS_ACTION_STATUS_SUCCEED:
+          return <h3>Robot has finished</h3>
+        case ROS_ACTION_STATUS_ABORT:
+          /**
+           * TODO: Just displaying that the robot faced an error is not useful
+           * to the user. We should think more carefully about what different
+           * error cases might arise, and change the UI accordingly to instruct
+           * users on how to troubleshoot/fix it.
+           */
+          return <h3>Robot encountered an error</h3>
+        case ROS_ACTION_STATUS_CANCELED:
+          return <h3>Robot is paused</h3>
+        default:
+          if (paused) {
+            return <h3>Robot is paused</h3>
+          } else {
+            return <h3>&nbsp;</h3>
+          }
+      }
+    },
+    [paused]
+  )
 
   // Render the component
   return (

@@ -33,8 +33,11 @@ export default function CircleProgressBar(props) {
               fontFamily: '"Raleway", Helvetica, sans-serif',
               fontSize: '2rem',
               position: 'absolute',
-              left: '35%',
-              top: '40%'
+              left: '50%',
+              top: '50%',
+              padding: '0px',
+              margin: '0px',
+              transform: 'translate(-50%, -50%)'
             }
           }
         })
