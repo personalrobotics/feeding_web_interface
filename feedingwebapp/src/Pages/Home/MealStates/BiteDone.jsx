@@ -18,12 +18,21 @@ const BiteDone = () => {
   const setMealState = useGlobalState((state) => state.setMealState)
   // Get icon image for move above plate
   let moveAbovePlateImage = FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate]
+  // Get icon image for move to resting position
+  let moveToRestingPositionImage = FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingToRestingPosition]
 
   /**
    * Callback function for when the user wants to move above plate.
    */
   const moveAbovePlate = useCallback(() => {
     setMealState(MEAL_STATE.R_MovingAbovePlate)
+  }, [setMealState])
+
+  /**
+   * Callback function for when the user wants to move to resting position.
+   */
+  const moveToRestingPosition = useCallback(() => {
+    setMealState(MEAL_STATE.R_MovingToRestingPosition)
   }, [setMealState])
 
   // Render the component
@@ -60,7 +69,7 @@ const BiteDone = () => {
           onClick={moveToRestingPosition}
           style={{ width: '300px', height: '200px' }}
         >
-          <img src={moveToRestingImage} alt='move_to_resting_image' className='center' />
+          <img src={moveToRestingPositionImage} alt='move_to_resting_image' className='center' />
         </Button>
       </Row>
     </div>

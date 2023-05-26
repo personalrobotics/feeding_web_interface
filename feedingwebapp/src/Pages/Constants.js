@@ -35,7 +35,6 @@ STATE_TO_BACK_BUTTON_TRANSITION[MEAL_STATE.R_MovingToMouth] = MEAL_STATE.R_Movin
 STATE_TO_BACK_BUTTON_TRANSITION[MEAL_STATE.R_StowingArm] = MEAL_STATE.R_MovingAbovePlate
 export { STATE_TO_BACK_BUTTON_TRANSITION }
 
-
 // The names of the ROS topic(s)
 export const CAMERA_FEED_TOPIC = '/camera/color/image_raw'
 export const FACE_DETECTION_TOPIC = '/face_detection'
@@ -45,7 +44,7 @@ export const FACE_DETECTION_IMG_TOPIC = '/face_detection_img'
 /**
  * For states that call ROS actions, this dictionary contains
  * the action name and the message type
- * 
+ *
  * TODO: add action for moving to resting position
  */
 let ROS_ACTIONS_NAMES = {}
