@@ -30,6 +30,8 @@ export const APP_PAGE = {
  *     the plate.
  *   - R_BiteAcquisition: Waiting for the robot to execute one bite acquisition
  *     attempt.
+ *   - R_MovingToRestingPosition: Waiting for the robot to move to resting
+ *     position.
  *   - U_BiteAcquisitionCheck: Waiting for the user to specify whether the
  *     bite acquisition was succesful or not.
  *   - R_MovingToMouth: Waiting for the robot to finish moving to the user's

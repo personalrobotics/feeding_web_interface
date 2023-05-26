@@ -34,8 +34,6 @@ export const FACE_DETECTION_IMG_TOPIC = '/face_detection_img'
 /**
  * For states that call ROS actions, this dictionary contains
  * the action name and the message type
- *
- * TODO: add action for moving to resting position
  */
 let ROS_ACTIONS_NAMES = {}
 ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingAbovePlate] = {
