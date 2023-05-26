@@ -20,9 +20,21 @@ export const TIME_TO_RESET_MS = 3600000 // 1 hour in milliseconds
  */
 let FOOTER_STATE_ICON_DICT = {}
 FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate] = '/robot_state_imgs/move_above_plate_position.svg'
+FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingToRestingPosition] = '/robot_state_imgs/move_to_resting_position.svg'
 FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth] = '/robot_state_imgs/move_to_mouth_position.svg'
 FOOTER_STATE_ICON_DICT[MEAL_STATE.R_StowingArm] = '/robot_state_imgs/stowing_arm_position.svg'
 export { FOOTER_STATE_ICON_DICT }
+
+/**
+ * A dictionary that maps a moving state to the state to transition to when the back button is pressed.
+ */
+let STATE_TO_BACK_BUTTON_TRANSITION = {}
+STATE_TO_BACK_BUTTON_TRANSITION[MEAL_STATE.R_BiteAcquisition] = MEAL_STATE.R_MovingAbovePlate
+STATE_TO_BACK_BUTTON_TRANSITION[MEAL_STATE.R_MovingToRestingPosition] = MEAL_STATE.R_MovingAbovePlate
+STATE_TO_BACK_BUTTON_TRANSITION[MEAL_STATE.R_MovingToMouth] = MEAL_STATE.R_MovingToRestingPosition
+STATE_TO_BACK_BUTTON_TRANSITION[MEAL_STATE.R_StowingArm] = MEAL_STATE.R_MovingAbovePlate
+export { STATE_TO_BACK_BUTTON_TRANSITION }
+
 
 // The names of the ROS topic(s)
 export const CAMERA_FEED_TOPIC = '/camera/color/image_raw'
@@ -33,6 +45,8 @@ export const FACE_DETECTION_IMG_TOPIC = '/face_detection_img'
 /**
  * For states that call ROS actions, this dictionary contains
  * the action name and the message type
+ * 
+ * TODO: add action for moving to resting position
  */
 let ROS_ACTIONS_NAMES = {}
 ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingAbovePlate] = {
@@ -56,17 +70,6 @@ ROS_ACTIONS_NAMES[MEAL_STATE.R_StowingArm] = {
   messageType: 'ada_feeding_msgs/action/MoveTo'
 }
 export { ROS_ACTIONS_NAMES }
-
-/**
- * For states that call ROS services, this dictionary contains
- * the service name and the message type
- */
-let ROS_SERVICE_NAMES = {}
-ROS_SERVICE_NAMES[MEAL_STATE.U_BiteAcquisitionCheck] = {
-  serviceName: 'ToggleFaceDetection',
-  messageType: 'ada_feeding_msgs/srv/ToggleFaceDetection'
-}
-export { ROS_SERVICE_NAMES }
 
 /**
  * The meaning of the status that motion actions return in their results.

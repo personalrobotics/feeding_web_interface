@@ -29,22 +29,38 @@ const BiteDone = () => {
   // Render the component
   return (
     <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
-      {/* Add empty space */}
-      <div className='justify-content-center mx-auto mt-5 row'>&nbsp;</div>
       {/* Ask the user whether they want to move to above plate position */}
       <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
         Bite finished? Move above plate.
       </p>
       {/* Icon to move above plate */}
-      <Row className='justify-content-center mx-auto mt-2 w-75'>
+      <Row className='justify-content-center mx-auto mb-2 w-75'>
         <Button
           variant='success'
-          className='mx-2 mt-2 btn-huge'
+          className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={moveAbovePlate}
           style={{ width: '300px', height: '200px' }}
         >
           <img src={moveAbovePlateImage} alt='move_above_plate_image' className='center' />
+        </Button>
+      </Row>
+      {/* Add empty space */}
+      <div className='justify-content-center mx-auto my-3 row'>&nbsp;</div>
+      <Row className='justify-content-center mx-auto mt-2'>
+        {/* Ask the user whether they want to move to resting position */}
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
+          Take another bite? Move to resting position.
+        </p>
+        {/* Icon to move to resting position */}
+        <Button
+          variant='warning'
+          className='mx-2 mb-2 btn-huge'
+          size='lg'
+          onClick={moveToRestingPosition}
+          style={{ width: '300px', height: '200px' }}
+        >
+          <img src={moveToRestingImage} alt='move_to_resting_image' className='center' />
         </Button>
       </Row>
     </div>

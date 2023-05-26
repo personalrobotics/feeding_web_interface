@@ -45,6 +45,7 @@ export const MEAL_STATE = {
   U_BiteSelection: 'U_BiteSelection',
   U_PlateLocator: 'U_PlateLocator',
   R_BiteAcquisition: 'R_BiteAcquisition',
+  R_MovingToRestingPosition: 'R_MovingToRestingPosition',
   U_BiteAcquisitionCheck: 'U_BiteAcquisitionCheck',
   R_MovingToMouth: 'R_MovingToMouth',
   U_BiteDone: 'U_BiteDone',
@@ -55,6 +56,8 @@ export const MEAL_STATE = {
 /**
  * The parameters that users can set (keys) and a list of human-readable values
  * they can take on.
+ *   - stagingPosition: Discrete options for where the robot should wait until
+ *     the user is ready.
  *   - biteInitiation: Options for the modality the user wants to use to tell
  *     the robot they are ready for a bite.
  *       - TODO: Make these checkboxes instead -- users should be able to
@@ -66,6 +69,7 @@ export const MEAL_STATE = {
  * value options will have to have corresponding rosparam names and value options.
  */
 export const SETTINGS = {
+  stagingPosition: ['In Front of Me', 'On My Right Side'],
   biteInitiation: ['Open Mouth', 'Say "I am Ready"', 'Press Button'],
   biteSelection: ['Name of Food', 'Click on Food']
 }
@@ -85,6 +89,7 @@ export const useGlobalState = create(
       desiredFoodItem: null,
       detectedMouthCenter: null,
       // Settings values
+      stagingPosition: SETTINGS.stagingPosition[0],
       biteInitiation: SETTINGS.biteInitiation[0],
       biteSelection: SETTINGS.biteSelection[0],
 
@@ -105,6 +110,10 @@ export const useGlobalState = create(
       setDetectedMouthCenter: (detectedMouthCenter) =>
         set(() => ({
           detectedMouthCenter: detectedMouthCenter
+        })),
+      setStagingPosition: (stagingPosition) =>
+        set(() => ({
+          stagingPosition: stagingPosition
         })),
       setBiteInitiation: (biteInitiation) =>
         set(() => ({
