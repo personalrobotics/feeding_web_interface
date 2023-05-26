@@ -60,6 +60,10 @@ ROS_ACTIONS_NAMES[MEAL_STATE.R_BiteAcquisition] = {
   actionName: 'AcquireFood',
   messageType: 'ada_feeding_msgs/action/AcquireFood'
 }
+ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingToRestingPosition] = {
+  actionName: 'MoveToRestingPosition',
+  messageType: 'ada_feeding_msgs/action/MoveTo'
+}
 ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingToMouth] = {
   actionName: 'MoveToMouth',
   messageType: 'ada_feeding_msgs/action/MoveToMouth'

@@ -99,6 +99,21 @@ function Home(props) {
           />
         )
       }
+      case MEAL_STATE.R_MovingToRestingPosition: {
+        let currentMealState = MEAL_STATE.R_MovingToRestingPosition
+        let nextMealState = MEAL_STATE.U_BiteAcquisitionCheck
+        let actionInput = {}
+        let waitingText = 'Waiting for the robot to move to the resting position...'
+        return (
+          <RobotMotion
+            debug={props.debug}
+            mealState={currentMealState}
+            nextMealState={nextMealState}
+            actionInput={actionInput}
+            waitingText={waitingText}
+          />
+        )
+      }
       case MEAL_STATE.U_BiteAcquisitionCheck: {
         return <BiteAcquisitionCheck debug={props.debug} />
       }
@@ -110,7 +125,7 @@ function Home(props) {
         let currentMealState = MEAL_STATE.R_MovingToMouth
         let nextMealState = MEAL_STATE.U_BiteDone
         let actionInput = { detected_mouth_center: detectedMouthCenter }
-        let waitingText = 'Waiting for Robot to move to your mouth...'
+        let waitingText = 'Waiting for the robot to move to your mouth...'
         return (
           <RobotMotion
             debug={props.debug}
