@@ -23,7 +23,7 @@ export const TIME_TO_RESET_MS = 3600000 // 1 hour in milliseconds
  */
 let MOVING_STATE_ICON_DICT = {}
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate] = '/robot_state_imgs/move_above_plate_position.svg'
-MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToStagingLocation] = '/robot_state_imgs/move_to_staging_position.svg'
+MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToRestingPosition] = '/robot_state_imgs/move_to_resting_position.svg'
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth] = '/robot_state_imgs/move_to_mouth_position.svg'
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_StowingArm] = '/robot_state_imgs/stowing_arm_position.svg'
 export { MOVING_STATE_ICON_DICT }
@@ -35,7 +35,6 @@ let NON_MOVING_STATES = new Set()
 NON_MOVING_STATES.add(MEAL_STATE.U_PreMeal)
 NON_MOVING_STATES.add(MEAL_STATE.U_BiteSelection)
 NON_MOVING_STATES.add(MEAL_STATE.U_BiteAcquisitionCheck)
-NON_MOVING_STATES.add(MEAL_STATE.U_BiteInitiation)
 NON_MOVING_STATES.add(MEAL_STATE.U_BiteDone)
 NON_MOVING_STATES.add(MEAL_STATE.U_PostMeal)
 export { NON_MOVING_STATES }
