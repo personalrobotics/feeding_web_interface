@@ -25,16 +25,6 @@ FOOTER_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth] = '/robot_state_imgs/move_to_
 FOOTER_STATE_ICON_DICT[MEAL_STATE.R_StowingArm] = '/robot_state_imgs/stowing_arm_position.svg'
 export { FOOTER_STATE_ICON_DICT }
 
-/**
- * A dictionary that maps a moving state to the state to transition to when the back button is pressed.
- */
-let STATE_TO_BACK_BUTTON_TRANSITION = {}
-STATE_TO_BACK_BUTTON_TRANSITION[MEAL_STATE.R_BiteAcquisition] = MEAL_STATE.R_MovingAbovePlate
-STATE_TO_BACK_BUTTON_TRANSITION[MEAL_STATE.R_MovingToRestingPosition] = MEAL_STATE.R_MovingAbovePlate
-STATE_TO_BACK_BUTTON_TRANSITION[MEAL_STATE.R_MovingToMouth] = MEAL_STATE.R_MovingToRestingPosition
-STATE_TO_BACK_BUTTON_TRANSITION[MEAL_STATE.R_StowingArm] = MEAL_STATE.R_MovingAbovePlate
-export { STATE_TO_BACK_BUTTON_TRANSITION }
-
 // The names of the ROS topic(s)
 export const CAMERA_FEED_TOPIC = '/camera/color/image_raw'
 export const FACE_DETECTION_TOPIC = '/face_detection'
