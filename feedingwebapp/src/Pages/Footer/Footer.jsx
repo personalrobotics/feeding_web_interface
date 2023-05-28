@@ -103,10 +103,7 @@ const Footer = (props) => {
     (callback) => {
       return (
         <>
-          <p
-            className='transitionMessage'
-            style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold', textAlign: 'center' }}
-          >
+          <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
             Resume
           </p>
           {/* Icon to resume current state */}
