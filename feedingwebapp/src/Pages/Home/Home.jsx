@@ -88,7 +88,7 @@ function Home(props) {
          * the app is performing a re-rendering and *then* the state is updated.
          */
         let currentMealState = MEAL_STATE.R_BiteAcquisition
-        let nextMealState = MEAL_STATE.R_MovingToRestingPosition
+        let nextMealState = MEAL_STATE.U_BiteAcquisitionCheck
         let actionInput = { detected_food: desiredFoodItem }
         let waitingText = 'Waiting for the robot to acquire the food...'
         return (
