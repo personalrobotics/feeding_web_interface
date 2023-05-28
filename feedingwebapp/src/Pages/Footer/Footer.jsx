@@ -50,15 +50,15 @@ const Footer = (props) => {
       return (
         <>
           <Row className='justify-content-center mx-auto'>
+            <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
+              Pause
+            </p>
             {/* Icon to pause */}
             <Button
               variant='danger'
               onClick={callback}
               style={{ marginLeft: '10', marginRight: '10', marginTop: '0', width: '350px', height: { footerButtonHeight } }}
             >
-              <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'black', fontWeight: 'bold' }}>
-                Pause
-              </p>
               <img style={{ width: '135px', height: '90px' }} src={pauseIcon} alt='pause_icon' className='center' />
             </Button>
           </Row>
@@ -77,15 +77,15 @@ const Footer = (props) => {
     (callback) => {
       return (
         <>
+          <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold' }}>
+            Back
+          </p>
           {/* Icon to move to previous state */}
           <Button
             variant='warning'
             onClick={callback}
             style={{ marginLeft: 10, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHeight } }}
           >
-            <p className='transitionMessage' style={{ marginBottom: '0', fontSize: '170%', color: 'black', fontWeight: 'bold' }}>
-              Back
-            </p>
             <img style={{ width: '120px', height: '72px' }} src={backIcon} alt='back_icon' className='center' />
           </Button>
         </>
@@ -103,18 +103,18 @@ const Footer = (props) => {
     (callback) => {
       return (
         <>
+          <p
+            className='transitionMessage'
+            style={{ marginBottom: '0', fontSize: '170%', color: 'white', fontWeight: 'bold', textAlign: 'center' }}
+          >
+            Resume
+          </p>
           {/* Icon to resume current state */}
           <Button
             variant='success'
             onClick={callback}
             style={{ marginLeft: 10, marginRight: 10, width: { backResumeButtonWidth }, height: { footerButtonHeight } }}
           >
-            <p
-              className='transitionMessage'
-              style={{ marginBottom: '0', fontSize: '170%', color: 'black', fontWeight: 'bold', textAlign: 'center' }}
-            >
-              Resume
-            </p>
             <img style={{ width: '120px', height: '72px' }} src={resumeIcon} alt='resume_icon' className='center' />
           </Button>
         </>
