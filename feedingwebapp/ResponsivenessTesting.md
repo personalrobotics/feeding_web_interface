@@ -10,13 +10,13 @@ If you don’t have the listed devices available for testing, please “Add cust
 
 ## Devices: 
 (Total 6 as listed below)
-#### 1 Smartphone: iPhone 14 Plus [Tyler]; Width: 428 & Height: 926
-#### 1 Tablet: iPad Pro (6th gen 12.9") [Tyler]; Width: 1024 & Height: 1366
-#### 1 External Monitor: Width: 4096 & Height: 2304
-#### 3 Laptop: Width: 2560 & Height: 1600
-- Full-screen 
-- Half-screen (vertical split)
-- Quarter screen. 
+- 1 Smartphone: iPhone 14 Plus [Tyler]; Width: 428 & Height: 926
+- 1 Tablet: iPad Pro (6th gen 12.9") [Tyler]; Width: 1024 & Height: 1366
+- 1 External Monitor: Width: 4096 & Height: 2304
+- 3 Laptop: Width: 2560 & Height: 1600
+    - Full-screen 
+    - Half-screen (vertical split)
+    - Quarter screen. 
 
 ## Browsers:  
 Chrome, Firefox, Edge, Safari
