@@ -6,14 +6,14 @@ For the smartphone and laptops, test on the 4 browsers specified below. For the 
 
 In total, you will run 18 tests  (4 browsers * 1 smartphone + 1 tablet + 4 browsers * 3 laptops + 1 monitor). 
 
-If you don’t have the listed devices available for testing, please “Add custom device” in your browser’s responsive design mode using the width and height of the specific device’s resolution below. Please a link in the Resources section at the bottom for each browser's documentation on how to do this.
+If you don’t have the listed devices available for testing, please “Add custom device” in your browser’s responsive design mode using the width and height of the specific device’s resolution below. Please find the appropriate link in the [Resources](#resources) section at the bottom of this page for each browser's documentation on how to do this *except* Safari. 
 
 ## Devices: 
-(Total 6 as listed below)
-- 1 Smartphone: iPhone 14 Plus [Tyler]; Width: 428 & Height: 926
-- 1 Tablet: iPad Pro (6th gen 12.9") [Tyler]; Width: 1024 & Height: 1366
-- 1 External Monitor: Width: 4096 & Height: 2304
-- 3 Laptop: Width: 2560 & Height: 1600
+(Total 4 as listed below)
+- **Smartphone:** iPhone 14 Plus [Tyler]; Width: 428 & Height: 926
+- **Tablet:** iPad Pro (6th gen 12.9") [Tyler]; Width: 1024 & Height: 1366
+- **External Monitor:** Width: 4096 & Height: 2304
+- **Laptop:** Width: 2560 & Height: 1600
     - Full-screen 
     - Half-screen (vertical split)
     - Quarter screen. 
@@ -26,7 +26,6 @@ Landscape and portrait
 
 In portrait, pages should have their content appear on one screen and not require scrolling. In landscape, scrolling may be unavoidable for some screens, but try to rearrange the content horizontally in order to minimize required scrolling. 
 
-
 ## Resources:
 1. https://www.ios-resolution.com/
 2. https://support.apple.com/kb/SP748?locale=en_US
@@ -34,7 +33,6 @@ In portrait, pages should have their content appear on one screen and not requir
 4. Adding custom device in Edge: https://learn.microsoft.com/en-us/microsoft-edge/devtools-guide-chromium/device-mode/
 5. Adding custom device in Firefox:
 https://firefox-source-docs.mozilla.org/devtools-user/responsive_design_mode/#creating-custom-devices
-6. Adding custom device in safari: https://developer.apple.com/forums/thread/650901
 
 
 
