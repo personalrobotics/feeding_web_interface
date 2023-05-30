@@ -68,6 +68,7 @@ const PlateLocator = (props) => {
        *
        * TODO: The values for margins should not be hardcoded. Bootstrap's
        * grid should be able to get alignment without fine-tuning of margins.
+       * add grid
        */}
       <div className='container'>
         <div className='row'>
