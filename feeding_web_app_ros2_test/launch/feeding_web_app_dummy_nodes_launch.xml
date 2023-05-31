@@ -18,8 +18,6 @@
   </group>
 
   <group if="$(var run_perception)">
-    <!-- Perception: The FaceDetection node -->
-    <node pkg="feeding_web_app_ros2_test" exec="FaceDetection" name="FaceDetection"/>
     <!-- Perception: The SegmentFromPoint node -->
     <node pkg="feeding_web_app_ros2_test" exec="SegmentFromPoint" name="SegmentFromPoint"/>
   </group>
