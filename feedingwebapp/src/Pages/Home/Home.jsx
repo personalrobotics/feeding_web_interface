@@ -65,7 +65,7 @@ function Home(props) {
         let currentMealState = MEAL_STATE.R_MovingAbovePlate
         let nextMealState = MEAL_STATE.U_BiteSelection
         let actionInput = {}
-        let waitingText = 'Waiting for the robot to move above the plate...'
+        let waitingText = 'Waiting to move above the plate...'
         return (
           <RobotMotion
             debug={props.debug}
@@ -90,7 +90,7 @@ function Home(props) {
         let currentMealState = MEAL_STATE.R_BiteAcquisition
         let nextMealState = MEAL_STATE.U_BiteAcquisitionCheck
         let actionInput = { detected_food: desiredFoodItem }
-        let waitingText = 'Waiting for the robot to acquire the food...'
+        let waitingText = 'Waiting to acquire the food...'
         return (
           <RobotMotion
             debug={props.debug}
@@ -105,7 +105,7 @@ function Home(props) {
         let currentMealState = MEAL_STATE.R_MovingToRestingPosition
         let nextMealState = MEAL_STATE.U_BiteAcquisitionCheck
         let actionInput = {}
-        let waitingText = 'Waiting for the robot to move to the resting position...'
+        let waitingText = 'Waiting to move to the resting position...'
         return (
           <RobotMotion
             debug={props.debug}
@@ -127,7 +127,7 @@ function Home(props) {
         let currentMealState = MEAL_STATE.R_MovingToMouth
         let nextMealState = MEAL_STATE.U_BiteDone
         let actionInput = { detected_mouth_center: detectedMouthCenter }
-        let waitingText = 'Waiting for the robot to move to your mouth...'
+        let waitingText = 'Waiting to move to your mouth...'
         return (
           <RobotMotion
             debug={props.debug}
@@ -149,7 +149,7 @@ function Home(props) {
         let currentMealState = MEAL_STATE.R_StowingArm
         let nextMealState = MEAL_STATE.U_PostMeal
         let actionInput = {}
-        let waitingText = 'Waiting for the robot to get out of your way...'
+        let waitingText = 'Waiting to get out of your way...'
         return (
           <RobotMotion
             debug={props.debug}

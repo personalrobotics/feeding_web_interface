@@ -2,6 +2,8 @@
 import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
+import { useMediaQuery } from 'react-responsive'
+import { View } from 'react-native'
 
 // Local Imports
 import '../Home.css'
@@ -20,6 +22,8 @@ const BiteDone = () => {
   let moveAbovePlateImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate]
   // Get icon image for move to resting position
   let moveToRestingPositionImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToRestingPosition]
+  // Get current orientation
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
 
   /**
    * Callback function for when the user wants to move above plate.
@@ -35,15 +39,31 @@ const BiteDone = () => {
     setMealState(MEAL_STATE.R_MovingToRestingPosition)
   }, [setMealState])
 
-  // Render the component
-  return (
-    <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
-      {/* Ask the user whether they want to move to above plate position */}
-      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
-        Bite finished? Move above plate.
-      </p>
-      {/* Icon to move above plate */}
-      <Row className='justify-content-center mx-auto mb-2 w-75'>
+  /**
+   * Get the bite finished text to render.
+   *
+   * @returns {JSX.Element} the bite finished text
+   */
+  let biteFinishedText = function () {
+    return (
+      <>
+        {/* Ask the user whether they want to move to above plate position */}
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '139%' }}>
+          Bite finished? Move above plate.
+        </p>
+      </>
+    )
+  }
+
+  /**
+   * Get the bite finished button to render.
+   *
+   * @returns {JSX.Element} the bite finished button
+   */
+  let biteFinishedButton = function () {
+    return (
+      <>
+        {/* Icon to move above plate */}
         <Button
           variant='success'
           className='mx-2 mb-2 btn-huge'
@@ -53,14 +73,34 @@ const BiteDone = () => {
         >
           <img src={moveAbovePlateImage} alt='move_above_plate_image' className='center' />
         </Button>
-      </Row>
-      {/* Add empty space */}
-      <div className='justify-content-center mx-auto my-3 row'>&nbsp;</div>
-      <Row className='justify-content-center mx-auto mt-2'>
+      </>
+    )
+  }
+
+  /**
+   * Get the take another bite text to render.
+   *
+   * @returns {JSX.Element} the take another bite text
+   */
+  let takeAnotherBiteText = function () {
+    return (
+      <>
         {/* Ask the user whether they want to move to resting position */}
-        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '139%' }}>
           Take another bite? Move to resting position.
         </p>
+      </>
+    )
+  }
+
+  /**
+   * Get the take another bite button to render.
+   *
+   * @returns {JSX.Element} the take another bite button
+   */
+  let takeAnotherBiteButton = function () {
+    return (
+      <>
         {/* Icon to move to resting position */}
         <Button
           variant='warning'
@@ -71,8 +111,38 @@ const BiteDone = () => {
         >
           <img src={moveToRestingPositionImage} alt='move_to_resting_image' className='center' />
         </Button>
-      </Row>
-    </div>
+      </>
+    )
+  }
+
+  // Render the component
+  return (
+    <>
+      {isPortrait ? (
+        <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
+          {biteFinishedText()}
+          {/* Icon to move above plate */}
+          <Row className='justify-content-center mx-auto mb-2 w-75'>{biteFinishedButton()}</Row>
+          {/* Add empty space */}
+          <div className='justify-content-center mx-auto my-3 row'>&nbsp;</div>
+          <Row className='justify-content-center mx-auto mt-2'>
+            {takeAnotherBiteText()}
+            {takeAnotherBiteButton()}
+          </Row>
+        </div>
+      ) : (
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+            {biteFinishedText()}
+            {biteFinishedButton()}
+          </View>
+          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+            {takeAnotherBiteText()}
+            {takeAnotherBiteButton()}
+          </View>
+        </View>
+      )}
+    </>
   )
 }
 

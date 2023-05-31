@@ -9,14 +9,14 @@ In total, you will run 18 tests  (4 browsers * 1 smartphone + 1 tablet + 4 brows
 If you don’t have the listed devices available for testing, please “Add custom device” in your browser’s responsive design mode using the width and height of the specific device’s resolution below. Please find the appropriate link in the [Resources](#resources) section at the bottom of this page for each browser's documentation on how to do this *except* Safari. 
 
 ## Devices: 
-(Total 4 as listed below)
+Total 4 as listed below
 - **Smartphone:** iPhone 14 Plus [Tyler]; Width: 428 & Height: 926
 - **Tablet:** iPad Pro (6th gen 12.9") [Tyler]; Width: 1024 & Height: 1366
 - **External Monitor:** Width: 4096 & Height: 2304
 - **Laptop:** Width: 2560 & Height: 1600
     - Full-screen 
     - Half-screen (vertical split)
-    - Quarter screen. 
+    - Quarter screen 
 
 ## Browsers:  
 Chrome, Firefox, Edge, Safari
