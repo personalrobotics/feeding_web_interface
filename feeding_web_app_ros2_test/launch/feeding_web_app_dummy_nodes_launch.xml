@@ -2,6 +2,7 @@
 
   <!-- What nodes to run -->
   <arg name="run_perception" default="true" description="Whether to run the dummy perception nodes" />
+  <arg name="run_real_sense" default="true" description="Whether to run the dummy RealSense node" />
   <arg name="run_motion" default="true"  description="Whether to run the dummy motion nodes" />
 
   <!-- The ROSBridge Node -->
@@ -11,9 +12,12 @@
 
   <!-- The dummy nodes -->
 
-  <group if="$(var run_perception)">
+  <group if="$(var run_real_sense)">
     <!-- Perception: The RealSense Node -->
     <node pkg="feeding_web_app_ros2_test" exec="DummyRealSense" name="DummyRealSense"/>
+  </group>
+
+  <group if="$(var run_perception)">
     <!-- Perception: The FaceDetection node -->
     <node pkg="feeding_web_app_ros2_test" exec="FaceDetection" name="FaceDetection"/>
     <!-- Perception: The SegmentFromPoint node -->
