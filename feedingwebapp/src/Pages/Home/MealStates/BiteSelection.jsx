@@ -1,6 +1,8 @@
 // React Imports
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
+import { useMediaQuery } from 'react-responsive'
+import { View } from 'react-native'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
@@ -40,6 +42,8 @@ const BiteSelection = (props) => {
   const setDesiredFoodItem = useGlobalState((state) => state.setDesiredFoodItem)
   // Get icon image for move to mouth
   let moveToMouthImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
 
   /**
    * Create a local state variable to store the detected masks, the
@@ -228,9 +232,9 @@ const BiteSelection = (props) => {
       case ROS_ACTION_STATUS_EXECUTE:
         if (actionStatus.feedback) {
           let elapsed_time = actionStatus.feedback.elapsed_time.sec + actionStatus.feedback.elapsed_time.nanosec / 10 ** 9
-          return <h3 style={{ textAlign: 'center' }}>Detecting food... ({Math.round(elapsed_time * 100) / 100} sec)</h3>
+          return <h5 style={{ textAlign: 'center' }}>Detecting food... ({Math.round(elapsed_time * 100) / 100} sec)</h5>
         } else {
-          return <h3 style={{ textAlign: 'center' }}>Detecting food...</h3>
+          return <h5 style={{ textAlign: 'center' }}>Detecting food...</h5>
         }
       case ROS_ACTION_STATUS_SUCCEED:
         if (actionResult && actionResult.detected_items && actionResult.detected_items.length > 0) {
@@ -251,10 +255,10 @@ const BiteSelection = (props) => {
 
           return (
             <>
-              <h3 style={{ textAlign: 'center' }}>Select one of the below foods, or click the image again to retry</h3>
+              <h5 style={{ textAlign: 'center' }}>Select a below item, or retry clicking on video. </h5>
               <Row>
                 {actionResult.detected_items.map((detected_item, i) => (
-                  <Col key={i}>
+                  <Col key={i} className='justify-content-center'>
                     <MaskButton
                       buttonSize={buttonSize}
                       imgSrc={imgSrc}
@@ -272,7 +276,7 @@ const BiteSelection = (props) => {
             </>
           )
         } else {
-          return <h3 style={{ textAlign: 'center' }}>Food detection succeeded</h3>
+          return <h4 style={{ textAlign: 'center' }}>Food detection succeeded</h4>
         }
       case ROS_ACTION_STATUS_ABORT:
         /**
@@ -289,41 +293,22 @@ const BiteSelection = (props) => {
     }
   }, [actionStatus, actionResult, width, height, scaleFactor, foodItemClicked, imgSrc])
 
-  // Render the component
-  return (
-    <>
-      {/**
-       * In addition to selecting their desired food item, the user has two
-       * other options on this page:
-       *   - If their desired food item is not visible on the plate, they can
-       *     decide to teleoperate the robot until it is visible.
-       *   - Instead of selecting their next bite, the user can indicate that
-       *     they are done eating.
-       */}
-      <div style={{ display: 'block', textAlign: 'center' }}>
-        <Button className='doneButton' style={{ fontSize: '21px', marginTop: '10px' }} onClick={locatePlateClicked}>
-          🍽️ Locate Plate
-        </Button>
-        <Button className='doneButton' style={{ fontSize: '21px', marginTop: '10px' }} onClick={doneEatingClicked}>
-          ✅ Done Eating
-        </Button>
-      </div>
-
-      {/**
-       * Display the live video feed from the robot's camera.
-       */}
-      <center>
-        <h3 style={{ textAlign: 'center' }}>Click the below image to indicate your desired food item.</h3>
+  let showVideo = function () {
+    return (
+      <React.Fragment>
+        <h5 style={{ textAlign: 'center' }}>Click on video to select food.</h5>,
         <img
           src={imgSrc}
           alt='Live video feed from the robot'
-          style={{ width: width, height: height, display: 'block' }}
+          style={{ width: 242, height: 140, display: 'block' }}
           onClick={imageClicked}
         />
+      </React.Fragment>
+    )
+  }
 
-        {/* Display the action status and/or results */}
-        {actionStatusText()}
-      </center>
+  let withoutAcquireButtonPortrait = function () {
+    return (
       <div style={{ display: 'block', width: '100%' }} className='outer'>
         {/* Ask the user whether they want to continue without acquisition by moving to above plate position */}
         <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '20px' }}>
@@ -342,18 +327,89 @@ const BiteSelection = (props) => {
           </Button>
         </Row>
       </div>
-      {/* If the user is running in debug mode, give them the option to skip */}
-      {props.debug ? (
-        <Button
-          variant='secondary'
-          className='justify-content-center mx-2 mb-2'
-          size='lg'
-          onClick={() => setMealState(MEAL_STATE.R_BiteAcquisition)}
-        >
-          Continue (Debug Mode)
+    )
+  }
+
+  let withoutAcquireButtonLandscape = function () {
+    return (
+      <div style={{ display: 'block', width: '100%' }} className='outer'>
+        {/* Ask the user whether they want to continue without acquisition by moving to above plate position */}
+        <h5 style={{ textAlign: 'center' }}>Continue without</h5>
+        <h5 style={{ textAlign: 'center' }}>acquiring bite.</h5>
+
+        {/* Icon to move to mouth */}
+        <Row className='justify-content-center mx-auto mb-2'>
+          <Button
+            variant='warning'
+            className='mx-2 mb-2 btn-huge'
+            size='lg'
+            onClick={moveToMouth}
+            style={{ width: '160px', height: '106px' }}
+          >
+            <img src={moveToMouthImage} alt='move_to_mouth_image' className='center' style={{ width: '150px', height: '88px' }} />
+          </Button>
+        </Row>
+      </div>
+    )
+  }
+
+  let debugOptions = function () {
+    /* If the user is running in debug mode, give them the option to skip */
+    props.debug ? (
+      <Button
+        variant='secondary'
+        className='justify-content-center mx-2 mb-2'
+        size='lg'
+        onClick={() => setMealState(MEAL_STATE.R_BiteAcquisition)}
+      >
+        Continue (Debug Mode)
+      </Button>
+    ) : (
+      <></>
+    )
+  }
+
+  // Render the component
+  return (
+    <>
+      {/**
+       * In addition to selecting their desired food item, the user has two
+       * other options on this page:
+       *   - If their desired food item is not visible on the plate, they can
+       *     decide to teleoperate the robot until it is visible.
+       *   - Instead of selecting their next bite, the user can indicate that
+       *     they are done eating.
+       */}
+      <div style={{ display: 'block', textAlign: 'center' }}>
+        <Button className='doneButton' style={{ fontSize: '18px', marginTop: '8px' }} onClick={locatePlateClicked}>
+          🍽️ Locate Plate
         </Button>
+        <Button className='doneButton' style={{ fontSize: '18px', marginTop: '8px' }} onClick={doneEatingClicked}>
+          ✅ Done Eating
+        </Button>
+      </div>
+
+      {/**
+       * Display the live video feed from the robot's camera.
+       */}
+      {isPortrait ? (
+        <React.Fragment>
+          <center>
+            {showVideo()}
+            {/* Display the action status and/or results */}
+            {actionStatusText()}
+          </center>
+          ,{withoutAcquireButtonPortrait()},{debugOptions()}
+        </React.Fragment>
       ) : (
-        <></>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>{showVideo()}</View>
+          <View style={{ flex: '1', alignItems: 'center' }}>{actionStatusText()}</View>
+          <View style={{ flex: '1', alignItems: 'center' }}>
+            {withoutAcquireButtonLandscape()}
+            {debugOptions}
+          </View>
+        </View>
       )}
     </>
   )

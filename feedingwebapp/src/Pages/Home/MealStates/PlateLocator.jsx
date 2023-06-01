@@ -1,6 +1,8 @@
 // React Imports
 import React from 'react'
 import Button from 'react-bootstrap/Button'
+import { useMediaQuery } from 'react-responsive'
+import { View } from 'react-native'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
@@ -10,6 +12,7 @@ import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 import { REALSENSE_WIDTH, REALSENSE_HEIGHT, CAMERA_FEED_TOPIC } from '../../Constants'
 import { convertRemToPixels, scaleWidthHeightToWindow } from '../../../helpers'
+import { Col, Row } from 'react-bootstrap'
 
 /**
  * The PlateLocator component appears if the user decides to adjust the position
@@ -20,6 +23,8 @@ import { convertRemToPixels, scaleWidthHeightToWindow } from '../../../helpers'
 const PlateLocator = (props) => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
 
   /**
    * Callback function for when the user presses one of the buttons to teleop
@@ -45,84 +50,109 @@ const PlateLocator = (props) => {
   const margin = convertRemToPixels(1)
   let { width, height } = scaleWidthHeightToWindow(REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
 
+  // done button to click when locating plate is done
+  let doneButton = function () {
+    return (
+      <center>
+        <Button variant='success' onClick={doneClicked} style={{ width: '150px', fontSize: '25px' }}>
+          ✅ Done
+        </Button>
+      </center>
+    )
+  }
+
+  /**
+   * An array of buttons for the user to teleoperate the robot, and a
+   * button for the user to indicate that they are done teleoperating the
+   * robot.
+   *
+   * TODO: The values for margins should not be hardcoded. Bootstrap's
+   * grid should be able to get alignment without fine-tuning of margins.
+   */
+  let showVideo = function () {
+    return (
+      <img
+        src={`${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(width)}&height=${Math.round(
+          height
+        )}&quality=20`}
+        alt='Live video feed from the robot'
+        style={{ width: 300, height: 230, display: 'block', marginTop: '8px', marginLeft: '3px' }}
+      />
+    )
+  }
+
+  /**
+   * An array of buttons for the user to teleoperate the robot, and a
+   * button for the user to indicate that they are done teleoperating the robot.
+   */
+  let directionalArrows = function () {
+    return (
+      <React.Fragment>
+        <Row className='justify-content-center'>
+          <Button
+            onClick={cartesianControlCommandReceived}
+            style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
+            value='forward'
+            variant='primary'
+          >
+            ⬆
+          </Button>
+        </Row>
+        <Row className='justify-content-center' xs={6} md={3} lg={3}>
+          <Col>
+            <center>
+              <Button
+                onClick={cartesianControlCommandReceived}
+                style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
+                value='left'
+                variant='primary'
+              >
+                ⬅
+              </Button>
+            </center>
+          </Col>
+          <Col style={{ width: '55px' }}></Col>
+          <Col>
+            <center>
+              <Button
+                onClick={cartesianControlCommandReceived}
+                style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
+                value='right'
+                variant='primary'
+              >
+                ➡
+              </Button>
+            </center>
+          </Col>
+        </Row>
+        <Row className='justify-content-center'>
+          <Button
+            onClick={cartesianControlCommandReceived}
+            style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
+            value='back'
+            variant='primary'
+          >
+            ⬇
+          </Button>
+        </Row>
+      </React.Fragment>
+    )
+  }
+
   // Render the component
   return (
-    <div style={{ overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
-      {/**
-       * Display the live stream from the robot's camera.
-       */}
-      <center>
-        <img
-          src={`${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(width)}&height=${Math.round(
-            height
-          )}&quality=20`}
-          alt='Live video feed from the robot'
-          style={{ width: width, height: height, display: 'block' }}
-        />
-      </center>
-
-      {/**
-       * An array of buttons for the user to teleoperate the robot, and a
-       * button for the user to indicate that they are done teleoperating the
-       * robot.
-       *
-       * TODO: The values for margins should not be hardcoded. Bootstrap's
-       * grid should be able to get alignment without fine-tuning of margins.
-       */}
-      <div className='container'>
-        <div className='row'>
-          <div className='col'>
-            <Button
-              onClick={cartesianControlCommandReceived}
-              style={{ fontSize: '25px', marginLeft: '15%' }}
-              value='forward'
-              variant='primary'
-            >
-              ⬆
-            </Button>
-          </div>
-
-          <div className='w-100'></div>
-
-          <div className='col-3'>
-            <Button onClick={cartesianControlCommandReceived} style={{ fontSize: '25px', marginLeft: '2%' }} value='left' variant='primary'>
-              ⬅
-            </Button>
-          </div>
-
-          <div className='col'>
-            <Button
-              onClick={cartesianControlCommandReceived}
-              style={{ fontSize: '25px', marginLeft: '3%' }}
-              value='right'
-              variant='primary'
-            >
-              ➡
-            </Button>
-          </div>
-
-          <div className='w-100'></div>
-          <div className='col'>
-            <Button
-              onClick={cartesianControlCommandReceived}
-              style={{ fontSize: '25px', marginLeft: '30%', marginTop: '5%', marginRight: '15%' }}
-              value='back'
-              variant='primary'
-            >
-              ⬇
-            </Button>
-          </div>
-          <div className='col'>
-            <Button
-              variant='success'
-              onClick={doneClicked}
-              style={{ width: '96%', fontSize: '25px', marginLeft: '10%', marginRight: '2%' }}
-            >
-              ✅ Done
-            </Button>
-          </div>
-        </div>
-      </div>
+    <div style={{ overflowX: 'hidden', overflowY: 'auto' }} className='justify-content-center mx-auto mb-2 w-77'>
+      {isPortrait ? (
+        <React.Fragment>
+          <center>{showVideo()}</center>,{directionalArrows()},{doneButton()}
+        </React.Fragment>
+      ) : (
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: '50px' }}>
+          <View style={{ flex: '1', alignItems: 'center' }}>{showVideo()}</View>
+          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>{directionalArrows()}</View>
+          <View style={{ flex: '1', alignItems: 'center' }}>{doneButton()}</View>
+        </View>
+      )}
     </div>
   )
 }
