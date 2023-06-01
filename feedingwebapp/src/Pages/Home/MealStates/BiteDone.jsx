@@ -22,7 +22,7 @@ const BiteDone = () => {
   let moveAbovePlateImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate]
   // Get icon image for move to resting position
   let moveToRestingPositionImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToRestingPosition]
-  // Get current orientation
+  // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
 
   /**
@@ -121,7 +121,6 @@ const BiteDone = () => {
       {isPortrait ? (
         <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
           {biteFinishedText()}
-          {/* Icon to move above plate */}
           <Row className='justify-content-center mx-auto mb-2 w-75'>{biteFinishedButton()}</Row>
           {/* Add empty space */}
           <div className='justify-content-center mx-auto my-3 row'>&nbsp;</div>

@@ -2,6 +2,8 @@
 import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
+import { useMediaQuery } from 'react-responsive'
+import { View } from 'react-native'
 
 // Local Imports
 import '../Home.css'
@@ -19,6 +21,8 @@ const BiteAcquisitionCheck = () => {
   let moveAbovePlateImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate]
   // Get icon image for move to mouth
   let moveToMouthImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
 
   /**
    * Callback function for when the user indicates that the bite acquisition
@@ -38,15 +42,31 @@ const BiteAcquisitionCheck = () => {
     setMealState(MEAL_STATE.R_MovingAbovePlate)
   }, [setMealState])
 
-  // Render the component
-  return (
-    <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
-      {/* Ask the user whether they want to move to mouth position */}
-      <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
-        Ready for bite? Move to mouth.
-      </p>
-      {/* Icon to move to mouth position */}
-      <Row className='justify-content-center mx-auto w-75'>
+  /**
+   * Get the ready for bite text to render.
+   *
+   * @returns {JSX.Element} the ready for bite text
+   */
+  let readyForBiteText = function () {
+    return (
+      <>
+        {/* Ask the user whether they want to move to mouth position */}
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
+          Ready for bite? Move to mouth.
+        </p>
+      </>
+    )
+  }
+
+  /**
+   * Get the ready for bite button to render.
+   *
+   * @returns {JSX.Element} the ready for bite button
+   */
+  let readyForBiteButton = function () {
+    return (
+      <>
+        {/* Icon to move to mouth position */}
         <Button
           variant='success'
           className='mx-2 mb-2 btn-huge'
@@ -56,14 +76,34 @@ const BiteAcquisitionCheck = () => {
         >
           <img src={moveToMouthImage} alt='move_to_mouth_image' className='center' />
         </Button>
-      </Row>
-      {/* Add empty space */}
-      <div className='justify-content-center mx-auto mb-1 row'>&nbsp;</div>
-      <Row className='justify-content-center mx-auto mb-2'>
+      </>
+    )
+  }
+
+  /**
+   * Get the re-acquire bite text to render.
+   *
+   * @returns {JSX.Element} the re-acquire bite text
+   */
+  let reacquireBiteText = function () {
+    return (
+      <>
         {/* Ask the user whether they want to try acquiring bite again */}
         <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
           Re-acquire bite? Move above plate.
         </p>
+      </>
+    )
+  }
+
+  /**
+   * Get the re-acquire bite button to render.
+   *
+   * @returns {JSX.Element} the re-acquire bite button
+   */
+  let reacquireBiteButton = function () {
+    return (
+      <>
         {/* Icon for move above plate */}
         <Button
           variant='warning'
@@ -74,8 +114,37 @@ const BiteAcquisitionCheck = () => {
         >
           <img src={moveAbovePlateImage} alt='move_above_plate_image' className='center' />
         </Button>
-      </Row>
-    </div>
+      </>
+    )
+  }
+
+  // Render the component
+  return (
+    <>
+      {isPortrait ? (
+        <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
+          {readyForBiteText()}
+          <Row className='justify-content-center mx-auto w-75'>{readyForBiteButton()}</Row>
+          {/* Add empty space */}
+          <div className='justify-content-center mx-auto mb-1 row'>&nbsp;</div>
+          <Row className='justify-content-center mx-auto mb-2'>
+            {reacquireBiteText()}
+            {reacquireBiteButton()}
+          </Row>
+        </div>
+      ) : (
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+            {readyForBiteText()}
+            {readyForBiteButton()}
+          </View>
+          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+            {reacquireBiteText()}
+            {reacquireBiteButton()}
+          </View>
+        </View>
+      )}
+    </>
   )
 }
 

@@ -81,8 +81,20 @@ const Header = (props) => {
        * element, Video, on the right side. An image showing the connection status
        * of the robot is placed in between Settings and Video.
        */}
-      <Navbar collapseOnSelect expand='lg' bg='dark' variant='dark' sticky='top'>
-        <Navbar id='responsive-navbar-nav' bg='dark' variant='dark'>
+      <Navbar
+        collapseOnSelect
+        expand='lg'
+        bg='dark'
+        variant='dark'
+        sticky='top'
+        style={{ '--bs-navbar-padding-x': '0rem', '--bs-navbar-padding-y': '0rem' }}
+      >
+        <Navbar
+          id='responsive-navbar-nav'
+          bg='dark'
+          variant='dark'
+          style={{ '--bs-navbar-padding-x': '0rem', '--bs-navbar-padding-y': '0rem' }}
+        >
           <Nav className='me-auto'>
             <Nav.Link
               onClick={homeClicked}
@@ -108,7 +120,7 @@ const Header = (props) => {
                   marginLeft: 3,
                   marginRight: 3,
                   width: '44px',
-                  height: '56px',
+                  height: '55px',
                   opacity: 1,
                   '--bs-btn-padding-y': '0rem',
                   '--bs-btn-padding-x': '0rem'
@@ -127,13 +139,13 @@ const Header = (props) => {
           )}
           {isConnected ? (
             <div>
-              <p className='connectedDiv' style={{ fontSize: '24px', margin: 3 }}>
+              <p className='connectedDiv' style={{ fontSize: '25px', margin: 3 }}>
                 🔌
               </p>
             </div>
           ) : (
             <div>
-              <p className='notConnectedDiv' style={{ fontSize: '24px', marginLeft: 3, marginRight: 3 }}>
+              <p className='notConnectedDiv' style={{ fontSize: '25px', marginLeft: 3, marginRight: 3 }}>
                 ⛔
               </p>
             </div>

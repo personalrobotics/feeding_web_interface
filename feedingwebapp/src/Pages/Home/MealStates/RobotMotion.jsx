@@ -1,6 +1,8 @@
 // React Imports
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMediaQuery } from 'react-responsive'
 import Button from 'react-bootstrap/Button'
+import { View } from 'react-native'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
@@ -59,6 +61,9 @@ const RobotMotion = (props) => {
    * re-connecting upon re-renders.
    */
   const ros = useRef(useROS().ros)
+
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
 
   /**
    * Create the ROS Action Client. This is re-created every time props.mealState
@@ -244,11 +249,27 @@ const RobotMotion = (props) => {
               // Calling CircleProgessBar component to visualize robot motion of moving
               return (
                 <>
-                  <h3>Robot is moving...</h3>
-                  <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
-                  <center>
-                    <CircleProgressBar proportion={progress} />
-                  </center>
+                  {isPortrait ? (
+                    <React.Fragment>
+                      <h3>Robot is moving...</h3>,
+                      <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>,
+                      <center>
+                        <CircleProgressBar proportion={progress} />
+                      </center>
+                    </React.Fragment>
+                  ) : (
+                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                      <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+                        <React.Fragment>
+                          <h3>Robot is moving...</h3>,
+                          <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
+                        </React.Fragment>
+                      </View>
+                      <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+                        <CircleProgressBar proportion={progress} />
+                      </View>
+                    </View>
+                  )}
                 </>
               )
             } else {
@@ -284,14 +305,14 @@ const RobotMotion = (props) => {
           }
       }
     },
-    [paused]
+    [paused, isPortrait]
   )
 
   // Render the component
   return (
     <>
       {/* TODO: Consider vertically centering this element */}
-      <Row className='justify-content-center mx-auto my-2 w-75'>
+      <Row className='justify-content-center mx-auto my-2 w-80'>
         <div>
           <h1 id='Waiting for robot motion' className='waitingMsg'>
             {props.waitingText}
@@ -303,7 +324,6 @@ const RobotMotion = (props) => {
           ) : (
             <></>
           )}
-          <br />
           <br />
           <br />
           {/**
