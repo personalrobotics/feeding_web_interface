@@ -258,7 +258,7 @@ const BiteSelection = (props) => {
               <h5 style={{ textAlign: 'center' }}>Select a food from below, or retry clicking on video. </h5>
               <Row>
                 {actionResult.detected_items.map((detected_item, i) => (
-                  <Col key={i} className='justify-content-center' style={{ padding: '0', marginBottom: '5px' }}>
+                  <Col key={i} className='justify-content-center' style={{ padding: '0', marginBottom: '6px' }}>
                     <MaskButton
                       buttonSize={buttonSize}
                       imgSrc={imgSrc}
