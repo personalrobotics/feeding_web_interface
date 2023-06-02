@@ -12,7 +12,7 @@ import Col from 'react-bootstrap/Col'
 // Local Imports
 import '../Home.css'
 import { useROS, createROSActionClient, callROSAction, destroyActionClient } from '../../../ros/ros_helpers'
-import { convertRemToPixels, scaleWidthHeightToWindow } from '../../../helpers'
+import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow } from '../../../helpers'
 import MaskButton from '../../../buttons/MaskButton'
 import {
   REALSENSE_WIDTH,
@@ -166,8 +166,9 @@ const BiteSelection = (props) => {
   )
 
   // Get the size of the robot's live video stream.
+  let size = useWindowSize()
   const margin = convertRemToPixels(1)
-  const { width, height, scaleFactor } = scaleWidthHeightToWindow(REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
+  const { width, height, scaleFactor } = scaleWidthHeightToWindow(size, REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
   const imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(width)}&height=${Math.round(
     height
   )}&quality=20`
@@ -293,14 +294,14 @@ const BiteSelection = (props) => {
     }
   }, [actionStatus, actionResult, width, height, scaleFactor, foodItemClicked, imgSrc])
 
-  let showVideo = function () {
+  let showVideo = function (currentWidth, currentHeight) {
     return (
       <React.Fragment>
-        <h5 style={{ textAlign: 'center' }}>Click on video to select food.</h5>,
+        <h5 style={{ textAlign: 'center' }}>Click on video to select food.</h5>
         <img
           src={imgSrc}
           alt='Live video feed from the robot'
-          style={{ width: 242, height: 140, display: 'block' }}
+          style={{ width: currentWidth, height: currentHeight, display: 'block' }}
           onClick={imageClicked}
         />
       </React.Fragment>
@@ -381,10 +382,10 @@ const BiteSelection = (props) => {
        *     they are done eating.
        */}
       <div style={{ display: 'block', textAlign: 'center' }}>
-        <Button className='doneButton' style={{ fontSize: '18px', marginTop: '8px' }} onClick={locatePlateClicked}>
+        <Button className='doneButton' style={{ fontSize: '18px', marginTop: '3px' }} onClick={locatePlateClicked}>
           🍽️ Locate Plate
         </Button>
-        <Button className='doneButton' style={{ fontSize: '18px', marginTop: '8px' }} onClick={doneEatingClicked}>
+        <Button className='doneButton' style={{ fontSize: '18px', marginTop: '3px' }} onClick={doneEatingClicked}>
           ✅ Done Eating
         </Button>
       </div>
@@ -395,17 +396,18 @@ const BiteSelection = (props) => {
       {isPortrait ? (
         <React.Fragment>
           <center>
-            {showVideo()}
+            {showVideo(width, height)}
             {/* Display the action status and/or results */}
             {actionStatusText()}
           </center>
-          ,{withoutAcquireButtonPortrait()},{debugOptions()}
+          {withoutAcquireButtonPortrait()}
+          {debugOptions()}
         </React.Fragment>
       ) : (
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 }}>{showVideo()}</View>
-          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 }}>{actionStatusText()}</View>
-          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+          <View>{showVideo(width * 0.68, height * 0.68)}</View>
+          <View>
+            {actionStatusText()}
             {withoutAcquireButtonLandscape()}
             {debugOptions}
           </View>

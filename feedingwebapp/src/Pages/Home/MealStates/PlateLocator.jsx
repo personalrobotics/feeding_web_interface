@@ -11,7 +11,7 @@ import PropTypes from 'prop-types'
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 import { REALSENSE_WIDTH, REALSENSE_HEIGHT, CAMERA_FEED_TOPIC } from '../../Constants'
-import { convertRemToPixels, scaleWidthHeightToWindow } from '../../../helpers'
+import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow } from '../../../helpers'
 import { Col, Row, Container } from 'react-bootstrap'
 
 /**
@@ -47,8 +47,10 @@ const PlateLocator = (props) => {
   }
 
   // Get the size of the robot's live video stream.
+  let landscapeSizeFactor = 0.9
+  let size = useWindowSize()
   const margin = convertRemToPixels(1)
-  let { width, height } = scaleWidthHeightToWindow(REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
+  let { width, height } = scaleWidthHeightToWindow(size, REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
 
   // done button to click when locating plate is done
   let doneButton = function () {
@@ -69,14 +71,21 @@ const PlateLocator = (props) => {
    * TODO: The values for margins should not be hardcoded. Bootstrap's
    * grid should be able to get alignment without fine-tuning of margins.
    */
-  let showVideo = function () {
+  let showVideo = function (currentWidth, currentHeight) {
     return (
       <img
-        src={`${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(width)}&height=${Math.round(
-          height
+        src={`${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(currentWidth)}&height=${Math.round(
+          currentHeight
         )}&quality=20`}
         alt='Live video feed from the robot'
-        style={{ width: 300, height: 230, display: 'block', marginTop: '8px', marginLeft: '3px' }}
+        style={{
+          width: currentWidth,
+          height: currentHeight,
+          display: 'block',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginTop: '9px'
+        }}
       />
     )
   }
@@ -129,7 +138,7 @@ const PlateLocator = (props) => {
           <Row className='justify-content-center' noGutters={true}>
             <Button
               onClick={cartesianControlCommandReceived}
-              style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
+              style={{ fontSize: '25px', alignItems: 'center', width: '55px', marginBottom: '10px' }}
               value='back'
               variant='primary'
             >
@@ -143,16 +152,18 @@ const PlateLocator = (props) => {
 
   // Render the component
   return (
-    <div style={{ overflowX: 'hidden', overflowY: 'auto' }} className='justify-content-center mx-auto mb-2 w-77'>
+    <div style={{ overflowX: 'hidden', overflowY: 'auto' }} className='justify-content-center'>
       {isPortrait ? (
         <React.Fragment>
-          <center>{showVideo()}</center>,{directionalArrows()},{doneButton()}
+          <center>{showVideo(width, height)}</center>,{directionalArrows()},{doneButton()}
         </React.Fragment>
       ) : (
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: '50px' }}>
-          <View style={{ flex: '1', alignItems: 'center' }}>{showVideo()}</View>
-          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>{directionalArrows()}</View>
-          <View style={{ flex: '1', alignItems: 'center' }}>{doneButton()}</View>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: '0.5px' }}>
+          <View style={{ alignItems: 'center' }}>{showVideo(width * landscapeSizeFactor, height * landscapeSizeFactor)}</View>
+          <View style={{ alignItems: 'center' }}>
+            {directionalArrows()}
+            {doneButton()}
+          </View>
         </View>
       )}
     </div>

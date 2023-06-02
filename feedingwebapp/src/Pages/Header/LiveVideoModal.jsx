@@ -9,7 +9,7 @@ import PropTypes from 'prop-types'
 
 // Local imports
 import { REALSENSE_WIDTH, REALSENSE_HEIGHT, CAMERA_FEED_TOPIC } from '../Constants'
-import { convertRemToPixels, scaleWidthHeightToWindow } from '../../helpers'
+import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow } from '../../helpers'
 
 /**
  * The LiveVideoModal displays to the user the live video feed from the robot.
@@ -29,8 +29,17 @@ function LiveVideoModal(props) {
   const marginLeft = convertRemToPixels(1)
   const marginRight = convertRemToPixels(1)
 
+  let size = useWindowSize()
   // 640 x 480 is the standard dimension of images outputed by the RealSense
-  let { width, height } = scaleWidthHeightToWindow(REALSENSE_WIDTH, REALSENSE_HEIGHT, marginTop, marginBottom, marginLeft, marginRight)
+  let { width, height } = scaleWidthHeightToWindow(
+    size,
+    REALSENSE_WIDTH,
+    REALSENSE_HEIGHT,
+    marginTop,
+    marginBottom,
+    marginLeft,
+    marginRight
+  )
   return (
     <Modal
       show={props.show}

@@ -1,3 +1,4 @@
+import { useLayoutEffect, useState } from 'react'
 /**
  * Takes in an imageWidth and imageHeight, and returns a width and height that
  * maintains the same aspect ratio but fits within the window.
@@ -11,13 +12,26 @@
  *
  * @returns {object} the width and height of the image that fits within the window and has the requested margins
  */
-export function scaleWidthHeightToWindow(imageWidth, imageHeight, marginTop = 0, marginBottom = 0, marginLeft = 0, marginRight = 0) {
+
+export function useWindowSize() {
+  const [size, setSize] = useState([0, 0])
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize([window.innerWidth, window.innerHeight])
+    }
+    window.addEventListener('resize', updateSize)
+    updateSize()
+    return () => window.removeEventListener('resize', updateSize)
+  }, [])
+  return size
+}
+
+export function scaleWidthHeightToWindow(size, imageWidth, imageHeight, marginTop = 0, marginBottom = 0, marginLeft = 0, marginRight = 0) {
   // Calculate the aspect ratio of the image
   let imageAspectRatio = imageWidth / imageHeight
-
   // Get the aspect ratio of the available subset of the window
-  let availableWidth = window.innerWidth - marginLeft - marginRight
-  let availableHeight = window.innerHeight - marginTop - marginBottom
+  let availableWidth = size[0] - marginLeft - marginRight
+  let availableHeight = size[1] - marginTop - marginBottom
   let availableAspectRatio = availableWidth / availableHeight
 
   // Calculate the width and height of the image that fits within the window
