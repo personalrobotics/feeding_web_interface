@@ -46,7 +46,6 @@ function Home(props) {
 
   // Get the relevant global variables
   const desiredFoodItem = useGlobalState((state) => state.desiredFoodItem)
-  const detectedMouthCenter = useGlobalState((state) => state.detectedMouthCenter)
 
   /**
    * Determines what screen to render based on the meal state.
@@ -126,8 +125,8 @@ function Home(props) {
          */
         let currentMealState = MEAL_STATE.R_MovingToMouth
         let nextMealState = MEAL_STATE.U_BiteDone
-        let actionInput = { detected_mouth_center: detectedMouthCenter }
-        let waitingText = 'Waiting to move to your mouth...'
+        let actionInput = {}
+        let waitingText = 'Waiting for the robot to move to your mouth...'
         return (
           <RobotMotion
             debug={props.debug}
@@ -167,7 +166,7 @@ function Home(props) {
         return <div>Unknown meal state: {mealState}</div>
       }
     }
-  }, [desiredFoodItem, detectedMouthCenter, mealState, props.debug, props.webVideoServerURL])
+  }, [desiredFoodItem, mealState, props.debug, props.webVideoServerURL])
 
   // Render the component
   return (
