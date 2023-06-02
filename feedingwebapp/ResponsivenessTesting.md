@@ -1,15 +1,6 @@
 # Methodology for Testing Responsiveness 
 
-After developing an app feature, make sure to test it on the following setups. 
-
-For the smartphone and laptops, test on the 4 browsers specified below. For the tablet and monitor, pick one browser to test it on. 
-
-In total, you will run 18 tests  (4 browsers * 1 smartphone + 1 tablet + 4 browsers * 3 laptops + 1 monitor). 
-
-If you don’t have the listed devices available for testing, please “Add custom device” in your browser’s responsive design mode using the width and height of the specific device’s resolution below. Please find the appropriate link in the [Resources](#resources) section at the bottom of this page for each browser's documentation on how to do this *except* Safari. 
-
-## Devices: 
-Total 4 as listed below
+After developing an app feature, make sure to test it on the following setups. Total 4 devices as listed below.
 - **Smartphone:** iPhone 14 Plus [Tyler]; Width: 428 & Height: 926
 - **Tablet:** iPad Pro (6th gen 12.9") [Tyler]; Width: 1024 & Height: 1366
 - **External Monitor:** Width: 4096 & Height: 2304
@@ -17,6 +8,12 @@ Total 4 as listed below
     - Full-screen 
     - Half-screen (vertical split)
     - Quarter screen 
+
+For the smartphone and laptops, test on the 4 browsers specified below. For the tablet and monitor, pick one browser to test it on. 
+
+In total, you will run 18 tests  (4 browsers * 1 smartphone + 1 tablet + 4 browsers * 3 laptops + 1 monitor). 
+
+If you don’t have the listed devices available for testing, please “Add custom device” in your browser’s responsive design mode using the width and height of the specific device’s resolution below. Please find the appropriate link in the [Resources](#resources) section at the bottom of this page for each browser's documentation on how to do this *except* Safari. 
 
 ## Browsers:  
 Chrome, Firefox, Edge, Safari
