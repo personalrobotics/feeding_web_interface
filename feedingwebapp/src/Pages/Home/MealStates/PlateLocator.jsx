@@ -12,7 +12,7 @@ import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 import { REALSENSE_WIDTH, REALSENSE_HEIGHT, CAMERA_FEED_TOPIC } from '../../Constants'
 import { convertRemToPixels, scaleWidthHeightToWindow } from '../../../helpers'
-import { Col, Row } from 'react-bootstrap'
+import { Col, Row, Container } from 'react-bootstrap'
 
 /**
  * The PlateLocator component appears if the user decides to adjust the position
@@ -88,53 +88,55 @@ const PlateLocator = (props) => {
   let directionalArrows = function () {
     return (
       <React.Fragment>
-        <Row className='justify-content-center'>
-          <Button
-            onClick={cartesianControlCommandReceived}
-            style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
-            value='forward'
-            variant='primary'
-          >
-            ⬆
-          </Button>
-        </Row>
-        <Row className='justify-content-center' xs={6} md={3} lg={3}>
-          <Col>
-            <center>
-              <Button
-                onClick={cartesianControlCommandReceived}
-                style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
-                value='left'
-                variant='primary'
-              >
-                ⬅
-              </Button>
-            </center>
-          </Col>
-          <Col style={{ width: '55px' }}></Col>
-          <Col>
-            <center>
-              <Button
-                onClick={cartesianControlCommandReceived}
-                style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
-                value='right'
-                variant='primary'
-              >
-                ➡
-              </Button>
-            </center>
-          </Col>
-        </Row>
-        <Row className='justify-content-center'>
-          <Button
-            onClick={cartesianControlCommandReceived}
-            style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
-            value='back'
-            variant='primary'
-          >
-            ⬇
-          </Button>
-        </Row>
+        <Container fluid>
+          <Row className='justify-content-center' noGutters={true}>
+            <Button
+              onClick={cartesianControlCommandReceived}
+              style={{ fontSize: '25px', alignItems: 'right', width: '55px' }}
+              value='forward'
+              variant='primary'
+            >
+              ⬆
+            </Button>
+          </Row>
+          <Row className='justify-content-center' style={{ '--bs-gutter-x': '0rem' }} xs='auto'>
+            <Col>
+              <center>
+                <Button
+                  onClick={cartesianControlCommandReceived}
+                  style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
+                  value='left'
+                  variant='primary'
+                >
+                  ⬅
+                </Button>
+              </center>
+            </Col>
+            <Col style={{ width: '55px' }}></Col>
+            <Col>
+              <center>
+                <Button
+                  onClick={cartesianControlCommandReceived}
+                  style={{ fontSize: '25px', alignItems: 'left', width: '55px' }}
+                  value='right'
+                  variant='primary'
+                >
+                  ➡
+                </Button>
+              </center>
+            </Col>
+          </Row>
+          <Row className='justify-content-center' noGutters={true}>
+            <Button
+              onClick={cartesianControlCommandReceived}
+              style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
+              value='back'
+              variant='primary'
+            >
+              ⬇
+            </Button>
+          </Row>
+        </Container>
       </React.Fragment>
     )
   }
