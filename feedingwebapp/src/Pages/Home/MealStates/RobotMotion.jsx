@@ -325,12 +325,6 @@ const RobotMotion = (props) => {
             <></>
           )}
           <br />
-          <br />
-          {/**
-           * TODO (Issue #22): Instead of just displaying progress via text on
-           * the page, we should visually show a progress bar. This will also
-           * negate the need for the `actionStatusText` function.
-           */}
           {actionStatusText(actionStatus)}
         </div>
       </Row>

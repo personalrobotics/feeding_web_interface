@@ -63,14 +63,6 @@ const PlateLocator = (props) => {
     )
   }
 
-  /**
-   * An array of buttons for the user to teleoperate the robot, and a
-   * button for the user to indicate that they are done teleoperating the
-   * robot.
-   *
-   * TODO: The values for margins should not be hardcoded. Bootstrap's
-   * grid should be able to get alignment without fine-tuning of margins.
-   */
   let showVideo = function (currentWidth, currentHeight) {
     return (
       <img

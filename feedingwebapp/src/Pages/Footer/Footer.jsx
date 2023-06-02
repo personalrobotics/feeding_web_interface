@@ -30,18 +30,18 @@ import { useGlobalState } from '../GlobalState'
 const Footer = (props) => {
   // Get the current meal state
   const mealState = useGlobalState((state) => state.mealState)
-
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Icons and other parameters for the footer buttons
   let pauseIcon = '/robot_state_imgs/pause_button_icon.svg'
   let backIcon = props.backMealState ? MOVING_STATE_ICON_DICT[props.backMealState] : ''
   let resumeIcon = MOVING_STATE_ICON_DICT[mealState]
   let phantomButtonIcon = '/robot_state_imgs/phantom_view_image.svg'
   // Width of Back and Resume buttons
-  let backResumeButtonWidth = '150px'
+  let backResumeButtonWidth = isPortrait ? '150px' : '450px'
   // Height of all Footer buttons
-  let footerButtonHeight = '100px'
-  // Flag to check if the current orientation is portrait
-  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  let footerButtonHeight = isPortrait ? '100px' : '50px'
+  let footerIconHeight = '48px'
 
   /**
    * Get the pause text and button to render in footer.
@@ -79,13 +79,13 @@ const Footer = (props) => {
                   marginLeft: '10',
                   marginRight: '10',
                   marginTop: '10',
-                  width: '650px',
-                  height: '50px',
+                  width: '900px',
+                  height: footerButtonHeight,
                   '--bs-btn-padding-y': '0rem'
                 }}
               >
                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                  <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ justifyContent: 'center' }}>
                     <p
                       className='transitionMessage'
                       style={{ marginBottom: '0', fontSize: '150%', color: 'black', fontWeight: 'bold', padding: '0' }}
@@ -93,8 +93,8 @@ const Footer = (props) => {
                       Pause
                     </p>
                   </View>
-                  <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
-                    <img style={{ width: '73px', height: '49px' }} src={pauseIcon} alt='pause_icon' className='center' />
+                  <View>
+                    <img style={{ width: '73px', height: footerIconHeight }} src={pauseIcon} alt='pause_icon' className='center' />
                   </View>
                 </View>
               </Button>
@@ -103,7 +103,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [isPortrait, pauseIcon, footerButtonHeight]
+    [isPortrait, pauseIcon, footerButtonHeight, footerIconHeight]
   )
 
   /**
@@ -138,13 +138,13 @@ const Footer = (props) => {
               variant='warning'
               onClick={callback}
               style={{
-                width: '450px',
-                height: '54px',
+                width: backResumeButtonWidth,
+                height: footerButtonHeight,
                 '--bs-btn-padding-y': '0rem'
               }}
             >
               <View style={{ flexDirection: 'row', justifyContent: 'center', margin: '1px' }}>
-                <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ justifyContent: 'center' }}>
                   <p
                     className='transitionMessage'
                     style={{ marginBottom: '0', fontSize: '150%', color: 'black', fontWeight: 'bold', padding: '0' }}
@@ -152,8 +152,8 @@ const Footer = (props) => {
                     Back
                   </p>
                 </View>
-                <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
-                  <img style={{ width: '73px', height: '48px' }} src={backIcon} alt='back_icon' className='center' />
+                <View>
+                  <img style={{ width: '73px', height: footerIconHeight }} src={backIcon} alt='back_icon' className='center' />
                 </View>
               </View>
             </Button>
@@ -161,7 +161,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [isPortrait, backIcon, backResumeButtonWidth, footerButtonHeight]
+    [isPortrait, backIcon, backResumeButtonWidth, footerButtonHeight, footerIconHeight]
   )
 
   /**
@@ -195,13 +195,13 @@ const Footer = (props) => {
               variant='success'
               onClick={callback}
               style={{
-                width: '450px',
-                height: '54px',
+                width: backResumeButtonWidth,
+                height: footerButtonHeight,
                 '--bs-btn-padding-y': '0rem'
               }}
             >
               <View style={{ flexDirection: 'row', justifyContent: 'center', margin: '1px' }}>
-                <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ justifyContent: 'center' }}>
                   <p
                     className='transitionMessage'
                     style={{ marginBottom: '0', fontSize: '150%', color: 'black', fontWeight: 'bold', padding: '0' }}
@@ -209,8 +209,13 @@ const Footer = (props) => {
                     Resume
                   </p>
                 </View>
-                <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
-                  <img style={{ width: '73px', height: '48px' }} src={resumeIcon} alt='resume_icon' className='center' />
+                <View>
+                  <img
+                    style={{ width: '73px', height: footerIconHeight, justifyContent: 'center' }}
+                    src={resumeIcon}
+                    alt='resume_icon'
+                    className='center'
+                  />
                 </View>
               </View>
             </Button>
@@ -218,7 +223,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [isPortrait, resumeIcon, backResumeButtonWidth, footerButtonHeight]
+    [isPortrait, resumeIcon, backResumeButtonWidth, footerButtonHeight, footerIconHeight]
   )
 
   /**
