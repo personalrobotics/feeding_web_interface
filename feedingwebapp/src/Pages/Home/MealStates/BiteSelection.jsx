@@ -256,7 +256,7 @@ const BiteSelection = (props) => {
 
           return (
             <>
-              <h5 style={{ textAlign: 'center' }}>Select a food from below, or retry clicking on video. </h5>
+              <h5 style={{ textAlign: 'center' }}>Select a food from below, or retry clicking on image. </h5>
               <Row>
                 {actionResult.detected_items.map((detected_item, i) => (
                   <Col key={i} className='justify-content-center' style={{ padding: '0', marginBottom: '6px' }}>
@@ -297,7 +297,7 @@ const BiteSelection = (props) => {
   let showVideo = function (currentWidth, currentHeight) {
     return (
       <React.Fragment>
-        <h5 style={{ textAlign: 'center' }}>Click on video to select food.</h5>
+        <h5 style={{ textAlign: 'center' }}>Click on image to select food.</h5>
         <img
           src={imgSrc}
           alt='Live video feed from the robot'
@@ -312,9 +312,7 @@ const BiteSelection = (props) => {
     return (
       <div style={{ display: 'block', width: '100%' }} className='outer'>
         {/* Ask the user whether they want to continue without acquisition by moving to above plate position */}
-        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '20px' }}>
-          Continue without acquiring bite.
-        </p>
+        <h5 style={{ textAlign: 'center' }}>Skip acquisition.</h5>
         {/* Icon to move to mouth */}
         <Row className='justify-content-center mx-auto mb-2 w-75'>
           <Button
@@ -335,8 +333,7 @@ const BiteSelection = (props) => {
     return (
       <div style={{ display: 'block', width: '100%' }} className='outer'>
         {/* Ask the user whether they want to continue without acquisition by moving to above plate position */}
-        <h5 style={{ textAlign: 'center' }}>Continue without</h5>
-        <h5 style={{ textAlign: 'center' }}>acquiring bite.</h5>
+        <h5 style={{ textAlign: 'center' }}>Skip acquisition.</h5>
 
         {/* Icon to move to mouth */}
         <Row className='justify-content-center mx-auto mb-2'>
@@ -405,7 +402,7 @@ const BiteSelection = (props) => {
         </React.Fragment>
       ) : (
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <View>{showVideo(width * 0.68, height * 0.68)}</View>
+          <View style={{ paddingHorizontal: 20 }}>{showVideo(width * 0.68, height * 0.68)}</View>
           <View>
             {actionStatusText()}
             {withoutAcquireButtonLandscape()}
