@@ -19,7 +19,7 @@ In total, you will run 23 tests (4 browsers * 1 smartphone * 2 orientations + 1 
 
 In portrait, pages should have their content appear on one screen and not require scrolling. In landscape, scrolling may be unavoidable for some screens, but try to rearrange the content horizontally in order to minimize required scrolling. 
 
-If you don’t have the listed devices available for testing, please “Add custom device” in your browser’s responsive design mode using the width and height of the specific device’s resolution below. Please find the appropriate link in the Resources section below for each browser's documentation on how to do this *except* Safari: 
+If you don’t have the listed devices available for testing, please “Add custom device” in your browser’s responsive design mode using the width and height of the specific device’s resolution below. Please find the appropriate link from below for each browser's documentation on how to do this *except* Safari: 
 
 1. https://www.ios-resolution.com/
 2. https://support.apple.com/kb/SP748?locale=en_US
