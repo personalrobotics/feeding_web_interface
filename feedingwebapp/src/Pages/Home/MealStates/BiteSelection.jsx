@@ -255,10 +255,10 @@ const BiteSelection = (props) => {
 
           return (
             <>
-              <h5 style={{ textAlign: 'center' }}>Select a below item, or retry clicking on video. </h5>
+              <h5 style={{ textAlign: 'center' }}>Select a food from below, or retry clicking on video. </h5>
               <Row>
                 {actionResult.detected_items.map((detected_item, i) => (
-                  <Col key={i} className='justify-content-center'>
+                  <Col key={i} className='justify-content-center' style={{ padding: '0', marginBottom: '5px' }}>
                     <MaskButton
                       buttonSize={buttonSize}
                       imgSrc={imgSrc}
@@ -403,9 +403,9 @@ const BiteSelection = (props) => {
         </React.Fragment>
       ) : (
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>{showVideo()}</View>
-          <View style={{ flex: '1', alignItems: 'center' }}>{actionStatusText()}</View>
-          <View style={{ flex: '1', alignItems: 'center' }}>
+          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 }}>{showVideo()}</View>
+          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 }}>{actionStatusText()}</View>
+          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
             {withoutAcquireButtonLandscape()}
             {debugOptions}
           </View>

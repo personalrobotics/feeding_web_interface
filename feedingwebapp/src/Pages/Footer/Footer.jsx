@@ -134,6 +134,7 @@ const Footer = (props) => {
             </React.Fragment>
           ) : (
             <Button
+              className='me-1'
               variant='warning'
               onClick={callback}
               style={{
