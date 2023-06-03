@@ -1,4 +1,20 @@
 import { useLayoutEffect, useState } from 'react'
+
+// Update width and height values whenever the screen is repainted.
+export function useWindowSize() {
+  const [size, setSize] = useState([0, 0])
+  useLayoutEffect(() => {
+    // set current width and height values
+    function updateSize() {
+      setSize([window.innerWidth, window.innerHeight])
+    }
+    window.addEventListener('resize', updateSize)
+    updateSize()
+    return () => window.removeEventListener('resize', updateSize)
+  }, [])
+  return size
+}
+
 /**
  * Takes in an imageWidth and imageHeight, and returns a width and height that
  * maintains the same aspect ratio but fits within the window.
@@ -12,19 +28,6 @@ import { useLayoutEffect, useState } from 'react'
  *
  * @returns {object} the width and height of the image that fits within the window and has the requested margins
  */
-
-export function useWindowSize() {
-  const [size, setSize] = useState([0, 0])
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight])
-    }
-    window.addEventListener('resize', updateSize)
-    updateSize()
-    return () => window.removeEventListener('resize', updateSize)
-  }, [])
-  return size
-}
 
 export function scaleWidthHeightToWindow(size, imageWidth, imageHeight, marginTop = 0, marginBottom = 0, marginLeft = 0, marginRight = 0) {
   // Calculate the aspect ratio of the image

@@ -294,6 +294,14 @@ const BiteSelection = (props) => {
     }
   }, [actionStatus, actionResult, width, height, scaleFactor, foodItemClicked, imgSrc])
 
+  /**
+   * Get the robot's live video stream.
+   *
+   * @param {number} currentWidth the adjusted width in pixels
+   * @param {number} currentHeight the adjusted height in pixels
+   *
+   * @returns {JSX.Element} the robot's live video stream
+   */
   let showVideo = function (currentWidth, currentHeight) {
     return (
       <React.Fragment>
@@ -308,49 +316,34 @@ const BiteSelection = (props) => {
     )
   }
 
-  let withoutAcquireButtonPortrait = function () {
+  // Get the button for continue without acquiring bite
+  let withoutAcquireButton = function () {
     return (
       <div style={{ display: 'block', width: '100%' }} className='outer'>
         {/* Ask the user whether they want to continue without acquisition by moving to above plate position */}
         <h5 style={{ textAlign: 'center' }}>Skip acquisition.</h5>
         {/* Icon to move to mouth */}
-        <Row className='justify-content-center mx-auto mb-2 w-75'>
+        <Row className='justify-content-center'>
           <Button
             variant='warning'
             className='mx-2 mb-2 btn-huge'
             size='lg'
             onClick={moveToMouth}
-            style={{ width: '300px', height: '200px' }}
+            style={{ width: isPortrait ? '300px' : '160px', height: isPortrait ? '200px' : '106px' }}
           >
-            <img src={moveToMouthImage} alt='move_to_mouth_image' className='center' />
+            <img
+              src={moveToMouthImage}
+              style={{ width: isPortrait ? '250px' : '140px', height: isPortrait ? '150px' : '86px' }}
+              alt='move_to_mouth_image'
+              className='center'
+            />
           </Button>
         </Row>
       </div>
     )
   }
 
-  let withoutAcquireButtonLandscape = function () {
-    return (
-      <div style={{ display: 'block', width: '100%' }} className='outer'>
-        {/* Ask the user whether they want to continue without acquisition by moving to above plate position */}
-        <h5 style={{ textAlign: 'center' }}>Skip acquisition.</h5>
-
-        {/* Icon to move to mouth */}
-        <Row className='justify-content-center mx-auto mb-2'>
-          <Button
-            variant='warning'
-            className='mx-2 mb-2 btn-huge'
-            size='lg'
-            onClick={moveToMouth}
-            style={{ width: '160px', height: '106px' }}
-          >
-            <img src={moveToMouthImage} alt='move_to_mouth_image' className='center' style={{ width: '150px', height: '88px' }} />
-          </Button>
-        </Row>
-      </div>
-    )
-  }
-
+  // Get the continue button when debug mode is enabled.
   let debugOptions = function () {
     /* If the user is running in debug mode, give them the option to skip */
     props.debug ? (
@@ -397,7 +390,7 @@ const BiteSelection = (props) => {
             {/* Display the action status and/or results */}
             {actionStatusText()}
           </center>
-          {withoutAcquireButtonPortrait()}
+          {withoutAcquireButton()}
           {debugOptions()}
         </React.Fragment>
       ) : (
@@ -405,7 +398,7 @@ const BiteSelection = (props) => {
           <View style={{ paddingHorizontal: 20 }}>{showVideo(width * 0.68, height * 0.68)}</View>
           <View>
             {actionStatusText()}
-            {withoutAcquireButtonLandscape()}
+            {withoutAcquireButton()}
             {debugOptions}
           </View>
         </View>

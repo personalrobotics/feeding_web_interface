@@ -52,7 +52,11 @@ const PlateLocator = (props) => {
   const margin = convertRemToPixels(1)
   let { width, height } = scaleWidthHeightToWindow(size, REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
 
-  // done button to click when locating plate is done
+  /**
+   * Get the done button to click when locating plate is done.
+   *
+   * @returns {JSX.Element} the done button
+   */
   let doneButton = function () {
     return (
       <center>
@@ -63,6 +67,14 @@ const PlateLocator = (props) => {
     )
   }
 
+  /**
+   * Get the robot's live video stream.
+   *
+   * @param {number} currentWidth the adjusted width in pixels
+   * @param {number} currentHeight the adjusted height in pixels
+   *
+   * @returns {JSX.Element} the robot's live video stream
+   */
   let showVideo = function (currentWidth, currentHeight) {
     return (
       <img
@@ -83,8 +95,10 @@ const PlateLocator = (props) => {
   }
 
   /**
-   * An array of buttons for the user to teleoperate the robot, and a
+   * An array of directional buttons for the user to teleoperate the robot, and a
    * button for the user to indicate that they are done teleoperating the robot.
+   *
+   * @returns {JSX.Element} the directional arrow buttons
    */
   let directionalArrows = function () {
     return (
