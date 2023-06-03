@@ -46,10 +46,16 @@ const Footer = (props) => {
 
   // Width of Back and Resume buttons
   let backResumeButtonWidth = width / 2
-  // Height of all Footer buttons
+  // Height of Footer buttons
   let footerButtonHeight = isPortrait ? '95px' : '50px'
+  // Height of Footer icon images
   let footerIconHeight = isPortrait ? '82px' : '42px'
+  // Width of landscape view of Footer buttons
   let footerButtonLandscapeWidth = '73px'
+  // Size of Footer buttons' font
+  let footerFontSize = '150%' 
+  // Width of portrait view of Footer buttons
+  let footerButtonPortraitWidth = '110px'
 
   /**
    * Get the pause text and button to render in footer.
@@ -80,7 +86,7 @@ const Footer = (props) => {
                 <View style={{ justifyContent: 'center' }}>
                   <p
                     className='transitionMessage'
-                    style={{ marginBottom: '0', fontSize: isPortrait ? '170%' : '150%', color: 'black', fontWeight: 'bold', padding: '0' }}
+                    style={{ marginBottom: '0', fontSize: isPortrait ? '170%' : footerFontSize, color: 'black', fontWeight: 'bold', padding: '0' }}
                   >
                     Pause
                   </p>
@@ -129,14 +135,14 @@ const Footer = (props) => {
               <View style={{ justifyContent: 'center' }}>
                 <p
                   className='transitionMessage'
-                  style={{ marginBottom: '0', fontSize: '150%', color: 'black', fontWeight: 'bold', padding: '0' }}
+                  style={{ marginBottom: '0', fontSize: footerFontSize, color: 'black', fontWeight: 'bold', padding: '0' }}
                 >
                   Back
                 </p>
               </View>
               <View>
                 <img
-                  style={{ width: isPortrait ? '110px' : footerButtonLandscapeWidth, height: footerIconHeight }}
+                  style={{ width: isPortrait ? footerButtonPortraitWidth : footerButtonLandscapeWidth, height: footerIconHeight }}
                   src={backIcon}
                   alt='back_icon'
                   className='center'
@@ -173,14 +179,14 @@ const Footer = (props) => {
               <View style={{ justifyContent: 'center' }}>
                 <p
                   className='transitionMessage'
-                  style={{ marginBottom: '0', fontSize: '150%', color: 'black', fontWeight: 'bold', padding: '0' }}
+                  style={{ marginBottom: '0', fontSize: footerFontSize, color: 'black', fontWeight: 'bold', padding: '0' }}
                 >
                   Resume
                 </p>
               </View>
               <View>
                 <img
-                  style={{ width: isPortrait ? '110px' : footerButtonLandscapeWidth, height: footerIconHeight }}
+                  style={{ width: isPortrait ? footerButtonPortraitWidth : footerButtonLandscapeWidth, height: footerIconHeight }}
                   src={resumeIcon}
                   alt='resume_icon'
                   className='center'
@@ -217,7 +223,7 @@ const Footer = (props) => {
           }}
         >
           <img
-            style={{ width: isPortrait ? '110px' : footerButtonLandscapeWidth, height: footerIconHeight }}
+            style={{ width: isPortrait ? footerButtonPortraitWidth : footerButtonLandscapeWidth, height: footerIconHeight }}
             src={phantomButtonIcon}
             alt='phantom_button_img'
             className='center'
