@@ -94,7 +94,7 @@ const Footer = (props) => {
               </Button>
             </Row>
           ) : (
-            <Row className='justify-content-center mx-auto'>
+            <Row className='justify-content-center'>
               {/* Icon to pause */}
               <Button
                 variant='danger'
