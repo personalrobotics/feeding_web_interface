@@ -53,7 +53,7 @@ const Footer = (props) => {
   // Width of landscape view of Footer buttons
   let footerButtonLandscapeWidth = '73px'
   // Size of Footer buttons' font
-  let footerFontSize = '150%' 
+  let footerFontSize = '150%'
   // Width of portrait view of Footer buttons
   let footerButtonPortraitWidth = '110px'
 
@@ -86,7 +86,13 @@ const Footer = (props) => {
                 <View style={{ justifyContent: 'center' }}>
                   <p
                     className='transitionMessage'
-                    style={{ marginBottom: '0', fontSize: isPortrait ? '170%' : footerFontSize, color: 'black', fontWeight: 'bold', padding: '0' }}
+                    style={{
+                      marginBottom: '0',
+                      fontSize: isPortrait ? '170%' : footerFontSize,
+                      color: 'black',
+                      fontWeight: 'bold',
+                      padding: '0'
+                    }}
                   >
                     Pause
                   </p>
@@ -108,7 +114,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [isPortrait, pauseIcon, footerButtonHeight, footerIconHeight, width, footerButtonLandscapeWidth]
+    [isPortrait, pauseIcon, footerButtonHeight, footerIconHeight, width, footerButtonLandscapeWidth, footerFontSize]
   )
 
   /**
@@ -153,7 +159,16 @@ const Footer = (props) => {
         </>
       )
     },
-    [isPortrait, backIcon, backResumeButtonWidth, footerButtonHeight, footerIconHeight, footerButtonLandscapeWidth]
+    [
+      isPortrait,
+      backIcon,
+      backResumeButtonWidth,
+      footerButtonHeight,
+      footerIconHeight,
+      footerFontSize,
+      footerButtonPortraitWidth,
+      footerButtonLandscapeWidth
+    ]
   )
 
   /**
@@ -197,7 +212,16 @@ const Footer = (props) => {
         </>
       )
     },
-    [isPortrait, resumeIcon, backResumeButtonWidth, footerButtonHeight, footerIconHeight, footerButtonLandscapeWidth]
+    [
+      isPortrait,
+      resumeIcon,
+      backResumeButtonWidth,
+      footerButtonHeight,
+      footerFontSize,
+      footerButtonPortraitWidth,
+      footerIconHeight,
+      footerButtonLandscapeWidth
+    ]
   )
 
   /**
