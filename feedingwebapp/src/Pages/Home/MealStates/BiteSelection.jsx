@@ -233,9 +233,23 @@ const BiteSelection = (props) => {
       case ROS_ACTION_STATUS_EXECUTE:
         if (actionStatus.feedback) {
           let elapsed_time = actionStatus.feedback.elapsed_time.sec + actionStatus.feedback.elapsed_time.nanosec / 10 ** 9
-          return <h5 style={{ textAlign: 'center' }}>Detecting food... ({Math.round(elapsed_time * 100) / 100} sec)</h5>
+          return (
+            <React.Fragment>
+              <h5 style={{ textAlign: 'center' }}>Detecting food... ({Math.round(elapsed_time * 100) / 100} sec)</h5>
+              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+            </React.Fragment>
+          )
         } else {
-          return <h5 style={{ textAlign: 'center' }}>Detecting food...</h5>
+          return (
+            <React.Fragment>
+              <h5 style={{ textAlign: 'center' }}>Detecting food... </h5>
+              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+            </React.Fragment>
+          )
         }
       case ROS_ACTION_STATUS_SUCCEED:
         if (actionResult && actionResult.detected_items && actionResult.detected_items.length > 0) {
@@ -256,10 +270,10 @@ const BiteSelection = (props) => {
 
           return (
             <>
-              <h5 style={{ textAlign: 'center' }}>Select a food from below, or retry clicking on image. </h5>
+              <h5 style={{ textAlign: 'center' }}>Select a food, or retry by clicking the image.</h5>
               <Row>
                 {actionResult.detected_items.map((detected_item, i) => (
-                  <Col key={i} className='justify-content-center' style={{ padding: '0', marginBottom: '6px' }}>
+                  <Col key={i} className='justify-content-center' style={{ padding: '0' }}>
                     <MaskButton
                       buttonSize={buttonSize}
                       imgSrc={imgSrc}
@@ -290,7 +304,14 @@ const BiteSelection = (props) => {
       case ROS_ACTION_STATUS_CANCELED:
         return <h3 style={{ textAlign: 'center' }}>Food detection canceled</h3>
       default:
-        return <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+        return (
+          <React.Fragment>
+            <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+            <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+            <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+            <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+          </React.Fragment>
+        )
     }
   }, [actionStatus, actionResult, width, height, scaleFactor, foodItemClicked, imgSrc])
 
@@ -394,9 +415,9 @@ const BiteSelection = (props) => {
           {debugOptions()}
         </React.Fragment>
       ) : (
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <View style={{ paddingHorizontal: 20 }}>{showVideo(width * 0.68, height * 0.68)}</View>
-          <View>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={{ paddingHorizontal: 40 }}>{showVideo(width * 0.68, height * 0.68)}</View>
+          <View style={{ justifyContent: 'center', width: '450px' }}>
             {actionStatusText()}
             {withoutAcquireButton()}
             {debugOptions}

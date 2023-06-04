@@ -161,7 +161,9 @@ const PlateLocator = (props) => {
     <div style={{ overflowX: 'hidden', overflowY: 'auto' }} className='justify-content-center'>
       {isPortrait ? (
         <React.Fragment>
-          <center>{showVideo(width, height)}</center>{directionalArrows()}{doneButton()}
+          <center>{showVideo(width, height)}</center>
+          {directionalArrows()}
+          {doneButton()}
         </React.Fragment>
       ) : (
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: '0.5px' }}>
