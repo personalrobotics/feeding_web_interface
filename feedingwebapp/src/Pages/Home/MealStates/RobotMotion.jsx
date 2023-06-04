@@ -251,7 +251,7 @@ const RobotMotion = (props) => {
                 <>
                   {isPortrait ? (
                     <React.Fragment>
-                      <h3>Robot is moving...</h3>,
+                      <h3>Robot is moving...</h3>
                       <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
                       <center>
                         <CircleProgressBar proportion={progress} />
