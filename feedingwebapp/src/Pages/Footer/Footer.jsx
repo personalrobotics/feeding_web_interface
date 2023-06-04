@@ -55,6 +55,8 @@ const Footer = (props) => {
   let footerIconWidth = isPortrait ? '82px' : '90px'
   // Size of Footer buttons' font
   let footerFontSize = '150%'
+  // Margin around footer buttons
+  let footerMargin = 3
 
   /**
    * Get the pause text and button to render in footer.
@@ -113,7 +115,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [isPortrait, pauseIcon, footerButtonHeight, footerIconHeight, pauseButtonWidth, footerFontSize, footerIconWidth]
+    [pauseIcon, footerButtonHeight, footerIconHeight, pauseButtonWidth, footerFontSize, footerIconWidth]
   )
 
   /**
@@ -131,7 +133,7 @@ const Footer = (props) => {
             style={{
               width: backResumeButtonWidth,
               height: footerButtonHeight,
-              marginRight: 3,
+              marginRight: footerMargin,
               '--bs-btn-padding-y': '0rem'
             }}
           >
@@ -152,7 +154,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [isPortrait, backIcon, backResumeButtonWidth, footerButtonHeight, footerIconHeight, footerFontSize, footerIconWidth]
+    [backIcon, backResumeButtonWidth, footerButtonHeight, footerMargin, footerIconHeight, footerFontSize, footerIconWidth]
   )
 
   /**
@@ -168,7 +170,7 @@ const Footer = (props) => {
             variant='success'
             onClick={callback}
             style={{
-              marginLeft: 3,
+              marginLeft: footerMargin,
               width: backResumeButtonWidth,
               height: footerButtonHeight
             }}
@@ -177,7 +179,14 @@ const Footer = (props) => {
               <View style={{ justifyContent: 'center' }}>
                 <p
                   className='transitionMessage'
-                  style={{ marginBottom: '0', fontSize: footerFontSize, color: 'black', fontWeight: 'bold', padding: '0' }}
+                  style={{
+                    marginBottom: '0',
+                    marginLeft: '1px',
+                    fontSize: footerFontSize,
+                    color: 'black',
+                    fontWeight: 'bold',
+                    padding: '0'
+                  }}
                 >
                   Resume
                 </p>
@@ -190,7 +199,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [isPortrait, resumeIcon, backResumeButtonWidth, footerButtonHeight, footerFontSize, footerIconWidth, footerIconHeight]
+    [isPortrait, resumeIcon, backResumeButtonWidth, footerButtonHeight, footerMargin, footerFontSize, footerIconWidth, footerIconHeight]
   )
 
   /**
@@ -208,8 +217,8 @@ const Footer = (props) => {
           style={{
             backgroundColor: 'transparent',
             border: 'none',
-            marginLeft: 10,
-            marginRight: 10,
+            marginLeft: footerMargin,
+            marginRight: footerMargin,
             width: backResumeButtonWidth,
             height: footerButtonHeight,
             '--bs-btn-padding-y': '0rem'
