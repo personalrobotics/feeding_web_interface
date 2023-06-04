@@ -46,16 +46,15 @@ const Footer = (props) => {
 
   // Width of Back and Resume buttons
   let backResumeButtonWidth = width / 2
-  // Height of Footer buttons
+  // Width of Pause button
+  let pauseButtonWidth = width
+  // Height of Footer buttons and icons. In landscape, the button will be shorter in height, since it is wider.
   let footerButtonHeight = isPortrait ? '95px' : '50px'
-  // Height of Footer icon images
-  let footerIconHeight = isPortrait ? '82px' : '42px'
-  // Width of landscape view of Footer buttons
-  let footerButtonLandscapeWidth = '73px'
+  let footerIconHeight = isPortrait ? '87px' : '42px'
+  // Width of Footer icon images in buttons
+  let footerIconWidth = isPortrait ? '82px' : '90px'
   // Size of Footer buttons' font
   let footerFontSize = '150%'
-  // Width of portrait view of Footer buttons
-  let footerButtonPortraitWidth = '110px'
 
   /**
    * Get the pause text and button to render in footer.
@@ -72,9 +71,9 @@ const Footer = (props) => {
               variant='danger'
               onClick={callback}
               style={{
-                width: width,
+                width: pauseButtonWidth,
                 height: footerButtonHeight,
-                '--bs-btn-padding-y': isPortrait ? '' : '0rem'
+                '--bs-btn-padding-y': '0rem'
               }}
             >
               <View
@@ -88,7 +87,7 @@ const Footer = (props) => {
                     className='transitionMessage'
                     style={{
                       marginBottom: '0',
-                      fontSize: isPortrait ? '170%' : footerFontSize,
+                      fontSize: footerFontSize,
                       color: 'black',
                       fontWeight: 'bold',
                       padding: '0'
@@ -100,8 +99,8 @@ const Footer = (props) => {
                 <View>
                   <img
                     style={{
-                      width: isPortrait ? '144px' : footerButtonLandscapeWidth,
-                      height: isPortrait ? footerIconHeight * 2 : footerIconHeight
+                      width: footerIconWidth,
+                      height: footerIconHeight
                     }}
                     src={pauseIcon}
                     alt='pause_icon'
@@ -114,7 +113,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [isPortrait, pauseIcon, footerButtonHeight, footerIconHeight, width, footerButtonLandscapeWidth, footerFontSize]
+    [isPortrait, pauseIcon, footerButtonHeight, footerIconHeight, pauseButtonWidth, footerFontSize, footerIconWidth]
   )
 
   /**
@@ -130,10 +129,9 @@ const Footer = (props) => {
             variant='warning'
             onClick={callback}
             style={{
-              marginLeft: isPortrait ? 10 : '',
               width: backResumeButtonWidth,
               height: footerButtonHeight,
-              marginRight: 5,
+              marginRight: 3,
               '--bs-btn-padding-y': '0rem'
             }}
           >
@@ -147,28 +145,14 @@ const Footer = (props) => {
                 </p>
               </View>
               <View>
-                <img
-                  style={{ width: isPortrait ? footerButtonPortraitWidth : footerButtonLandscapeWidth, height: footerIconHeight }}
-                  src={backIcon}
-                  alt='back_icon'
-                  className='center'
-                />
+                <img style={{ width: footerIconWidth, height: footerIconHeight }} src={backIcon} alt='back_icon' className='center' />
               </View>
             </View>
           </Button>
         </>
       )
     },
-    [
-      isPortrait,
-      backIcon,
-      backResumeButtonWidth,
-      footerButtonHeight,
-      footerIconHeight,
-      footerFontSize,
-      footerButtonPortraitWidth,
-      footerButtonLandscapeWidth
-    ]
+    [isPortrait, backIcon, backResumeButtonWidth, footerButtonHeight, footerIconHeight, footerFontSize, footerIconWidth]
   )
 
   /**
@@ -184,8 +168,7 @@ const Footer = (props) => {
             variant='success'
             onClick={callback}
             style={{
-              marginLeft: isPortrait ? 5 : '',
-              marginRight: isPortrait ? 10 : '',
+              marginLeft: 3,
               width: backResumeButtonWidth,
               height: footerButtonHeight
             }}
@@ -200,28 +183,14 @@ const Footer = (props) => {
                 </p>
               </View>
               <View>
-                <img
-                  style={{ width: isPortrait ? footerButtonPortraitWidth : footerButtonLandscapeWidth, height: footerIconHeight }}
-                  src={resumeIcon}
-                  alt='resume_icon'
-                  className='center'
-                />
+                <img style={{ width: footerIconWidth, height: footerIconHeight }} src={resumeIcon} alt='resume_icon' className='center' />
               </View>
             </View>
           </Button>
         </>
       )
     },
-    [
-      isPortrait,
-      resumeIcon,
-      backResumeButtonWidth,
-      footerButtonHeight,
-      footerFontSize,
-      footerButtonPortraitWidth,
-      footerIconHeight,
-      footerButtonLandscapeWidth
-    ]
+    [isPortrait, resumeIcon, backResumeButtonWidth, footerButtonHeight, footerFontSize, footerIconWidth, footerIconHeight]
   )
 
   /**
@@ -247,7 +216,7 @@ const Footer = (props) => {
           }}
         >
           <img
-            style={{ width: isPortrait ? footerButtonPortraitWidth : footerButtonLandscapeWidth, height: footerIconHeight }}
+            style={{ width: footerIconWidth, height: footerIconHeight }}
             src={phantomButtonIcon}
             alt='phantom_button_img'
             className='center'
