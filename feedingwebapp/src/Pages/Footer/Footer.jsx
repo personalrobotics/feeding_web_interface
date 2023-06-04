@@ -9,8 +9,8 @@ import { useMediaQuery } from 'react-responsive'
 import PropTypes from 'prop-types'
 
 // Local imports
-import { REALSENSE_WIDTH, REALSENSE_HEIGHT, MOVING_STATE_ICON_DICT } from '../Constants'
-import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow } from '../../helpers'
+import { MOVING_STATE_ICON_DICT } from '../Constants'
+import { useWindowSize } from '../../helpers'
 import { useGlobalState } from '../GlobalState'
 
 /**
@@ -41,9 +41,9 @@ const Footer = (props) => {
 
   // Get the size of the robot's live video stream.
   let size = useWindowSize()
-  const margin = convertRemToPixels(1)
-  let { width } = scaleWidthHeightToWindow(size, REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
-
+  // Pixels to subtract from window width
+  let footerWidthSubtraction = 32
+  let width = size[0] - footerWidthSubtraction
   // Width of Back and Resume buttons
   let backResumeButtonWidth = width / 2
   // Width of Pause button
@@ -175,7 +175,7 @@ const Footer = (props) => {
               height: footerButtonHeight
             }}
           >
-            <View style={{ flexDirection: 'row', justifyContent: 'center', marginLeft: isPortrait ? '11px' : '' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
               <View style={{ justifyContent: 'center' }}>
                 <p
                   className='transitionMessage'
@@ -199,7 +199,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [isPortrait, resumeIcon, backResumeButtonWidth, footerButtonHeight, footerMargin, footerFontSize, footerIconWidth, footerIconHeight]
+    [resumeIcon, backResumeButtonWidth, footerButtonHeight, footerMargin, footerFontSize, footerIconWidth, footerIconHeight]
   )
 
   /**
