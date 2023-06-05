@@ -52,7 +52,7 @@ export function showVideo(webVideoServerURL, currentWidth, currentHeight, onclic
  * Takes in an imageWidth and imageHeight, and returns a width and height that
  * maintains the same aspect ratio but fits within the window.
  *
- * @param {number} size the inner width and height of the window
+ * @param {number} windowSize the inner width and height of the window
  * @param {number} imageWidth the original image's width in pixels
  * @param {number} imageHeight the original image's height in pixels
  * @param {number} marginTop the desired top margin between window and image, in pixels
@@ -63,12 +63,20 @@ export function showVideo(webVideoServerURL, currentWidth, currentHeight, onclic
  * @returns {object} the width and height of the image that fits within the window and has the requested margins
  */
 
-export function scaleWidthHeightToWindow(size, imageWidth, imageHeight, marginTop = 0, marginBottom = 0, marginLeft = 0, marginRight = 0) {
+export function scaleWidthHeightToWindow(
+  windowSize,
+  imageWidth,
+  imageHeight,
+  marginTop = 0,
+  marginBottom = 0,
+  marginLeft = 0,
+  marginRight = 0
+) {
   // Calculate the aspect ratio of the image
   let imageAspectRatio = imageWidth / imageHeight
   // Get the aspect ratio of the available subset of the window
-  let availableWidth = size[0] - marginLeft - marginRight
-  let availableHeight = size[1] - marginTop - marginBottom
+  let availableWidth = windowSize[0] - marginLeft - marginRight
+  let availableHeight = windowSize[1] - marginTop - marginBottom
   let availableAspectRatio = availableWidth / availableHeight
 
   // Calculate the width and height of the image that fits within the window

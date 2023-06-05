@@ -51,7 +51,7 @@ const BiteSelection = (props) => {
   let iconWidth = isPortrait ? '250px' : '140px'
   let iconHeight = isPortrait ? '150px' : '86px'
   // Factor to modify video size in landscape which has less space than portrait
-  let landscapeSizeFactor = 0.68
+  let landscapeSizeFactor = 0.65
 
   /**
    * Create a local state variable to store the detected masks, the
@@ -82,6 +82,32 @@ const BiteSelection = (props) => {
    */
   let { actionName, messageType } = ROS_ACTIONS_NAMES[MEAL_STATE.U_BiteSelection]
   let segmentFromPointAction = useRef(createROSActionClient(ros.current, actionName, messageType))
+
+  // Margin for scaling video
+  const margin = convertRemToPixels(1)
+  // Get current window size
+  let windowSize = useWindowSize()
+  // Define variables for width, height and scale factor of video
+  const [width, setWidth] = useState(windowSize[0])
+  const [height, setHeight] = useState(windowSize[1])
+  const [scaleFactor, setScaleFactor] = useState(0)
+
+  useEffect(() => {
+    // Get the size of the robot's live video stream.
+    let {
+      width: widthUpdate,
+      height: heightUpdate,
+      scaleFactor
+    } = scaleWidthHeightToWindow(windowSize, REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
+    setWidth(widthUpdate)
+    setHeight(heightUpdate)
+    setScaleFactor(scaleFactor)
+  }, [windowSize, margin])
+
+  // Define a variable for robot's live video stream.
+  const imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(width)}&height=${Math.round(
+    height
+  )}&quality=20`
 
   /**
    * Callback function for when the user indicates that they want to move the
@@ -172,14 +198,6 @@ const BiteSelection = (props) => {
     },
     [setActionStatus, setActionResult]
   )
-
-  // Get the size of the robot's live video stream.
-  let size = useWindowSize()
-  const margin = convertRemToPixels(1)
-  const { width, height, scaleFactor } = scaleWidthHeightToWindow(size, REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
-  const imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(width)}&height=${Math.round(
-    height
-  )}&quality=20`
 
   /**
    * Callback function for when the user clicks the image of the plate.
@@ -399,8 +417,8 @@ const BiteSelection = (props) => {
           {debugOptions()}
         </React.Fragment>
       ) : (
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ paddingHorizontal: 40 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <View style={{ paddingHorizontal: 20, alignItems: 'center' }}>
             <h5 style={{ textAlign: 'center' }}>Click on image to select food.</h5>
             {showVideo(props.webVideoServerURL, width * landscapeSizeFactor, height * landscapeSizeFactor, imageClicked)}
           </View>

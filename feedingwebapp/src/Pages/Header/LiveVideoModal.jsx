@@ -1,5 +1,5 @@
 // React imports
-import React, { useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 // The Modal is a screen that appears on top of the main app, and can be toggled
 // on and off.
 import Modal from 'react-bootstrap/Modal'
@@ -29,17 +29,27 @@ function LiveVideoModal(props) {
   const marginLeft = convertRemToPixels(1)
   const marginRight = convertRemToPixels(1)
 
-  let size = useWindowSize()
-  // 640 x 480 is the standard dimension of images outputed by the RealSense
-  let { width, height } = scaleWidthHeightToWindow(
-    size,
-    REALSENSE_WIDTH,
-    REALSENSE_HEIGHT,
-    marginTop,
-    marginBottom,
-    marginLeft,
-    marginRight
-  )
+  // Get current window size
+  let windowSize = useWindowSize()
+  // Define variables for width and height of video
+  const [width, setWidth] = useState(windowSize[0])
+  const [height, setHeight] = useState(windowSize[1])
+
+  useEffect(() => {
+    // 640 x 480 is the standard dimension of images outputed by the RealSense
+    let { width: widthUpdate, height: heightUpdate } = scaleWidthHeightToWindow(
+      windowSize,
+      REALSENSE_WIDTH,
+      REALSENSE_HEIGHT,
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight
+    )
+    setWidth(widthUpdate)
+    setHeight(heightUpdate)
+  }, [windowSize, marginTop, marginBottom, marginLeft, marginRight])
+
   return (
     <Modal
       show={props.show}

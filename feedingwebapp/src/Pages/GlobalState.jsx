@@ -94,6 +94,8 @@ export const useGlobalState = create(
       desiredFoodItem: null,
       // Whether or not the currently-executing robot motion was paused by the user
       paused: false,
+      // Flag to indicate robot motion in plate locator
+      notLocatingPlate: true,
       // Settings values
       stagingPosition: SETTINGS.stagingPosition[0],
       biteInitiation: SETTINGS.biteInitiation[0],
@@ -116,6 +118,10 @@ export const useGlobalState = create(
       setPaused: (paused) =>
         set(() => ({
           paused: paused
+        })),
+      setNotLocatingPlate: (notLocatingPlate) =>
+        set(() => ({
+          notLocatingPlate: notLocatingPlate
         })),
       setStagingPosition: (stagingPosition) =>
         set(() => ({

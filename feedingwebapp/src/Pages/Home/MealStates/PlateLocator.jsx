@@ -1,5 +1,5 @@
 // React Imports
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -23,16 +23,34 @@ import { Col, Row, Container } from 'react-bootstrap'
 const PlateLocator = (props) => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
+  // Get robot motion flag for plate locator
+  const setNotLocatingPlate = useGlobalState((state) => state.setNotLocatingPlate)
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Factor to modify video size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.9
-  // Get current window size
-  let size = useWindowSize()
   // Define margin for video
   const margin = convertRemToPixels(1)
-  // Get the size of the robot's live video stream.
-  let { width, height } = scaleWidthHeightToWindow(size, REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
+  // Get current window size
+  let windowSize = useWindowSize()
+  // Define variables for width and height of video
+  const [width, setWidth] = useState(windowSize[0])
+  const [height, setHeight] = useState(windowSize[1])
+
+  useEffect(() => {
+    // Get the size of the robot's live video stream.
+    let { width: widthUpdate, height: heightUpdate } = scaleWidthHeightToWindow(
+      windowSize,
+      REALSENSE_WIDTH,
+      REALSENSE_HEIGHT,
+      margin,
+      margin,
+      margin,
+      margin
+    )
+    setWidth(widthUpdate)
+    setHeight(heightUpdate)
+  }, [windowSize, margin])
 
   /**
    * Callback function for when the user presses one of the buttons to teleop
@@ -40,10 +58,14 @@ const PlateLocator = (props) => {
    *
    * TODO: Implement this when ROS is connected to the robot!
    */
-  const cartesianControlCommandReceived = useCallback((event) => {
-    let direction = event.target.value
-    console.log('cartesianControlCommandReceived', direction)
-  }, [])
+  const cartesianControlCommandReceived = useCallback(
+    (event) => {
+      let direction = event.target.value
+      setNotLocatingPlate(false)
+      console.log('cartesianControlCommandReceived', direction)
+    },
+    [setNotLocatingPlate]
+  )
 
   /**
    * Callback function for when the user indicates that they are done
@@ -51,8 +73,9 @@ const PlateLocator = (props) => {
    */
   const doneClicked = useCallback(() => {
     console.log('doneClicked')
+    setNotLocatingPlate(true)
     setMealState(MEAL_STATE.U_BiteSelection)
-  }, [setMealState])
+  }, [setMealState, setNotLocatingPlate])
 
   /**
    * Get the done button to click when locating plate is done.
