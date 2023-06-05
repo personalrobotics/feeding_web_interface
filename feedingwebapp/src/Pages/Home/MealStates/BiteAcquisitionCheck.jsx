@@ -47,7 +47,7 @@ const BiteAcquisitionCheck = () => {
    *
    * @returns {JSX.Element} the ready for bite text
    */
-  let readyForBiteText = function () {
+  const readyForBiteText = useCallback(() => {
     return (
       <>
         {/* Ask the user whether they want to move to mouth position */}
@@ -56,14 +56,14 @@ const BiteAcquisitionCheck = () => {
         </p>
       </>
     )
-  }
+  }, [])
 
   /**
    * Get the ready for bite button to render.
    *
    * @returns {JSX.Element} the ready for bite button
    */
-  let readyForBiteButton = function () {
+  const readyForBiteButton = useCallback(() => {
     return (
       <>
         {/* Icon to move to mouth position */}
@@ -78,14 +78,14 @@ const BiteAcquisitionCheck = () => {
         </Button>
       </>
     )
-  }
+  }, [moveToMouthImage, acquisitionSuccess])
 
   /**
    * Get the re-acquire bite text to render.
    *
    * @returns {JSX.Element} the re-acquire bite text
    */
-  let reacquireBiteText = function () {
+  const reacquireBiteText = useCallback(() => {
     return (
       <>
         {/* Ask the user whether they want to try acquiring bite again */}
@@ -94,14 +94,14 @@ const BiteAcquisitionCheck = () => {
         </p>
       </>
     )
-  }
+  }, [])
 
   /**
    * Get the re-acquire bite button to render.
    *
    * @returns {JSX.Element} the re-acquire bite button
    */
-  let reacquireBiteButton = function () {
+  const reacquireBiteButton = useCallback(() => {
     return (
       <>
         {/* Icon for move above plate */}
@@ -116,7 +116,7 @@ const BiteAcquisitionCheck = () => {
         </Button>
       </>
     )
-  }
+  }, [acquisitionFailure, moveAbovePlateImage])
 
   // Render the component
   return (

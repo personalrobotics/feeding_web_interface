@@ -1,5 +1,5 @@
 // React Imports
-import React from 'react'
+import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -25,27 +25,6 @@ const PlateLocator = (props) => {
   const setMealState = useGlobalState((state) => state.setMealState)
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-
-  /**
-   * Callback function for when the user presses one of the buttons to teleop
-   * the robot.
-   *
-   * TODO: Implement this when ROS is connected to the robot!
-   */
-  function cartesianControlCommandReceived(event) {
-    let direction = event.target.value
-    console.log('cartesianControlCommandReceived', direction)
-  }
-
-  /**
-   * Callback function for when the user indicates that they are done
-   * teleoperating the robot.
-   */
-  function doneClicked() {
-    console.log('doneClicked')
-    setMealState(MEAL_STATE.U_BiteSelection)
-  }
-
   // Factor to modify video size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.9
   // Get current window size
@@ -56,11 +35,31 @@ const PlateLocator = (props) => {
   let { width, height } = scaleWidthHeightToWindow(size, REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
 
   /**
+   * Callback function for when the user presses one of the buttons to teleop
+   * the robot.
+   *
+   * TODO: Implement this when ROS is connected to the robot!
+   */
+  const cartesianControlCommandReceived = useCallback((event) => {
+    let direction = event.target.value
+    console.log('cartesianControlCommandReceived', direction)
+  }, [])
+
+  /**
+   * Callback function for when the user indicates that they are done
+   * teleoperating the robot.
+   */
+  const doneClicked = useCallback(() => {
+    console.log('doneClicked')
+    setMealState(MEAL_STATE.U_BiteSelection)
+  }, [setMealState])
+
+  /**
    * Get the done button to click when locating plate is done.
    *
    * @returns {JSX.Element} the done button
    */
-  let doneButton = function () {
+  const doneButton = useCallback(() => {
     return (
       <center>
         <Button variant='success' onClick={doneClicked} style={{ width: '150px', fontSize: '25px' }}>
@@ -68,7 +67,7 @@ const PlateLocator = (props) => {
         </Button>
       </center>
     )
-  }
+  }, [doneClicked])
 
   /**
    * An array of directional buttons for the user to teleoperate the robot, and a
@@ -76,7 +75,7 @@ const PlateLocator = (props) => {
    *
    * @returns {JSX.Element} the directional arrow buttons
    */
-  let directionalArrows = function () {
+  const directionalArrows = useCallback(() => {
     return (
       <React.Fragment>
         <Container fluid>
@@ -130,7 +129,7 @@ const PlateLocator = (props) => {
         </Container>
       </React.Fragment>
     )
-  }
+  }, [cartesianControlCommandReceived])
 
   // Render the component
   return (

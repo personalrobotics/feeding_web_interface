@@ -44,7 +44,7 @@ const BiteDone = () => {
    *
    * @returns {JSX.Element} the bite finished text
    */
-  let biteFinishedText = function () {
+  const biteFinishedText = useCallback(() => {
     return (
       <>
         {/* Ask the user whether they want to move to above plate position */}
@@ -53,14 +53,14 @@ const BiteDone = () => {
         </p>
       </>
     )
-  }
+  }, [])
 
   /**
    * Get the bite finished button to render.
    *
    * @returns {JSX.Element} the bite finished button
    */
-  let biteFinishedButton = function () {
+  const biteFinishedButton = useCallback(() => {
     return (
       <>
         {/* Icon to move above plate */}
@@ -75,14 +75,14 @@ const BiteDone = () => {
         </Button>
       </>
     )
-  }
+  }, [moveAbovePlate, moveAbovePlateImage])
 
   /**
    * Get the take another bite text to render.
    *
    * @returns {JSX.Element} the take another bite text
    */
-  let takeAnotherBiteText = function () {
+  const takeAnotherBiteText = useCallback(() => {
     return (
       <>
         {/* Ask the user whether they want to move to resting position */}
@@ -91,14 +91,14 @@ const BiteDone = () => {
         </p>
       </>
     )
-  }
+  }, [])
 
   /**
    * Get the take another bite button to render.
    *
    * @returns {JSX.Element} the take another bite button
    */
-  let takeAnotherBiteButton = function () {
+  const takeAnotherBiteButton = useCallback(() => {
     return (
       <>
         {/* Icon to move to resting position */}
@@ -113,7 +113,7 @@ const BiteDone = () => {
         </Button>
       </>
     )
-  }
+  }, [moveToRestingPosition, moveToRestingPositionImage])
 
   // Render the component
   return (

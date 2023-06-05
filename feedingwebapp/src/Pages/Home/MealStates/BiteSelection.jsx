@@ -47,6 +47,9 @@ const BiteSelection = (props) => {
   // Width and Height of skip acquisition button
   let skipAcquisitionButtonWidth = isPortrait ? '300px' : '160px'
   let skipAcquisitionButtonHeight = isPortrait ? '200px' : '106px'
+  // Width and height of icon
+  let iconWidth = isPortrait ? '250px' : '140px'
+  let iconHeight = isPortrait ? '150px' : '86px'
   // Factor to modify video size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.68
 
@@ -320,11 +323,14 @@ const BiteSelection = (props) => {
     }
   }, [actionStatus, actionResult, width, height, scaleFactor, foodItemClicked, imgSrc])
 
-  // Get the button for continue without acquiring bite
-  let withoutAcquireButton = function () {
+  /** Get the button for continue without acquiring bite
+   *
+   * @returns {JSX.Element} the skip acquisition button
+   */
+  const withoutAcquireButton = useCallback(() => {
     return (
       <div style={{ display: 'block', width: '100%' }} className='outer'>
-        {/* Ask the user whether they want to continue without acquisition by moving to above plate position */}
+        {/* Ask the user whether they want to skip acquisition and move above plate */}
         <h5 style={{ textAlign: 'center' }}>Skip acquisition.</h5>
         {/* Icon to move to mouth */}
         <Row className='justify-content-center'>
@@ -335,21 +341,19 @@ const BiteSelection = (props) => {
             onClick={moveToMouth}
             style={{ width: skipAcquisitionButtonWidth, height: skipAcquisitionButtonHeight }}
           >
-            <img
-              src={moveToMouthImage}
-              style={{ width: isPortrait ? '250px' : '140px', height: isPortrait ? '150px' : '86px' }}
-              alt='move_to_mouth_image'
-              className='center'
-            />
+            <img src={moveToMouthImage} style={{ width: iconWidth, height: iconHeight }} alt='move_to_mouth_image' className='center' />
           </Button>
         </Row>
       </div>
     )
-  }
+  }, [iconHeight, iconWidth, skipAcquisitionButtonHeight, skipAcquisitionButtonWidth, moveToMouth, moveToMouthImage])
 
-  // Get the continue button when debug mode is enabled.
-  let debugOptions = function () {
-    /* If the user is running in debug mode, give them the option to skip */
+  /** Get the continue button when debug mode is enabled
+   *
+   * @returns {JSX.Element} the continue debug button
+   */
+  const debugOptions = useCallback(() => {
+    // If the user is in debug mode, give them the option to skip
     props.debug ? (
       <Button
         variant='secondary'
@@ -362,7 +366,7 @@ const BiteSelection = (props) => {
     ) : (
       <></>
     )
-  }
+  }, [setMealState, props.debug])
 
   // Render the component
   return (

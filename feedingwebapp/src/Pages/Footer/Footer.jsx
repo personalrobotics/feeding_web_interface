@@ -53,7 +53,8 @@ const Footer = (props) => {
   let footerButtonHeight = isPortrait ? '95px' : '50px'
   let footerIconHeight = isPortrait ? '87px' : '42px'
   // Width of Footer icon images in buttons
-  let footerIconWidth = isPortrait ? '82px' : '90px'
+  let backResumeIconWidth = isPortrait ? '82px' : '90px'
+  let pauseIconWidth = isPortrait ? '150px' : '89px'
   // Size of Footer buttons' font
   let footerFontSize = '150%'
   // Margin around footer buttons
@@ -102,7 +103,7 @@ const Footer = (props) => {
                 <View>
                   <img
                     style={{
-                      width: footerIconWidth,
+                      width: pauseIconWidth,
                       height: footerIconHeight
                     }}
                     src={pauseIcon}
@@ -116,7 +117,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [pauseIcon, footerButtonHeight, footerIconHeight, pauseButtonWidth, footerFontSize, footerIconWidth]
+    [pauseIcon, footerButtonHeight, footerIconHeight, pauseButtonWidth, footerFontSize, pauseIconWidth]
   )
 
   /**
@@ -148,14 +149,14 @@ const Footer = (props) => {
                 </p>
               </View>
               <View>
-                <img style={{ width: footerIconWidth, height: footerIconHeight }} src={backIcon} alt='back_icon' className='center' />
+                <img style={{ width: backResumeIconWidth, height: footerIconHeight }} src={backIcon} alt='back_icon' className='center' />
               </View>
             </View>
           </Button>
         </>
       )
     },
-    [backIcon, backResumeButtonWidth, footerButtonHeight, footerMargin, footerIconHeight, footerFontSize, footerIconWidth]
+    [backIcon, backResumeButtonWidth, footerButtonHeight, footerMargin, footerIconHeight, footerFontSize, backResumeIconWidth]
   )
 
   /**
@@ -193,14 +194,19 @@ const Footer = (props) => {
                 </p>
               </View>
               <View>
-                <img style={{ width: footerIconWidth, height: footerIconHeight }} src={resumeIcon} alt='resume_icon' className='center' />
+                <img
+                  style={{ width: backResumeIconWidth, height: footerIconHeight }}
+                  src={resumeIcon}
+                  alt='resume_icon'
+                  className='center'
+                />
               </View>
             </View>
           </Button>
         </>
       )
     },
-    [resumeIcon, backResumeButtonWidth, footerButtonHeight, footerMargin, footerFontSize, footerIconWidth, footerIconHeight]
+    [resumeIcon, backResumeButtonWidth, footerButtonHeight, footerMargin, footerFontSize, backResumeIconWidth, footerIconHeight]
   )
 
   /**
@@ -226,7 +232,7 @@ const Footer = (props) => {
           }}
         >
           <img
-            style={{ width: footerIconWidth, height: footerIconHeight }}
+            style={{ width: backResumeIconWidth, height: footerIconHeight }}
             src={phantomButtonIcon}
             alt='phantom_button_img'
             className='center'
