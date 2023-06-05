@@ -8,8 +8,8 @@ import Modal from 'react-bootstrap/Modal'
 import PropTypes from 'prop-types'
 
 // Local imports
-import { REALSENSE_WIDTH, REALSENSE_HEIGHT, CAMERA_FEED_TOPIC } from '../Constants'
-import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow } from '../../helpers'
+import { REALSENSE_WIDTH, REALSENSE_HEIGHT } from '../Constants'
+import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow, showVideo } from '../../helpers'
 
 /**
  * The LiveVideoModal displays to the user the live video feed from the robot.
@@ -57,15 +57,7 @@ function LiveVideoModal(props) {
         <Modal.Title id='contained-modal-title-vcenter'>Live Video</Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ overflow: 'hidden' }}>
-        <center>
-          <img
-            src={`${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(width)}&height=${Math.round(
-              height
-            )}&quality=20`}
-            alt='Live video feed from the robot'
-            style={{ width: width, height: height, display: 'block' }}
-          />
-        </center>
+        <center>{showVideo(props.webVideoServerURL, width, height, null)}</center>
       </Modal.Body>
     </Modal>
   )

@@ -10,8 +10,8 @@ import PropTypes from 'prop-types'
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import { REALSENSE_WIDTH, REALSENSE_HEIGHT, CAMERA_FEED_TOPIC } from '../../Constants'
-import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow } from '../../../helpers'
+import { REALSENSE_WIDTH, REALSENSE_HEIGHT } from '../../Constants'
+import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow, showVideo } from '../../../helpers'
 import { Col, Row, Container } from 'react-bootstrap'
 
 /**
@@ -67,34 +67,6 @@ const PlateLocator = (props) => {
           ✅ Done
         </Button>
       </center>
-    )
-  }
-
-  /**
-   * Get the robot's live video stream.
-   *
-   * @param {number} currentWidth the adjusted width in pixels
-   * @param {number} currentHeight the adjusted height in pixels
-   *
-   * @returns {JSX.Element} the robot's live video stream
-   */
-  let showVideo = function (currentWidth, currentHeight) {
-    return (
-      <img
-        src={`${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(currentWidth)}&height=${Math.round(
-          currentHeight
-        )}&quality=20`}
-        alt='Live video feed from the robot'
-        style={{
-          width: currentWidth,
-          height: currentHeight,
-          display: 'block',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginTop: '5px',
-          marginBottom: '5px'
-        }}
-      />
     )
   }
 
@@ -165,13 +137,15 @@ const PlateLocator = (props) => {
     <div style={{ overflowX: 'hidden', overflowY: 'auto' }} className='justify-content-center'>
       {isPortrait ? (
         <React.Fragment>
-          <center>{showVideo(width, height)}</center>
+          <center>{showVideo(props.webVideoServerURL, width, height, null)}</center>
           {directionalArrows()}
           {doneButton()}
         </React.Fragment>
       ) : (
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: '0.5px' }}>
-          <View style={{ alignItems: 'center' }}>{showVideo(width * landscapeSizeFactor, height * landscapeSizeFactor)}</View>
+          <View style={{ alignItems: 'center' }}>
+            {showVideo(props.webVideoServerURL, width * landscapeSizeFactor, height * landscapeSizeFactor, null)}
+          </View>
           <View style={{ alignItems: 'center' }}>
             {directionalArrows()}
             {doneButton()}

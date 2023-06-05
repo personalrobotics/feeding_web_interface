@@ -1,4 +1,5 @@
-import { useLayoutEffect, useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
+import { CAMERA_FEED_TOPIC } from './Pages/Constants'
 
 // Updates and returns the window size whenever the screen is re-sized.
 export function useWindowSize() {
@@ -13,6 +14,38 @@ export function useWindowSize() {
     return () => window.removeEventListener('resize', updateSize)
   }, [])
   return size
+}
+
+/**
+ * Get the robot's live video stream.
+ *
+ * @param {string} webVideoServerURL The URL of the web video server
+ * @param {number} currentWidth the adjusted width in pixels
+ * @param {number} currentHeight the adjusted height in pixels
+ * @param {func} onclick the function trigerred in video onclick  
+ }}
+ *
+ * @returns {JSX.Element} the robot's live video stream
+ */
+export function showVideo(webVideoServerURL, currentWidth, currentHeight, onclick) {
+  return (
+    <img
+      src={`${webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(currentWidth)}&height=${Math.round(
+        currentHeight
+      )}&quality=20`}
+      alt='Live video feed from the robot'
+      style={{
+        width: currentWidth,
+        height: currentHeight,
+        display: 'block',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: '5px',
+        marginBottom: '5px'
+      }}
+      onClick={onclick}
+    />
+  )
 }
 
 /**

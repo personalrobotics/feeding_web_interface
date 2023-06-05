@@ -12,7 +12,7 @@ import Col from 'react-bootstrap/Col'
 // Local Imports
 import '../Home.css'
 import { useROS, createROSActionClient, callROSAction, destroyActionClient } from '../../../ros/ros_helpers'
-import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow } from '../../../helpers'
+import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow, showVideo } from '../../../helpers'
 import MaskButton from '../../../buttons/MaskButton'
 import {
   REALSENSE_WIDTH,
@@ -320,28 +320,6 @@ const BiteSelection = (props) => {
     }
   }, [actionStatus, actionResult, width, height, scaleFactor, foodItemClicked, imgSrc])
 
-  /**
-   * Get the robot's live video stream.
-   *
-   * @param {number} currentWidth the adjusted width in pixels
-   * @param {number} currentHeight the adjusted height in pixels
-   *
-   * @returns {JSX.Element} the robot's live video stream
-   */
-  let showVideo = function (currentWidth, currentHeight) {
-    return (
-      <React.Fragment>
-        <h5 style={{ textAlign: 'center' }}>Click on image to select food.</h5>
-        <img
-          src={imgSrc}
-          alt='Live video feed from the robot'
-          style={{ width: currentWidth, height: currentHeight, display: 'block' }}
-          onClick={imageClicked}
-        />
-      </React.Fragment>
-    )
-  }
-
   // Get the button for continue without acquiring bite
   let withoutAcquireButton = function () {
     return (
@@ -408,7 +386,8 @@ const BiteSelection = (props) => {
       {isPortrait ? (
         <React.Fragment>
           <center>
-            {showVideo(width, height)}
+            <h5 style={{ textAlign: 'center' }}>Click on image to select food.</h5>
+            {showVideo(props.webVideoServerURL, width, height, imageClicked)}
             {/* Display the action status and/or results */}
             {actionStatusText()}
           </center>
@@ -417,7 +396,10 @@ const BiteSelection = (props) => {
         </React.Fragment>
       ) : (
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ paddingHorizontal: 40 }}>{showVideo(width * landscapeSizeFactor, height * landscapeSizeFactor)}</View>
+          <View style={{ paddingHorizontal: 40 }}>
+            <h5 style={{ textAlign: 'center' }}>Click on image to select food.</h5>
+            {showVideo(props.webVideoServerURL, width * landscapeSizeFactor, height * landscapeSizeFactor, imageClicked)}
+          </View>
           <View style={{ justifyContent: 'center', width: '450px' }}>
             {actionStatusText()}
             {withoutAcquireButton()}
