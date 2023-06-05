@@ -126,7 +126,7 @@ function Home(props) {
         let currentMealState = MEAL_STATE.R_MovingToMouth
         let nextMealState = MEAL_STATE.U_BiteDone
         let actionInput = {}
-        let waitingText = 'Waiting for the robot to move to your mouth...'
+        let waitingText = 'Waiting to move to your mouth...'
         return (
           <RobotMotion
             debug={props.debug}

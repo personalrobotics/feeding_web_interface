@@ -39,10 +39,11 @@ const Footer = (props) => {
   let resumeIcon = MOVING_STATE_ICON_DICT[mealState]
   let phantomButtonIcon = '/robot_state_imgs/phantom_view_image.svg'
 
-  // Get the size of the robot's live video stream.
+  // Get the size of window.
   let size = useWindowSize()
   // Pixels to subtract from window width
   let footerWidthSubtraction = 32
+  // Get footer width by adjusting to current window width
   let width = size[0] - footerWidthSubtraction
   // Width of Back and Resume buttons
   let backResumeButtonWidth = width / 2

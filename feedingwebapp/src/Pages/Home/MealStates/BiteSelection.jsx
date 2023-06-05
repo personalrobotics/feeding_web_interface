@@ -44,6 +44,9 @@ const BiteSelection = (props) => {
   let moveToMouthImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // Width and Height of skip acquisition button
+  let skipAcquisitionButtonWidth = isPortrait ? '300px' : '160px'
+  let skipAcquisitionButtonHeight = isPortrait ? '200px' : '106px'
 
   /**
    * Create a local state variable to store the detected masks, the
@@ -350,7 +353,7 @@ const BiteSelection = (props) => {
             className='mx-2 mb-2 btn-huge'
             size='lg'
             onClick={moveToMouth}
-            style={{ width: isPortrait ? '300px' : '160px', height: isPortrait ? '200px' : '106px' }}
+            style={{ width: skipAcquisitionButtonWidth, height: skipAcquisitionButtonHeight }}
           >
             <img
               src={moveToMouthImage}
@@ -400,10 +403,6 @@ const BiteSelection = (props) => {
           ✅ Done Eating
         </Button>
       </div>
-
-      {/**
-       * Display the live video feed from the robot's camera.
-       */}
       {isPortrait ? (
         <React.Fragment>
           <center>
