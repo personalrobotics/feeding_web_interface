@@ -47,6 +47,8 @@ const BiteSelection = (props) => {
   // Width and Height of skip acquisition button
   let skipAcquisitionButtonWidth = isPortrait ? '300px' : '160px'
   let skipAcquisitionButtonHeight = isPortrait ? '200px' : '106px'
+  // Factor to modify video size in landscape which has less space than portrait
+  let landscapeSizeFactor = 0.68
 
   /**
    * Create a local state variable to store the detected masks, the
@@ -415,7 +417,7 @@ const BiteSelection = (props) => {
         </React.Fragment>
       ) : (
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ paddingHorizontal: 40 }}>{showVideo(width * 0.68, height * 0.68)}</View>
+          <View style={{ paddingHorizontal: 40 }}>{showVideo(width * landscapeSizeFactor, height * landscapeSizeFactor)}</View>
           <View style={{ justifyContent: 'center', width: '450px' }}>
             {actionStatusText()}
             {withoutAcquireButton()}

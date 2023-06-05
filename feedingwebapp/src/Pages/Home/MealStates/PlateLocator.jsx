@@ -46,10 +46,13 @@ const PlateLocator = (props) => {
     setMealState(MEAL_STATE.U_BiteSelection)
   }
 
-  // Get the size of the robot's live video stream.
+  // Factor to modify video size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.9
+  // Get current window size
   let size = useWindowSize()
+  // Define margin for video
   const margin = convertRemToPixels(1)
+  // Get the size of the robot's live video stream.
   let { width, height } = scaleWidthHeightToWindow(size, REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
 
   /**
@@ -88,7 +91,8 @@ const PlateLocator = (props) => {
           display: 'block',
           alignItems: 'center',
           justifyContent: 'center',
-          marginTop: '9px'
+          marginTop: '5px',
+          marginBottom: '5px'
         }}
       />
     )

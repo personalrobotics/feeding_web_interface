@@ -1,10 +1,10 @@
 import { useLayoutEffect, useState } from 'react'
 
-// Update width and height values whenever the screen is repainted.
+// Updates and returns the window size whenever the screen is re-sized.
 export function useWindowSize() {
   const [size, setSize] = useState([0, 0])
   useLayoutEffect(() => {
-    // set current width and height values
+    // set current size
     function updateSize() {
       setSize([window.innerWidth, window.innerHeight])
     }
@@ -19,6 +19,7 @@ export function useWindowSize() {
  * Takes in an imageWidth and imageHeight, and returns a width and height that
  * maintains the same aspect ratio but fits within the window.
  *
+ * @param {number} size the inner width and height of the window
  * @param {number} imageWidth the original image's width in pixels
  * @param {number} imageHeight the original image's height in pixels
  * @param {number} marginTop the desired top margin between window and image, in pixels
