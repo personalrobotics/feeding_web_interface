@@ -43,15 +43,12 @@ const BiteSelection = (props) => {
   let moveToMouthImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  // Width and Height of skip acquisition button
-  let skipAcquisitionButtonWidth = isPortrait ? '300px' : '160px'
-  let skipAcquisitionButtonHeight = isPortrait ? '200px' : '103px'
   // Width and height of icon
-  let iconWidth = isPortrait ? '250px' : '140px'
-  let iconHeight = isPortrait ? '150px' : '86px'
+  let iconWidth = isPortrait ? '79px' : '100px'
+  let iconHeight = isPortrait ? '85px' : '77px'
   // Factor to modify video size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.65
-  // Width and height of food image buttons
+  // Width and height of buttons
   let buttonSizeWidth = isPortrait ? 90 : 110
   let buttonSizeHeight = isPortrait ? 85 : 87
 
@@ -358,14 +355,14 @@ const BiteSelection = (props) => {
             className='mx-2 btn-huge'
             size='lg'
             onClick={moveToMouth}
-            style={{ width: skipAcquisitionButtonWidth, height: skipAcquisitionButtonHeight }}
+            style={{ width: buttonSizeWidth, height: buttonSizeHeight, '--bs-btn-padding-x': '0rem', '--bs-btn-padding-y': '0rem' }}
           >
             <img src={moveToMouthImage} style={{ width: iconWidth, height: iconHeight }} alt='move_to_mouth_image' className='center' />
           </Button>
         </Row>
       </div>
     )
-  }, [iconHeight, iconWidth, skipAcquisitionButtonHeight, skipAcquisitionButtonWidth, moveToMouth, moveToMouthImage])
+  }, [iconHeight, iconWidth, buttonSizeWidth, buttonSizeHeight, moveToMouth, moveToMouthImage])
 
   /** Get the continue button when debug mode is enabled
    *
