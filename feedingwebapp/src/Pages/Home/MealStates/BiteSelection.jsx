@@ -45,7 +45,7 @@ const BiteSelection = (props) => {
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Width and height of icon
   let iconWidth = isPortrait ? '79px' : '100px'
-  let iconHeight = isPortrait ? '73px' : '70px'
+  let iconHeight = isPortrait ? '73px' : '40px'
   // Factor to modify video size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.65
 
@@ -104,7 +104,7 @@ const BiteSelection = (props) => {
   let maskButtonWidth = isPortrait ? 90 : 110
   let maskButtonHeight = isPortrait ? 85 : 87
   let skipButtonWidth = width
-  let skipButtonHeight = isPortrait ? 73 : 70
+  let skipButtonHeight = isPortrait ? 73 : 40
 
   /**
    * Callback function for when the user indicates that they want to move the
