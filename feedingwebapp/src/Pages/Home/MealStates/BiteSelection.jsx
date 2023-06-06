@@ -429,7 +429,7 @@ const BiteSelection = (props) => {
             <h5 style={{ textAlign: 'center' }}>Click on image to select food.</h5>
             {showVideo(props.webVideoServerURL, width * landscapeSizeFactor, height * landscapeSizeFactor, imageClicked)}
           </View>
-          <View style={{ paddingHorizontal: 20, justifyContent: 'center', width: '450px' }}>
+          <View style={{ paddingHorizontal: 20, justifyContent: 'flex-start', width: '450px' }}>
             {actionStatusText()}
             <h6 style={{ textAlign: 'center' }}>&nbsp;</h6>
             {withoutAcquireButton()}
