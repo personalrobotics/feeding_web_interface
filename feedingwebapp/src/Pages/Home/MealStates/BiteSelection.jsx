@@ -45,12 +45,9 @@ const BiteSelection = (props) => {
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Width and height of icon
   let iconWidth = isPortrait ? '79px' : '100px'
-  let iconHeight = isPortrait ? '85px' : '77px'
+  let iconHeight = isPortrait ? '73px' : '70px'
   // Factor to modify video size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.65
-  // Width and height of buttons
-  let buttonSizeWidth = isPortrait ? 90 : 110
-  let buttonSizeHeight = isPortrait ? 85 : 87
 
   /**
    * Create a local state variable to store the detected masks, the
@@ -102,6 +99,12 @@ const BiteSelection = (props) => {
     setHeight(heightUpdate)
     setScaleFactor(scaleFactor)
   }, [windowSize, margin])
+
+  // Width and height of buttons
+  let maskButtonWidth = isPortrait ? 90 : 110
+  let maskButtonHeight = isPortrait ? 85 : 87
+  let skipButtonWidth = width
+  let skipButtonHeight = isPortrait ? 73 : 70
 
   /**
    * Callback function for when the user indicates that they want to move the
@@ -283,12 +286,17 @@ const BiteSelection = (props) => {
               maxHeight = detected_item.roi.height
             }
           }
-          let maskScaleFactor = Math.min(buttonSizeWidth / maxWidth, buttonSizeHeight / maxHeight)
-          let imgSize = { width: Math.round(buttonSizeWidth * maxWidth), height: Math.round(buttonSizeHeight * maxHeight) }
+          console.log('btnSizeWidth: ' + maskButtonWidth)
+          console.log('maxWidth: ' + maxWidth)
+          console.log('btnSizeHeight: ' + maskButtonHeight)
+          console.log('maxHeight: ' + maxHeight)
+          let maskScaleFactor = Math.min(maskButtonWidth / maxWidth, maskButtonHeight / maxHeight)
+          console.log('maskScaleFactor: ' + maskScaleFactor)
+          let imgSize = { width: Math.round(maskButtonWidth * maxWidth), height: Math.round(maskButtonHeight * maxHeight) }
           // Define a variable for robot's live video stream.
           let imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(
-            buttonSizeWidth
-          )}&height=${Math.round(buttonSizeHeight)}&quality=20`
+            maskButtonWidth
+          )}&height=${Math.round(maskButtonHeight)}&quality=20`
 
           return (
             <>
@@ -298,7 +306,7 @@ const BiteSelection = (props) => {
                   {actionResult.detected_items.map((detected_item, i) => (
                     <View key={i}>
                       <MaskButton
-                        buttonSize={{ width: buttonSizeWidth, height: buttonSizeHeight }}
+                        buttonSize={{ width: maskButtonWidth, height: maskButtonHeight }}
                         imgSrc={imgSrc}
                         imgSize={imgSize}
                         maskSrc={'data:image/jpeg;base64,' + detected_item.mask.data}
@@ -337,7 +345,7 @@ const BiteSelection = (props) => {
           </React.Fragment>
         )
     }
-  }, [actionStatus, actionResult, foodItemClicked, buttonSizeWidth, buttonSizeHeight, props.webVideoServerURL])
+  }, [actionStatus, actionResult, foodItemClicked, maskButtonWidth, maskButtonHeight, props.webVideoServerURL])
 
   /** Get the button for continue without acquiring bite
    *
@@ -355,14 +363,14 @@ const BiteSelection = (props) => {
             className='mx-2 btn-huge'
             size='lg'
             onClick={moveToMouth}
-            style={{ width: buttonSizeWidth, height: buttonSizeHeight, '--bs-btn-padding-x': '0rem', '--bs-btn-padding-y': '0rem' }}
+            style={{ width: skipButtonWidth, height: skipButtonHeight, '--bs-btn-padding-x': '0rem', '--bs-btn-padding-y': '0rem' }}
           >
             <img src={moveToMouthImage} style={{ width: iconWidth, height: iconHeight }} alt='move_to_mouth_image' className='center' />
           </Button>
         </Row>
       </div>
     )
-  }, [iconHeight, iconWidth, buttonSizeWidth, buttonSizeHeight, moveToMouth, moveToMouthImage])
+  }, [iconHeight, iconWidth, skipButtonWidth, skipButtonHeight, moveToMouth, moveToMouthImage])
 
   /** Get the continue button when debug mode is enabled
    *
@@ -421,7 +429,7 @@ const BiteSelection = (props) => {
             <h5 style={{ textAlign: 'center' }}>Click on image to select food.</h5>
             {showVideo(props.webVideoServerURL, width * landscapeSizeFactor, height * landscapeSizeFactor, imageClicked)}
           </View>
-          <View style={{ justifyContent: 'center', width: '450px' }}>
+          <View style={{ paddingHorizontal: 20, justifyContent: 'center', width: '450px' }}>
             {actionStatusText()}
             <h6 style={{ textAlign: 'center' }}>&nbsp;</h6>
             {withoutAcquireButton()}

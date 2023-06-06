@@ -87,7 +87,7 @@ const BiteDone = () => {
       <>
         {/* Ask the user whether they want to move to resting position */}
         <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '139%' }}>
-          Take another bite? Move to resting position.
+          Take another bite? Move back.
         </p>
       </>
     )
