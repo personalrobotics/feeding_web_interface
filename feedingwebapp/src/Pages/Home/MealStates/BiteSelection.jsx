@@ -431,7 +431,6 @@ const BiteSelection = (props) => {
           </View>
           <View style={{ paddingHorizontal: 20, justifyContent: 'flex-start', width: '450px' }}>
             {actionStatusText()}
-            <h6 style={{ textAlign: 'center' }}>&nbsp;</h6>
             {withoutAcquireButton()}
             {debugOptions}
           </View>
