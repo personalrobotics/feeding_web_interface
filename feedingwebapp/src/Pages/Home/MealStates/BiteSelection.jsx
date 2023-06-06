@@ -7,7 +7,6 @@ import { View } from 'react-native'
 // Component
 import PropTypes from 'prop-types'
 import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 
 // Local Imports
 import '../Home.css'
@@ -46,12 +45,15 @@ const BiteSelection = (props) => {
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Width and Height of skip acquisition button
   let skipAcquisitionButtonWidth = isPortrait ? '300px' : '160px'
-  let skipAcquisitionButtonHeight = isPortrait ? '200px' : '106px'
+  let skipAcquisitionButtonHeight = isPortrait ? '200px' : '103px'
   // Width and height of icon
   let iconWidth = isPortrait ? '250px' : '140px'
   let iconHeight = isPortrait ? '150px' : '86px'
   // Factor to modify video size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.65
+  // Width and height of food image buttons
+  let buttonSizeWidth = isPortrait ? 90 : 110
+  let buttonSizeHeight = isPortrait ? 85 : 87
 
   /**
    * Create a local state variable to store the detected masks, the
@@ -103,11 +105,6 @@ const BiteSelection = (props) => {
     setHeight(heightUpdate)
     setScaleFactor(scaleFactor)
   }, [windowSize, margin])
-
-  // Define a variable for robot's live video stream.
-  const imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(width)}&height=${Math.round(
-    height
-  )}&quality=20`
 
   /**
    * Callback function for when the user indicates that they want to move the
@@ -263,8 +260,8 @@ const BiteSelection = (props) => {
             <React.Fragment>
               <h5 style={{ textAlign: 'center' }}>Detecting food... ({Math.round(elapsed_time * 100) / 100} sec)</h5>
               <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
-              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
-              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+              <h4 style={{ textAlign: 'center' }}>&nbsp;</h4>
+              <h6 style={{ textAlign: 'center' }}>&nbsp;</h6>
             </React.Fragment>
           )
         } else {
@@ -280,9 +277,6 @@ const BiteSelection = (props) => {
       case ROS_ACTION_STATUS_SUCCEED:
         if (actionResult && actionResult.detected_items && actionResult.detected_items.length > 0) {
           // Get the parameters to display the mask as buttons
-          let imgSize = { width: width, height: height }
-          let maskScaleFactor = scaleFactor
-
           let [maxWidth, maxHeight] = [0, 0]
           for (let detected_item of actionResult.detected_items) {
             if (detected_item.roi.width > maxWidth) {
@@ -292,28 +286,35 @@ const BiteSelection = (props) => {
               maxHeight = detected_item.roi.height
             }
           }
-          let buttonSize = { width: maxWidth * maskScaleFactor, height: maxHeight * maskScaleFactor }
+          let maskScaleFactor = Math.min(buttonSizeWidth / maxWidth, buttonSizeHeight / maxHeight)
+          let imgSize = { width: Math.round(buttonSizeWidth * maxWidth), height: Math.round(buttonSizeHeight * maxHeight) }
+          // Define a variable for robot's live video stream.
+          let imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(
+            buttonSizeWidth
+          )}&height=${Math.round(buttonSizeHeight)}&quality=20`
 
           return (
             <>
-              <h5 style={{ textAlign: 'center' }}>Select a food, or retry by clicking the image.</h5>
-              <Row>
-                {actionResult.detected_items.map((detected_item, i) => (
-                  <Col key={i} className='justify-content-center' style={{ padding: '0' }}>
-                    <MaskButton
-                      buttonSize={buttonSize}
-                      imgSrc={imgSrc}
-                      imgSize={imgSize}
-                      maskSrc={'data:image/jpeg;base64,' + detected_item.mask.data}
-                      invertMask={true}
-                      maskScaleFactor={maskScaleFactor}
-                      maskBoundingBox={detected_item.roi}
-                      onClick={foodItemClicked}
-                      value={i.toString()}
-                    />
-                  </Col>
-                ))}
-              </Row>
+              <center>
+                <h5 style={{ textAlign: 'center' }}>Select a food, or retry by clicking the image.</h5>
+                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                  {actionResult.detected_items.map((detected_item, i) => (
+                    <View key={i}>
+                      <MaskButton
+                        buttonSize={{ width: buttonSizeWidth, height: buttonSizeHeight }}
+                        imgSrc={imgSrc}
+                        imgSize={imgSize}
+                        maskSrc={'data:image/jpeg;base64,' + detected_item.mask.data}
+                        invertMask={true}
+                        maskScaleFactor={maskScaleFactor}
+                        maskBoundingBox={detected_item.roi}
+                        onClick={foodItemClicked}
+                        value={i.toString()}
+                      />
+                    </View>
+                  ))}
+                </View>
+              </center>
             </>
           )
         } else {
@@ -334,12 +335,12 @@ const BiteSelection = (props) => {
           <React.Fragment>
             <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
             <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
-            <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
-            <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
+            <h5 style={{ textAlign: 'center' }}>&nbsp;</h5>
+            <h6 style={{ textAlign: 'center' }}>&nbsp;</h6>
           </React.Fragment>
         )
     }
-  }, [actionStatus, actionResult, width, height, scaleFactor, foodItemClicked, imgSrc])
+  }, [actionStatus, actionResult, foodItemClicked, buttonSizeWidth, buttonSizeHeight, props.webVideoServerURL])
 
   /** Get the button for continue without acquiring bite
    *
@@ -354,7 +355,7 @@ const BiteSelection = (props) => {
         <Row className='justify-content-center'>
           <Button
             variant='warning'
-            className='mx-2 mb-2 btn-huge'
+            className='mx-2 btn-huge'
             size='lg'
             onClick={moveToMouth}
             style={{ width: skipAcquisitionButtonWidth, height: skipAcquisitionButtonHeight }}
@@ -413,6 +414,7 @@ const BiteSelection = (props) => {
             {/* Display the action status and/or results */}
             {actionStatusText()}
           </center>
+          <h5 style={{ textAlign: 'center' }}>&nbsp;</h5>
           {withoutAcquireButton()}
           {debugOptions()}
         </React.Fragment>
@@ -424,6 +426,7 @@ const BiteSelection = (props) => {
           </View>
           <View style={{ justifyContent: 'center', width: '450px' }}>
             {actionStatusText()}
+            <h6 style={{ textAlign: 'center' }}>&nbsp;</h6>
             {withoutAcquireButton()}
             {debugOptions}
           </View>
