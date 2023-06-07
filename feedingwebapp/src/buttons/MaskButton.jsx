@@ -39,6 +39,11 @@ function MaskButton(props) {
   let onClick = props.onClick
   let value = props.value
 
+  console.log('bounding box x_offset: ' + maskBoundingBox.x_offset)
+  console.log('bounding box y_offset: ' + maskBoundingBox.y_offset)
+  console.log('bounding box width: ' + maskBoundingBox.width)
+  console.log('bounding box height: ' + maskBoundingBox.height)
+
   return (
     <Button
       style={{ backgroundColor: invertMask ? 'white' : 'black', borderColor: invertMask ? 'black' : 'white', borderWidth: 'medium' }}

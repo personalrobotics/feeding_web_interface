@@ -28,19 +28,19 @@ export function useWindowSize() {
  * @returns {JSX.Element} the robot's live video stream
  */
 export function showVideo(webVideoServerURL, currentWidth, currentHeight, onclick) {
+  let imgWidth = Math.round(currentWidth * 0.75)
+  let imgHeight = Math.round(currentHeight * 0.9)
   return (
     <img
-      src={`${webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(currentWidth)}&height=${Math.round(
-        currentHeight
-      )}&quality=20`}
+      src={`${webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${imgWidth}&height=${imgHeight}&quality=20`}
       alt='Live video feed from the robot'
       style={{
-        width: currentWidth,
-        height: currentHeight,
+        width: imgWidth,
+        height: imgHeight,
         display: 'block',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: '5px',
+        marginLeft: '25px',
         marginBottom: '5px'
       }}
       onClick={onclick}
@@ -78,6 +78,7 @@ export function scaleWidthHeightToWindow(
   let availableWidth = windowSize[0] - marginLeft - marginRight
   let availableHeight = windowSize[1] - marginTop - marginBottom
   let availableAspectRatio = availableWidth / availableHeight
+  console.log('availableAspectRatio ' + availableAspectRatio)
 
   // Calculate the width and height of the image that fits within the window
   let returnWidth, returnHeight
