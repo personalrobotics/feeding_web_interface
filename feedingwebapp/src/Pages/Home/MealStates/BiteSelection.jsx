@@ -283,8 +283,9 @@ const BiteSelection = (props) => {
               maxHeight = detected_item.roi.height
             }
           }
-          let buttonSize = { width: width * 0.15, height: height * 0.8 }
-          let maskScaleFactor = Math.min(buttonSize.width / maxWidth - 0.6, buttonSize.height / maxHeight - 0.6)
+          // fixed buttonSize takes 15% of view width and 21% of view height adjusting to window size
+          let buttonSize = { width: width * 0.15, height: height * 0.21 }
+          let maskScaleFactor = Math.min(buttonSize.width / maxWidth, buttonSize.height / maxHeight)
           let imgSize = {
             width: Math.round(REALSENSE_WIDTH * maskScaleFactor),
             height: Math.round(REALSENSE_HEIGHT * maskScaleFactor)
