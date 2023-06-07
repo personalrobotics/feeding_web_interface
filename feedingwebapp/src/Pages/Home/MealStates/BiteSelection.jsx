@@ -290,7 +290,7 @@ const BiteSelection = (props) => {
           }
           let buttonSize = { width: 100, height: 70 }
           let maskScaleFactor = Math.min(buttonSize.width / maxWidth, buttonSize.height / maxHeight)
-          let imgSize = { width: Math.round(maxWidth / maskScaleFactor) * 2, height: Math.round(maxHeight / maskScaleFactor) * 2 }
+          let imgSize = { width: Math.round((maxWidth / maskScaleFactor) * 1.25), height: Math.round((maxHeight / maskScaleFactor) * 1.25) }
           // Define a variable for robot's live video stream.
           console.log('imgSize: width and height ' + imgSize.width + imgSize.height)
           let imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${imgSize.width}&height=${imgSize.height}&quality=20`
@@ -300,7 +300,6 @@ const BiteSelection = (props) => {
           console.log('btnSizeHeight: ' + buttonSize.height)
           console.log('maxHeight: ' + maxHeight)
           console.log('maskScaleFactor: ' + maskScaleFactor)
-          console.log('detectedItems: ' + actionResult.detected_items[0][0] + actionResult.detected_items[0][1])
           return (
             <>
               <center>
