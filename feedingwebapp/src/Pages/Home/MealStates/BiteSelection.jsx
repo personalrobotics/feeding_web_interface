@@ -101,8 +101,8 @@ const BiteSelection = (props) => {
   }, [windowSize, margin])
 
   // Width and height of buttons
-  let maskButtonWidth = isPortrait ? 90 : 110
-  let maskButtonHeight = isPortrait ? 85 : 87
+  //let maskButtonWidth = isPortrait ? 90 : 110
+  //let maskButtonHeight = isPortrait ? 85 : 87
   let skipButtonWidth = width
   let skipButtonHeight = isPortrait ? 73 : 40
 
@@ -279,6 +279,8 @@ const BiteSelection = (props) => {
           // Get the parameters to display the mask as buttons
           let [maxWidth, maxHeight] = [0, 0]
           for (let detected_item of actionResult.detected_items) {
+            console.log('detected item: ' + detected_item[0] + detected_item[1])
+            console.log('detected item roi' + detected_item.roi[0] + detected_item.roi[1])
             if (detected_item.roi.width > maxWidth) {
               maxWidth = detected_item.roi.width
             }
@@ -286,18 +288,19 @@ const BiteSelection = (props) => {
               maxHeight = detected_item.roi.height
             }
           }
-          console.log('btnSizeWidth: ' + maskButtonWidth)
-          console.log('maxWidth: ' + maxWidth)
-          console.log('btnSizeHeight: ' + maskButtonHeight)
-          console.log('maxHeight: ' + maxHeight)
-          let maskScaleFactor = Math.min(maskButtonWidth / maxWidth, maskButtonHeight / maxHeight)
-          console.log('maskScaleFactor: ' + maskScaleFactor)
-          let imgSize = { width: Math.round(maskButtonWidth * maxWidth), height: Math.round(maskButtonHeight * maxHeight) }
+          let buttonSize = { width: 100, height: 70 }
+          let maskScaleFactor = Math.min(buttonSize.width / maxWidth, buttonSize.height / maxHeight)
+          let imgSize = { width: Math.round(maxWidth / maskScaleFactor) * 2, height: Math.round(maxHeight / maskScaleFactor) * 2 }
           // Define a variable for robot's live video stream.
-          let imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${Math.round(
-            maskButtonWidth
-          )}&height=${Math.round(maskButtonHeight)}&quality=20`
-
+          console.log('imgSize: width and height ' + imgSize.width + imgSize.height)
+          let imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${imgSize.width}&height=${imgSize.height}&quality=20`
+          console.log('imgSrc: ' + imgSrc)
+          console.log('btnSizeWidth: ' + buttonSize.width)
+          console.log('maxWidth: ' + maxWidth)
+          console.log('btnSizeHeight: ' + buttonSize.height)
+          console.log('maxHeight: ' + maxHeight)
+          console.log('maskScaleFactor: ' + maskScaleFactor)
+          console.log('detectedItems: ' + actionResult.detected_items[0][0] + actionResult.detected_items[0][1])
           return (
             <>
               <center>
@@ -306,7 +309,7 @@ const BiteSelection = (props) => {
                   {actionResult.detected_items.map((detected_item, i) => (
                     <View key={i}>
                       <MaskButton
-                        buttonSize={{ width: maskButtonWidth, height: maskButtonHeight }}
+                        buttonSize={{ buttonSize }}
                         imgSrc={imgSrc}
                         imgSize={imgSize}
                         maskSrc={'data:image/jpeg;base64,' + detected_item.mask.data}
@@ -345,7 +348,7 @@ const BiteSelection = (props) => {
           </React.Fragment>
         )
     }
-  }, [actionStatus, actionResult, foodItemClicked, maskButtonWidth, maskButtonHeight, props.webVideoServerURL])
+  }, [actionStatus, actionResult, foodItemClicked, props.webVideoServerURL])
 
   /** Get the button for continue without acquiring bite
    *
