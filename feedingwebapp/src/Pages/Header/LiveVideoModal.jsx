@@ -35,6 +35,7 @@ function LiveVideoModal(props) {
   const [width, setWidth] = useState(windowSize[0])
   const [height, setHeight] = useState(windowSize[1])
 
+  // Update the image size when the screen changes size.
   useEffect(() => {
     // 640 x 480 is the standard dimension of images outputed by the RealSense
     let { width: widthUpdate, height: heightUpdate } = scaleWidthHeightToWindow(

@@ -24,7 +24,7 @@ const PlateLocator = (props) => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
   // Get robot motion flag for plate locator
-  const setNotLocatingPlate = useGlobalState((state) => state.setNotLocatingPlate)
+  const setTeleopIsMoving = useGlobalState((state) => state.setTeleopIsMoving)
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Factor to modify video size in landscape which has less space than portrait
@@ -37,6 +37,7 @@ const PlateLocator = (props) => {
   const [width, setWidth] = useState(windowSize[0])
   const [height, setHeight] = useState(windowSize[1])
 
+  // Update the image size when the screen changes size.
   useEffect(() => {
     // Get the size of the robot's live video stream.
     let { width: widthUpdate, height: heightUpdate } = scaleWidthHeightToWindow(
@@ -61,10 +62,10 @@ const PlateLocator = (props) => {
   const cartesianControlCommandReceived = useCallback(
     (event) => {
       let direction = event.target.value
-      setNotLocatingPlate(false)
+      setTeleopIsMoving(true)
       console.log('cartesianControlCommandReceived', direction)
     },
-    [setNotLocatingPlate]
+    [setTeleopIsMoving]
   )
 
   /**
@@ -73,9 +74,9 @@ const PlateLocator = (props) => {
    */
   const doneClicked = useCallback(() => {
     console.log('doneClicked')
-    setNotLocatingPlate(true)
+    setTeleopIsMoving(false)
     setMealState(MEAL_STATE.U_BiteSelection)
-  }, [setMealState, setNotLocatingPlate])
+  }, [setMealState, setTeleopIsMoving])
 
   /**
    * Get the done button to click when locating plate is done.

@@ -251,9 +251,9 @@ const RobotMotion = (props) => {
                 <>
                   {isPortrait ? (
                     <React.Fragment>
-                      <h3>Robot is moving...</h3>
-                      <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
                       <center>
+                        <h3>Robot is moving...</h3>
+                        <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
                         <CircleProgressBar proportion={progress} />
                       </center>
                     </React.Fragment>
@@ -276,17 +276,31 @@ const RobotMotion = (props) => {
               let planning_elapsed_time = actionStatus.feedback.planning_time.sec + actionStatus.feedback.planning_time.nanosec / 10 ** 9
               return (
                 <>
-                  <h3>Robot is thinking...</h3>
-                  <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec</h3>
+                  <center>
+                    <h3>Robot is thinking...</h3>
+                    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec</h3>
+                  </center>
                 </>
               )
             }
           } else {
             // If you haven't gotten feedback yet, assume the robot is planning
-            return <h3>Robot is thinking...</h3>
+            return (
+              <>
+                <center>
+                  <h3>Robot is thinking...</h3>
+                </center>
+              </>
+            )
           }
         case ROS_ACTION_STATUS_SUCCEED:
-          return <h3>Robot has finished</h3>
+          return (
+            <>
+              <center>
+                <h3>Robot has finished</h3>
+              </center>
+            </>
+          )
         case ROS_ACTION_STATUS_ABORT:
           /**
            * TODO: Just displaying that the robot faced an error is not useful
@@ -294,12 +308,30 @@ const RobotMotion = (props) => {
            * error cases might arise, and change the UI accordingly to instruct
            * users on how to troubleshoot/fix it.
            */
-          return <h3>Robot encountered an error</h3>
+          return (
+            <>
+              <center>
+                <h3>Robot encountered an error</h3>
+              </center>
+            </>
+          )
         case ROS_ACTION_STATUS_CANCELED:
-          return <h3>Robot is paused</h3>
+          return (
+            <>
+              <center>
+                <h3>Robot is paused</h3>
+              </center>
+            </>
+          )
         default:
           if (paused) {
-            return <h3>Robot is paused</h3>
+            return (
+              <>
+                <center>
+                  <h3>Robot is paused</h3>
+                </center>
+              </>
+            )
           } else {
             return <h3>&nbsp;</h3>
           }

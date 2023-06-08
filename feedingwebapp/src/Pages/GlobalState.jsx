@@ -94,8 +94,8 @@ export const useGlobalState = create(
       desiredFoodItem: null,
       // Whether or not the currently-executing robot motion was paused by the user
       paused: false,
-      // Flag to indicate robot motion in plate locator
-      notLocatingPlate: true,
+      // Flag to indicate robot motion trough teleoperation interface
+      teleopIsMoving: false,
       // Settings values
       stagingPosition: SETTINGS.stagingPosition[0],
       biteInitiation: SETTINGS.biteInitiation[0],
@@ -119,9 +119,9 @@ export const useGlobalState = create(
         set(() => ({
           paused: paused
         })),
-      setNotLocatingPlate: (notLocatingPlate) =>
+      setTeleopIsMoving: (teleopIsMoving) =>
         set(() => ({
-          notLocatingPlate: notLocatingPlate
+          teleopIsMoving: teleopIsMoving
         })),
       setStagingPosition: (stagingPosition) =>
         set(() => ({

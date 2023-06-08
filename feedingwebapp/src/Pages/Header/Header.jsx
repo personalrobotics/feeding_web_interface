@@ -47,7 +47,7 @@ const Header = (props) => {
   const mealState = useGlobalState((state) => state.mealState)
   const setAppPage = useGlobalState((state) => state.setAppPage)
   const paused = useGlobalState((state) => state.paused)
-  const notLocatingPlate = useGlobalState((state) => state.notLocatingPlate)
+  const teleopIsMoving = useGlobalState((state) => state.teleopIsMoving)
 
   /**
    * When the Home button in the header is clicked, return to the Home page.
@@ -112,7 +112,7 @@ const Header = (props) => {
               Settings
             </Nav.Link>
           </Nav>
-          {NON_MOVING_STATES.has(mealState) || paused || (mealState === MEAL_STATE.U_PlateLocator && notLocatingPlate) ? (
+          {NON_MOVING_STATES.has(mealState) || paused || (mealState === MEAL_STATE.U_PlateLocator && teleopIsMoving === false) ? (
             <div>
               <Button
                 variant='danger'

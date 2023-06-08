@@ -85,6 +85,7 @@ const BiteSelection = (props) => {
   const [imgHeight, setImgHeight] = useState(windowSize[1])
   const [scaleFactor, setScaleFactor] = useState(0)
 
+  // Update the image size when the screen changes size.
   useEffect(() => {
     // Get the size of the robot's live video stream.
     let {

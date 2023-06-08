@@ -40,15 +40,15 @@ const Footer = (props) => {
   let phantomButtonIcon = '/robot_state_imgs/phantom_view_image.svg'
 
   // Get the size of window.
-  let size = useWindowSize()
+  let windowSize = useWindowSize()
   // Pixels to subtract from window width
   let footerWidthSubtraction = 32
   // Get footer width by adjusting to current window width
-  let width = size[0] - footerWidthSubtraction
+  let footerWidth = windowSize[0] - footerWidthSubtraction
   // Width of Back and Resume buttons
-  let backResumeButtonWidth = width / 2
+  let backResumeButtonWidth = footerWidth / 2
   // Width of Pause button
-  let pauseButtonWidth = width
+  let pauseButtonWidth = footerWidth
   // Height of Footer buttons and icons. In landscape, the button will be shorter in height, since it is wider.
   let footerButtonHeight = isPortrait ? '95px' : '50px'
   let footerIconHeight = isPortrait ? '87px' : '42px'

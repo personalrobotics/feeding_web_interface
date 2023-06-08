@@ -3,17 +3,17 @@ import { CAMERA_FEED_TOPIC } from './Pages/Constants'
 
 // Updates and returns the window size whenever the screen is re-sized.
 export function useWindowSize() {
-  const [size, setSize] = useState([0, 0])
+  const [windowSize, setWindowSize] = useState([0, 0])
   useLayoutEffect(() => {
-    // set current size
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight])
+    // set current window size
+    function updateWindowSize() {
+      setWindowSize([window.innerWidth, window.innerHeight])
     }
-    window.addEventListener('resize', updateSize)
-    updateSize()
-    return () => window.removeEventListener('resize', updateSize)
+    window.addEventListener('resize', updateWindowSize)
+    updateWindowSize()
+    return () => window.removeEventListener('resize', updateWindowSize)
   }, [])
-  return size
+  return windowSize
 }
 
 /**
@@ -60,7 +60,6 @@ export function showVideo(webVideoServerURL, currentWidth, currentHeight, onclic
  *
  * @returns {object} the width and height of the image that fits within the window and has the requested margins
  */
-
 export function scaleWidthHeightToWindow(
   windowSize,
   imageWidth,
