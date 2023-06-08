@@ -253,9 +253,7 @@ const RobotMotion = (props) => {
                     <React.Fragment>
                       <center>
                         <h3 style={{ fontSize: '4vh' }}>Robot is moving...</h3>
-                        <h3 style={{ fontSize: '4vh' }}>
-                          &nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec
-                        </h3>
+                        <h3 style={{ fontSize: '4vh' }}>&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
                         <CircleProgressBar proportion={progress} />
                       </center>
                     </React.Fragment>
@@ -264,9 +262,7 @@ const RobotMotion = (props) => {
                       <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
                         <React.Fragment>
                           <h3 style={{ fontSize: '4vh' }}>Robot is moving...</h3>
-                          <h3 style={{ fontSize: '4vh' }}>
-                            &nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec
-                          </h3>
+                          <h3 style={{ fontSize: '4vh' }}>&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
                         </React.Fragment>
                       </View>
                       <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
@@ -282,9 +278,7 @@ const RobotMotion = (props) => {
                 <>
                   <center>
                     <h3 style={{ fontSize: '4vh' }}>Robot is thinking...</h3>
-                    <h3 style={{ fontSize: '4vh' }}>
-                      &nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec
-                    </h3>
+                    <h3 style={{ fontSize: '4vh' }}>&nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec</h3>
                   </center>
                 </>
               )

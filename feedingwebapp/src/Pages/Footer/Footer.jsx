@@ -4,13 +4,11 @@ import { MDBFooter } from 'mdb-react-ui-kit'
 import Button from 'react-bootstrap/Button'
 import { View } from 'react-native'
 import Row from 'react-bootstrap/Row'
-import { useMediaQuery } from 'react-responsive'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
 
 // Local imports
 import { MOVING_STATE_ICON_DICT } from '../Constants'
-import { useWindowSize } from '../../helpers'
 import { useGlobalState } from '../GlobalState'
 
 /**
@@ -31,34 +29,23 @@ import { useGlobalState } from '../GlobalState'
 const Footer = (props) => {
   // Get the current meal state
   const mealState = useGlobalState((state) => state.mealState)
-  // Flag to check if the current orientation is portrait
-  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  // Icons and other parameters for the footer buttons
+  // Icons for the footer buttons
   let pauseIcon = '/robot_state_imgs/pause_button_icon.svg'
   let backIcon = props.backMealState ? MOVING_STATE_ICON_DICT[props.backMealState] : ''
   let resumeIcon = MOVING_STATE_ICON_DICT[mealState]
   let phantomButtonIcon = '/robot_state_imgs/phantom_view_image.svg'
-
-  // Get the size of window.
-  let windowSize = useWindowSize()
-  // Pixels to subtract from window width
-  let footerWidthSubtraction = 32
-  // Get footer width by adjusting to current window width
-  let footerWidth = windowSize[0] - footerWidthSubtraction
-  // Width of Back and Resume buttons
-  let backResumeButtonWidth = footerWidth / 2
-  // Width of Pause button
-  let pauseButtonWidth = footerWidth
-  // Height of Footer buttons and icons. In landscape, the button will be shorter in height, since it is wider.
-  let footerButtonHeight = isPortrait ? '95px' : '50px'
-  let footerIconHeight = isPortrait ? '87px' : '42px'
-  // Width of Footer icon images in buttons
-  let backResumeIconWidth = isPortrait ? '82px' : '90px'
-  let pauseIconWidth = isPortrait ? '150px' : '89px'
-  // Size of Footer buttons' font
-  let footerFontSize = '150%'
+  // sizes for footer buttons and icons (width, height, fontsize)
+  let pauseButtonWidth = '98vw'
+  let backResumeButtonWidth = '49vw'
+  let footerButtonHeight = '10vh'
+  let pauseIconWidth = '15vh'
+  let backResumeIconWidth = '10vh'
+  let pauseIconHeight = '10vh'
+  let backResumeIconHeight = '9vh'
+  let pauseFontSize = '7vh'
+  let backResumeFontSize = '3vh'
   // Margin around footer buttons
-  let footerMargin = 3
+  let footerMargin = '0.3vh'
 
   /**
    * Get the pause text and button to render in footer.
@@ -76,6 +63,8 @@ const Footer = (props) => {
               onClick={callback}
               style={{
                 width: pauseButtonWidth,
+                justifyContent: 'center',
+                alignItems: 'center',
                 height: footerButtonHeight,
                 '--bs-btn-padding-y': '0rem'
               }}
@@ -90,8 +79,7 @@ const Footer = (props) => {
                   <p
                     className='transitionMessage'
                     style={{
-                      marginBottom: '0',
-                      fontSize: footerFontSize,
+                      fontSize: pauseFontSize,
                       color: 'black',
                       fontWeight: 'bold',
                       padding: '0'
@@ -104,7 +92,7 @@ const Footer = (props) => {
                   <img
                     style={{
                       width: pauseIconWidth,
-                      height: footerIconHeight
+                      height: pauseIconHeight
                     }}
                     src={pauseIcon}
                     alt='pause_icon'
@@ -117,7 +105,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [pauseIcon, footerButtonHeight, footerIconHeight, pauseButtonWidth, footerFontSize, pauseIconWidth]
+    [pauseIcon, footerButtonHeight, pauseButtonWidth, pauseIconHeight, pauseIconWidth, pauseFontSize]
   )
 
   /**
@@ -139,24 +127,29 @@ const Footer = (props) => {
               '--bs-btn-padding-y': '0rem'
             }}
           >
-            <View style={{ flexDirection: 'row', justifyContent: 'center', margin: '1px' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
               <View style={{ justifyContent: 'center' }}>
                 <p
                   className='transitionMessage'
-                  style={{ marginBottom: '0', fontSize: footerFontSize, color: 'black', fontWeight: 'bold', padding: '0' }}
+                  style={{ marginBottom: '0', fontSize: backResumeFontSize, color: 'black', fontWeight: 'bold', padding: '0' }}
                 >
                   Back
                 </p>
               </View>
               <View>
-                <img style={{ width: backResumeIconWidth, height: footerIconHeight }} src={backIcon} alt='back_icon' className='center' />
+                <img
+                  style={{ width: backResumeIconWidth, height: backResumeIconHeight }}
+                  src={backIcon}
+                  alt='back_icon'
+                  className='center'
+                />
               </View>
             </View>
           </Button>
         </>
       )
     },
-    [backIcon, backResumeButtonWidth, footerButtonHeight, footerMargin, footerIconHeight, footerFontSize, backResumeIconWidth]
+    [backIcon, footerMargin, backResumeButtonWidth, backResumeFontSize, footerButtonHeight, backResumeIconHeight, backResumeIconWidth]
   )
 
   /**
@@ -174,7 +167,8 @@ const Footer = (props) => {
             style={{
               marginLeft: footerMargin,
               width: backResumeButtonWidth,
-              height: footerButtonHeight
+              height: footerButtonHeight,
+              '--bs-btn-padding-y': '0rem'
             }}
           >
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
@@ -183,11 +177,9 @@ const Footer = (props) => {
                   className='transitionMessage'
                   style={{
                     marginBottom: '0',
-                    marginLeft: '1px',
-                    fontSize: footerFontSize,
+                    fontSize: backResumeFontSize,
                     color: 'black',
-                    fontWeight: 'bold',
-                    padding: '0'
+                    fontWeight: 'bold'
                   }}
                 >
                   Resume
@@ -195,7 +187,7 @@ const Footer = (props) => {
               </View>
               <View>
                 <img
-                  style={{ width: backResumeIconWidth, height: footerIconHeight }}
+                  style={{ width: backResumeIconWidth, height: backResumeIconHeight }}
                   src={resumeIcon}
                   alt='resume_icon'
                   className='center'
@@ -206,7 +198,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [resumeIcon, backResumeButtonWidth, footerButtonHeight, footerMargin, footerFontSize, backResumeIconWidth, footerIconHeight]
+    [resumeIcon, footerMargin, backResumeButtonWidth, backResumeFontSize, footerButtonHeight, backResumeIconHeight, backResumeIconWidth]
   )
 
   /**
@@ -232,7 +224,7 @@ const Footer = (props) => {
           }}
         >
           <img
-            style={{ width: backResumeIconWidth, height: footerIconHeight }}
+            style={{ width: backResumeIconWidth, height: backResumeIconHeight }}
             src={phantomButtonIcon}
             alt='phantom_button_img'
             className='center'
