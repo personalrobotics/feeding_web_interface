@@ -28,8 +28,8 @@ export function useWindowSize() {
  * @returns {JSX.Element} the robot's live video stream
  */
 export function showVideo(webVideoServerURL, currentWidth, currentHeight, onclick) {
-  let imgWidth = Math.round(currentWidth * 0.75)
-  let imgHeight = Math.round(currentHeight * 0.9)
+  let imgWidth = Math.round(currentWidth)
+  let imgHeight = Math.round(currentHeight)
   return (
     <img
       src={`${webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${imgWidth}&height=${imgHeight}&quality=20`}
@@ -39,9 +39,7 @@ export function showVideo(webVideoServerURL, currentWidth, currentHeight, onclic
         height: imgHeight,
         display: 'block',
         alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: '25px',
-        marginBottom: '5px'
+        justifyContent: 'center'
       }}
       onClick={onclick}
     />
