@@ -1,8 +1,7 @@
 // React imports
 import React, { useCallback, useEffect, useState } from 'react'
 // The NavBar is the navigation toolbar at the top
-import Navbar from 'react-bootstrap/Navbar'
-import Nav from 'react-bootstrap/Nav'
+import { Navbar, Nav } from 'react-bootstrap'
 // The Button is used for stop icon at the top
 import Button from 'react-bootstrap/Button'
 // PropTypes is used to validate that the used props are in fact passed to this
@@ -76,11 +75,10 @@ const Header = (props) => {
        * The ToastContainer is an alert that pops up on the top of the screen
        * and has a timeout.
        */}
-      <ToastContainer style={{ fontSize: '24px' }} />
+      <ToastContainer style={{ fontSize: '4vh' }} />
       {/**
-       * The NavBar has two elements, Home and Settings, on the left side and one
-       * element, Video, on the right side. An image showing the connection status
-       * of the robot is placed in between Settings and Video.
+       * The NavBar has five elements, Home and Settings, on the left side and three
+       * elements: Lock Icon, Robot Connection Status Icon, and Video; on the right side.
        */}
       <Navbar
         collapseOnSelect
@@ -88,74 +86,79 @@ const Header = (props) => {
         bg='dark'
         variant='dark'
         sticky='top'
-        style={{ '--bs-navbar-padding-x': '0rem', '--bs-navbar-padding-y': '0rem' }}
+        style={{ width: '100vw', '--bs-navbar-padding-x': '0rem', '--bs-navbar-padding-y': '0rem' }}
       >
         <Navbar
           id='responsive-navbar-nav'
           bg='dark'
           variant='dark'
-          style={{ '--bs-navbar-padding-x': '0rem', '--bs-navbar-padding-y': '0rem' }}
+          style={{ '--bs-navbar-padding-x': '0rem', '--bs-navbar-padding-y': '0.2rem' }}
         >
           <Nav className='me-auto'>
             <Nav.Link
               onClick={homeClicked}
               className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
-              style={{ fontSize: '150%' }}
+              style={{ fontSize: '2vh' }}
             >
               Home
             </Nav.Link>
             <Nav.Link
               onClick={settingsClicked}
               className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
-              style={{ fontSize: '150%' }}
+              style={{ fontSize: '2vh' }}
             >
               Settings
             </Nav.Link>
           </Nav>
-          {NON_MOVING_STATES.has(mealState) || paused || (mealState === MEAL_STATE.U_PlateLocator && teleopIsMoving === false) ? (
-            <div>
-              <Button
-                variant='danger'
-                disabled={true}
-                style={{
-                  marginLeft: 3,
-                  marginRight: 3,
-                  width: '44px',
-                  height: '55px',
-                  opacity: 1,
-                  '--bs-btn-padding-y': '0rem',
-                  '--bs-btn-padding-x': '0rem'
-                }}
-              >
-                <img
-                  style={{ width: '44px', height: '50px' }}
-                  src='/robot_state_imgs/lock_icon_image.svg'
-                  alt='lock_icon_img'
-                  className='center'
-                />
-              </Button>
-            </div>
-          ) : (
-            <></>
-          )}
-          {isConnected ? (
-            <div>
-              <p className='connectedDiv' style={{ fontSize: '25px', margin: 3 }}>
-                🔌
-              </p>
-            </div>
-          ) : (
-            <div>
-              <p className='notConnectedDiv' style={{ fontSize: '25px', marginLeft: 3, marginRight: 3 }}>
-                ⛔
-              </p>
-            </div>
-          )}
-          <Nav>
+          <Nav pullRight>
+            <Nav.Item>
+              {NON_MOVING_STATES.has(mealState) || paused || (mealState === MEAL_STATE.U_PlateLocator && teleopIsMoving === false) ? (
+                <div>
+                  <Button
+                    variant='danger'
+                    disabled={true}
+                    style={{
+                      marginLeft: 3,
+                      marginRight: 3,
+                      marginTop: 3,
+                      width: '4vh',
+                      height: '5vh',
+                      opacity: 1,
+                      '--bs-btn-padding-y': '0rem',
+                      '--bs-btn-padding-x': '0rem'
+                    }}
+                  >
+                    <img
+                      style={{ width: '4vh', height: '4vh' }}
+                      src='/robot_state_imgs/lock_icon_image.svg'
+                      alt='lock_icon_img'
+                      className='center'
+                    />
+                  </Button>
+                </div>
+              ) : (
+                <></>
+              )}
+            </Nav.Item>
+            <Nav.Item>
+              {isConnected ? (
+                <div>
+                  <p className='connectedDiv' style={{ fontSize: '2vh', margin: 3 }}>
+                    🔌
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p className='notConnectedDiv' style={{ fontSize: '2vh', marginLeft: 3, marginRight: 3 }}>
+                    ⛔
+                  </p>
+                </div>
+              )}
+            </Nav.Item>
             <Nav.Link
               onClick={() => setVideoShow(true)}
               className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
-              style={{ fontSize: '150%' }}
+              style={{ fontSize: '2vh' }}
             >
               Video
             </Nav.Link>
