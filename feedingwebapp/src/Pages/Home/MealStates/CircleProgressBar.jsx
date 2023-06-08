@@ -31,7 +31,7 @@ export default function CircleProgressBar(props) {
           text: {
             style: {
               fontFamily: '"Raleway", Helvetica, sans-serif',
-              fontSize: '2rem',
+              fontSize: '5vh',
               position: 'absolute',
               left: '50%',
               top: '50%',
@@ -51,7 +51,7 @@ export default function CircleProgressBar(props) {
     // everytime items in dependency array (the second argument) update, useEffect runs.
   }, [setBar, bar, props.proportion])
   // render HTML
-  return <div id='container' style={{ margin: '20px', width: '200px', height: '200px', position: 'relative' }}></div>
+  return <div id='container' style={{ margin: '20px', width: '40vh', height: '40vh', position: 'relative' }}></div>
 }
 
 // progress proportion corresponding with the motion the robot is executing

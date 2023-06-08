@@ -252,8 +252,10 @@ const RobotMotion = (props) => {
                   {isPortrait ? (
                     <React.Fragment>
                       <center>
-                        <h3>Robot is moving...</h3>
-                        <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
+                        <h3 style={{ fontSize: '4vh' }}>Robot is moving...</h3>
+                        <h3 style={{ fontSize: '4vh' }}>
+                          &nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec
+                        </h3>
                         <CircleProgressBar proportion={progress} />
                       </center>
                     </React.Fragment>
@@ -261,8 +263,10 @@ const RobotMotion = (props) => {
                     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                       <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
                         <React.Fragment>
-                          <h3>Robot is moving...</h3>
-                          <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
+                          <h3 style={{ fontSize: '4vh' }}>Robot is moving...</h3>
+                          <h3 style={{ fontSize: '4vh' }}>
+                            &nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec
+                          </h3>
                         </React.Fragment>
                       </View>
                       <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
@@ -277,8 +281,10 @@ const RobotMotion = (props) => {
               return (
                 <>
                   <center>
-                    <h3>Robot is thinking...</h3>
-                    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec</h3>
+                    <h3 style={{ fontSize: '4vh' }}>Robot is thinking...</h3>
+                    <h3 style={{ fontSize: '4vh' }}>
+                      &nbsp;&nbsp;&nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec
+                    </h3>
                   </center>
                 </>
               )
@@ -288,7 +294,7 @@ const RobotMotion = (props) => {
             return (
               <>
                 <center>
-                  <h3>Robot is thinking...</h3>
+                  <h3 style={{ fontSize: '4vh' }}>Robot is thinking...</h3>
                 </center>
               </>
             )
@@ -297,7 +303,7 @@ const RobotMotion = (props) => {
           return (
             <>
               <center>
-                <h3>Robot has finished</h3>
+                <h3 style={{ fontSize: '4vh' }}>Robot has finished</h3>
               </center>
             </>
           )
@@ -311,7 +317,7 @@ const RobotMotion = (props) => {
           return (
             <>
               <center>
-                <h3>Robot encountered an error</h3>
+                <h3 style={{ fontSize: '4vh' }}>Robot encountered an error</h3>
               </center>
             </>
           )
@@ -319,7 +325,7 @@ const RobotMotion = (props) => {
           return (
             <>
               <center>
-                <h3>Robot is paused</h3>
+                <h3 style={{ fontSize: '4vh' }}>Robot is paused</h3>
               </center>
             </>
           )
@@ -328,7 +334,7 @@ const RobotMotion = (props) => {
             return (
               <>
                 <center>
-                  <h3>Robot is paused</h3>
+                  <h3 style={{ fontSize: '4vh' }}>Robot is paused</h3>
                 </center>
               </>
             )
@@ -346,7 +352,7 @@ const RobotMotion = (props) => {
       {/* TODO: Consider vertically centering this element */}
       <Row className='justify-content-center mx-auto my-2 w-80'>
         <div>
-          <h1 id='Waiting for robot motion' className='waitingMsg'>
+          <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: '5vh' }}>
             {props.waitingText}
           </h1>
           {props.debug ? (
