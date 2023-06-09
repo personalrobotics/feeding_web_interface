@@ -1,7 +1,6 @@
 // React Imports
 import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
-import Row from 'react-bootstrap/Row'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
 
@@ -23,6 +22,14 @@ const BiteAcquisitionCheck = () => {
   let moveToMouthImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // Indicator of how to arrange screen elements based on orientation
+  let dimension = isPortrait ? 'column' : 'row'
+  // Font size for text
+  let textFontSize = isPortrait ? '3vh' : '3vw'
+  let buttonWidth = isPortrait ? '30vh' : '30vw'
+  let buttonHeight = isPortrait ? '20vh' : '20vw'
+  let iconWidth = isPortrait ? '28vh' : '28vw'
+  let iconHeight = isPortrait ? '18vh' : '18vw'
 
   /**
    * Callback function for when the user indicates that the bite acquisition
@@ -51,12 +58,12 @@ const BiteAcquisitionCheck = () => {
     return (
       <>
         {/* Ask the user whether they want to move to mouth position */}
-        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
           Ready for bite? Move to mouth.
         </p>
       </>
     )
-  }, [])
+  }, [textFontSize])
 
   /**
    * Get the ready for bite button to render.
@@ -72,13 +79,13 @@ const BiteAcquisitionCheck = () => {
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={acquisitionSuccess}
-          style={{ width: '300px', height: '200px' }}
+          style={{ width: buttonWidth, height: buttonHeight }}
         >
-          <img src={moveToMouthImage} alt='move_to_mouth_image' className='center' />
+          <img src={moveToMouthImage} alt='move_to_mouth_image' className='center' style={{ width: iconWidth, height: iconHeight }} />
         </Button>
       </>
     )
-  }, [moveToMouthImage, acquisitionSuccess])
+  }, [moveToMouthImage, acquisitionSuccess, buttonHeight, buttonWidth, iconHeight, iconWidth])
 
   /**
    * Get the re-acquire bite text to render.
@@ -89,12 +96,12 @@ const BiteAcquisitionCheck = () => {
     return (
       <>
         {/* Ask the user whether they want to try acquiring bite again */}
-        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: '140%' }}>
+        <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
           Re-acquire bite? Move above plate.
         </p>
       </>
     )
-  }, [])
+  }, [textFontSize])
 
   /**
    * Get the re-acquire bite button to render.
@@ -110,42 +117,35 @@ const BiteAcquisitionCheck = () => {
           className='mx-2 mb-2 btn-huge'
           size='lg'
           onClick={acquisitionFailure}
-          style={{ width: '300px', height: '200px' }}
+          style={{ width: buttonWidth, height: buttonHeight }}
         >
-          <img src={moveAbovePlateImage} alt='move_above_plate_image' className='center' />
+          <img src={moveAbovePlateImage} alt='move_above_plate_image' className='center' style={{ width: iconWidth, height: iconHeight }} />
         </Button>
       </>
     )
-  }, [acquisitionFailure, moveAbovePlateImage])
+  }, [acquisitionFailure, moveAbovePlateImage, buttonHeight, buttonWidth, iconHeight, iconWidth])
+
+  /** Get the full page view
+   *
+   * @returns {JSX.Element} the the full page view
+   */
+  const fullPageView = useCallback(() => {
+    return (
+      <View style={{ flex: 1, flexDirection: dimension, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+          {readyForBiteText()}
+          {readyForBiteButton()}
+        </View>
+        <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+          {reacquireBiteText()}
+          {reacquireBiteButton()}
+        </View>
+      </View>
+    )
+  }, [dimension, reacquireBiteButton, reacquireBiteText, readyForBiteButton, readyForBiteText])
 
   // Render the component
-  return (
-    <>
-      {isPortrait ? (
-        <div style={{ display: 'block', width: '100%', height: '115vh', overflowX: 'hidden', overflowY: 'auto' }} className='outer'>
-          {readyForBiteText()}
-          <Row className='justify-content-center mx-auto w-75'>{readyForBiteButton()}</Row>
-          {/* Add empty space */}
-          <div className='justify-content-center mx-auto mb-1 row'>&nbsp;</div>
-          <Row className='justify-content-center mx-auto mb-2'>
-            {reacquireBiteText()}
-            {reacquireBiteButton()}
-          </Row>
-        </div>
-      ) : (
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
-            {readyForBiteText()}
-            {readyForBiteButton()}
-          </View>
-          <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
-            {reacquireBiteText()}
-            {reacquireBiteButton()}
-          </View>
-        </View>
-      )}
-    </>
-  )
+  return <>{fullPageView()}</>
 }
 
 export default BiteAcquisitionCheck

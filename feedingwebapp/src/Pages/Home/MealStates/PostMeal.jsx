@@ -2,6 +2,7 @@
 import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
+import { useMediaQuery } from 'react-responsive'
 
 // Local Imports
 import '../Home.css'
@@ -14,6 +15,18 @@ import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 const PostMeal = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // Font size for text
+  let textFontSize = isPortrait ? '3vh' : '3vw'
+  // Font size for button
+  let buttonFontSize = isPortrait ? '5vh' : '5vw'
+  // Width for button
+  let buttonWidth = isPortrait ? '40vh' : '40vw'
+  // Height for button
+  let buttonHeight = isPortrait ? '10vh' : '10vw'
+  // Margin
+  let margin = isPortrait ? '5vh' : '5vw'
 
   /**
    * Callback function for when the user decides to return to the start of the app.
@@ -26,7 +39,7 @@ const PostMeal = () => {
   // Render the component
   return (
     <Row xs={1} md={1} className='justify-content-center mx-2 my-2'>
-      <p className='transitionMessage' style={{ marginBottom: '10px', marginTop: '0px', fontSize: '24px' }}>
+      <p className='transitionMessage' style={{ marginBottom: margin, marginTop: '0px', fontSize: textFontSize }}>
         That was a delicious meal 😋 ! Cheers 🥂 to your good health!
       </p>
       <Button
@@ -35,7 +48,7 @@ const PostMeal = () => {
         className='btn-huge'
         id='#returnToStartBtn'
         onClick={returnToStartClicked}
-        style={{ width: '75%', fontSize: '35px', marginTop: '30px' }}
+        style={{ width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, marginTop: margin }}
       >
         Return to Start
       </Button>

@@ -41,10 +41,18 @@ const BiteSelection = (props) => {
   const setDesiredFoodItem = useGlobalState((state) => state.setDesiredFoodItem)
   // Get icon image for move to mouth
   let moveToMouthImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
+  // Factor to modify video size in landscape which has less space than portrait
+  let landscapeSizeFactor = 0.5
+  // Factor to modify mask button size with regards to window size
+  let maskButtonSizeFactor = 0.12
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  // Factor to modify video size in landscape which has less space than portrait
-  // let landscapeSizeFactor = 0.65
+  // text font size
+  let textFontSize = isPortrait ? '2.5vh' : '2.5vw'
+  // done button width
+  let skipButtonWidth = isPortrait ? '25vh' : '25vw'
+  // button height
+  let skipButtonHeight = isPortrait ? '5vh' : '5vw'
 
   /**
    * Create a local state variable to store the detected masks, the
@@ -84,6 +92,8 @@ const BiteSelection = (props) => {
   const [imgWidth, setImgWidth] = useState(windowSize[0])
   const [imgHeight, setImgHeight] = useState(windowSize[1])
   const [scaleFactor, setScaleFactor] = useState(0)
+  // Indicator of how to arrange screen elements based on orientation
+  let dimension = isPortrait ? 'column' : 'row'
 
   // Update the image size when the screen changes size.
   useEffect(() => {
@@ -97,6 +107,9 @@ const BiteSelection = (props) => {
     setImgHeight(heightUpdate)
     setScaleFactor(scaleFactor)
   }, [windowSize, margin])
+
+  let finalImgWidth = isPortrait ? imgWidth : landscapeSizeFactor * imgWidth
+  let finalImgHeight = isPortrait ? imgHeight : landscapeSizeFactor * imgHeight
 
   /**
    * Callback function for when the user indicates that they want to move the
@@ -250,7 +263,9 @@ const BiteSelection = (props) => {
           let elapsed_time = actionStatus.feedback.elapsed_time.sec + actionStatus.feedback.elapsed_time.nanosec / 10 ** 9
           return (
             <React.Fragment>
-              <h5 style={{ textAlign: 'center' }}>Detecting food... ({Math.round(elapsed_time * 100) / 100} sec)</h5>
+              <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>
+                Detecting food... ({Math.round(elapsed_time * 100) / 100} sec)
+              </h5>
               <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
               <h4 style={{ textAlign: 'center' }}>&nbsp;</h4>
               <h6 style={{ textAlign: 'center' }}>&nbsp;</h6>
@@ -259,7 +274,7 @@ const BiteSelection = (props) => {
         } else {
           return (
             <React.Fragment>
-              <h5 style={{ textAlign: 'center' }}>Detecting food... </h5>
+              <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Detecting food... </h5>
               <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
               <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
               <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
@@ -280,13 +295,14 @@ const BiteSelection = (props) => {
           }
           // fixed buttonSize takes 15% of view width and 21% of view height adjusting to window size
           let buttonSize = {
-            width: isPortrait ? windowSize[0] * 0.21 : windowSize[0] * 0.12,
-            height: isPortrait ? windowSize[1] * 0.12 : windowSize[1] * 0.21
+            width: isPortrait ? maskButtonSizeFactor * windowSize[1] : maskButtonSizeFactor * windowSize[0],
+            height: isPortrait ? maskButtonSizeFactor * windowSize[1] : maskButtonSizeFactor * windowSize[0]
           }
           let maskScaleFactor = Math.min(buttonSize.width / maxWidth, buttonSize.height / maxHeight)
+          let finalMaskScaleFactor = isPortrait ? maskScaleFactor : 0.5 * maskScaleFactor
           let imgSize = {
-            width: Math.round(REALSENSE_WIDTH * maskScaleFactor),
-            height: Math.round(REALSENSE_HEIGHT * maskScaleFactor)
+            width: Math.round(REALSENSE_WIDTH * finalMaskScaleFactor),
+            height: Math.round(REALSENSE_HEIGHT * finalMaskScaleFactor)
           }
           // Define a variable for robot's live video stream.
           console.log('imgSize: width and height ' + imgSize.width + imgSize.height)
@@ -300,7 +316,7 @@ const BiteSelection = (props) => {
           return (
             <>
               <center>
-                <h5 style={{ textAlign: 'center' }}>Select a food, or retry by clicking image.</h5>
+                <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Select a food, or retry by clicking image.</h5>
                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                   {actionResult.detected_items.map((detected_item, i) => (
                     <View key={i}>
@@ -322,7 +338,7 @@ const BiteSelection = (props) => {
             </>
           )
         } else {
-          return <h4 style={{ textAlign: 'center' }}>Food detection succeeded</h4>
+          return <h4 style={{ textAlign: 'center', fontSize: textFontSize }}>Food detection succeeded</h4>
         }
       case ROS_ACTION_STATUS_ABORT:
         /**
@@ -331,9 +347,9 @@ const BiteSelection = (props) => {
          * error cases might arise, and change the UI accordingly to instruct
          * users on how to troubleshoot/fix it.
          */
-        return <h3 style={{ textAlign: 'center' }}>Error in food detection</h3>
+        return <h3 style={{ textAlign: 'center', fontSize: textFontSize }}>Error in food detection</h3>
       case ROS_ACTION_STATUS_CANCELED:
-        return <h3 style={{ textAlign: 'center' }}>Food detection canceled</h3>
+        return <h3 style={{ textAlign: 'center', fontSize: textFontSize }}>Food detection canceled</h3>
       default:
         return (
           <React.Fragment>
@@ -344,7 +360,7 @@ const BiteSelection = (props) => {
           </React.Fragment>
         )
     }
-  }, [actionStatus, actionResult, foodItemClicked, props.webVideoServerURL, windowSize, isPortrait])
+  }, [actionStatus, actionResult, foodItemClicked, props.webVideoServerURL, isPortrait, windowSize, textFontSize, maskButtonSizeFactor])
 
   /** Get the button for continue without acquiring bite
    *
@@ -352,9 +368,9 @@ const BiteSelection = (props) => {
    */
   const withoutAcquireButton = useCallback(() => {
     return (
-      <div style={{ display: 'block', margin: 'auto', width: '100%' }} className='outer'>
+      <>
         {/* Ask the user whether they want to skip acquisition and move above plate */}
-        <h5 style={{ textAlign: 'center' }}>Skip acquisition.</h5>
+        <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Skip acquisition.</h5>
         {/* Icon to move to mouth, button 45% of window width and 7% of window height */}
         <Row className='justify-content-center'>
           <Button
@@ -362,19 +378,19 @@ const BiteSelection = (props) => {
             className='mx-2 btn-huge'
             size='lg'
             onClick={moveToMouth}
-            style={{ width: windowSize[0] * 0.35, height: windowSize[1] * 0.1, '--bs-btn-padding-x': '0rem', '--bs-btn-padding-y': '0rem' }}
+            style={{ width: skipButtonWidth, height: skipButtonHeight, '--bs-btn-padding-x': '0rem', '--bs-btn-padding-y': '0rem' }}
           >
             <img
               src={moveToMouthImage}
-              style={{ width: windowSize[0] * 0.45, height: windowSize[1] * 0.07 }}
+              style={{ width: skipButtonWidth, height: skipButtonHeight }}
               alt='move_to_mouth_image'
               className='center'
             />
           </Button>
         </Row>
-      </div>
+      </>
     )
-  }, [moveToMouth, windowSize, moveToMouthImage])
+  }, [moveToMouth, moveToMouthImage, textFontSize, skipButtonWidth, skipButtonHeight])
 
   /** Get the continue button when debug mode is enabled
    *
@@ -388,13 +404,47 @@ const BiteSelection = (props) => {
         className='justify-content-center mx-2 mb-2'
         size='lg'
         onClick={() => setMealState(MEAL_STATE.R_BiteAcquisition)}
+        style={{ fontSize: textFontSize }}
       >
         Continue (Debug Mode)
       </Button>
     ) : (
       <></>
     )
-  }, [setMealState, props.debug])
+  }, [setMealState, props.debug, textFontSize])
+
+  /** Get the full page view
+   *
+   * @returns {JSX.Element} the the full page view
+   */
+  const fullPageView = useCallback(() => {
+    return (
+      <React.Fragment>
+        <View style={{ flexDirection: dimension, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+            <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Click on image to select food.</h5>
+            {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, imageClicked)}
+          </View>
+          <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+            {/* Display the action status and/or results */}
+            {actionStatusText()}
+            {withoutAcquireButton()}
+            {debugOptions()}
+          </View>
+        </View>
+      </React.Fragment>
+    )
+  }, [
+    dimension,
+    actionStatusText,
+    debugOptions,
+    imageClicked,
+    finalImgHeight,
+    finalImgWidth,
+    textFontSize,
+    props.webVideoServerURL,
+    withoutAcquireButton
+  ])
 
   // Render the component
   return (
@@ -408,41 +458,14 @@ const BiteSelection = (props) => {
        *     they are done eating.
        */}
       <div style={{ display: 'block', textAlign: 'center' }}>
-        <Button className='doneButton' style={{ fontSize: '18px', marginTop: '3px' }} onClick={locatePlateClicked}>
+        <Button className='doneButton' style={{ fontSize: textFontSize, marginTop: margin }} onClick={locatePlateClicked}>
           🍽️ Locate Plate
         </Button>
-        <Button className='doneButton' style={{ fontSize: '18px', marginTop: '3px' }} onClick={doneEatingClicked}>
+        <Button className='doneButton' style={{ fontSize: textFontSize, marginTop: margin }} onClick={doneEatingClicked}>
           ✅ Done Eating
         </Button>
       </div>
-      {isPortrait ? (
-        <React.Fragment>
-          <View style={{ flexDirection: 'col', flex: 1 }}>
-            <View style={{ flex: 7 }}>
-              <h5 style={{ textAlign: 'center' }}>Click on image to select food.</h5>
-              {showVideo(props.webVideoServerURL, imgWidth, imgHeight, imageClicked)}
-            </View>
-            <View style={{ flex: 3 }}>
-              {/* Display the action status and/or results */}
-              {actionStatusText()}
-              {withoutAcquireButton()}
-              {debugOptions()}
-            </View>
-          </View>
-        </React.Fragment>
-      ) : (
-        <View style={{ flexDirection: 'row', flex: 1 }}>
-          <View style={{ flex: 7 }}>
-            <h5 style={{ textAlign: 'center' }}>Click on image to select food.</h5>
-            {showVideo(props.webVideoServerURL, imgWidth, imgHeight, imageClicked)}
-          </View>
-          <View style={{ flex: 3, justifyContent: 'flex-start' }}>
-            <Row style={{ width: '100%', height: '30%' }}>{actionStatusText()}</Row>
-            <Row style={{ width: '100%', height: '20%' }}>{withoutAcquireButton()}</Row>
-            <Row style={{ width: '100%', height: '10%' }}>{debugOptions}</Row>
-          </View>
-        </View>
-      )}
+      {fullPageView()}
     </>
   )
 }

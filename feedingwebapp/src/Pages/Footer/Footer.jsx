@@ -4,6 +4,7 @@ import { MDBFooter } from 'mdb-react-ui-kit'
 import Button from 'react-bootstrap/Button'
 import { View } from 'react-native'
 import Row from 'react-bootstrap/Row'
+import { useMediaQuery } from 'react-responsive'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
 
@@ -33,19 +34,21 @@ const Footer = (props) => {
   let pauseIcon = '/robot_state_imgs/pause_button_icon.svg'
   let backIcon = props.backMealState ? MOVING_STATE_ICON_DICT[props.backMealState] : ''
   let resumeIcon = MOVING_STATE_ICON_DICT[mealState]
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   let phantomButtonIcon = '/robot_state_imgs/phantom_view_image.svg'
   // sizes for footer buttons and icons (width, height, fontsize)
   let pauseButtonWidth = '98vw'
   let backResumeButtonWidth = '49vw'
-  let footerButtonHeight = '10vh'
-  let pauseIconWidth = '15vh'
-  let backResumeIconWidth = '10vh'
-  let pauseIconHeight = '10vh'
-  let backResumeIconHeight = '9vh'
-  let pauseFontSize = '7vh'
-  let backResumeFontSize = '3vh'
+  let footerButtonHeight = isPortrait ? '10vh' : '10vw'
+  let pauseIconWidth = isPortrait ? '15vh' : '15vw'
+  let backResumeIconWidth = isPortrait ? '10vh' : '10vw'
+  let pauseIconHeight = isPortrait ? '10vh' : '10vw'
+  let backResumeIconHeight = isPortrait ? '9vh' : '9vw'
+  let pauseFontSize = isPortrait ? '7vh' : '7vw'
+  let backResumeFontSize = isPortrait ? '3vh' : '3vw'
   // Margin around footer buttons
-  let footerMargin = '0.3vh'
+  let footerMargin = isPortrait ? '0.3vh' : '0.3vw'
 
   /**
    * Get the pause text and button to render in footer.
@@ -66,6 +69,7 @@ const Footer = (props) => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: footerButtonHeight,
+                margin: footerMargin,
                 '--bs-btn-padding-y': '0rem'
               }}
             >
@@ -105,7 +109,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [pauseIcon, footerButtonHeight, pauseButtonWidth, pauseIconHeight, pauseIconWidth, pauseFontSize]
+    [pauseIcon, footerButtonHeight, pauseButtonWidth, pauseIconHeight, pauseIconWidth, pauseFontSize, footerMargin]
   )
 
   /**
@@ -123,7 +127,7 @@ const Footer = (props) => {
             style={{
               width: backResumeButtonWidth,
               height: footerButtonHeight,
-              marginRight: footerMargin,
+              margin: footerMargin,
               '--bs-btn-padding-y': '0rem'
             }}
           >
@@ -165,7 +169,7 @@ const Footer = (props) => {
             variant='success'
             onClick={callback}
             style={{
-              marginLeft: footerMargin,
+              margin: footerMargin,
               width: backResumeButtonWidth,
               height: footerButtonHeight,
               '--bs-btn-padding-y': '0rem'

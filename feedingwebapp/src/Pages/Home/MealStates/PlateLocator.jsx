@@ -27,20 +27,30 @@ const PlateLocator = (props) => {
   const setTeleopIsMoving = useGlobalState((state) => state.setTeleopIsMoving)
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  // Factor to modify video size in landscape which has less space than portrait
-  let landscapeSizeFactor = 0.9
+  // Indicator of how to arrange screen elements based on orientation
+  let dimension = isPortrait ? 'column' : 'row'
   // Define margin for video
   const margin = convertRemToPixels(1)
   // Get current window size
   let windowSize = useWindowSize()
+  // text font size
+  let textFontSize = isPortrait ? '3vh' : '3vw'
+  // done button width
+  let doneButtonWidth = isPortrait ? '15vh' : '15vw'
+  // button height
+  let buttonHeight = isPortrait ? '6vh' : '6vw'
+  // arrow button width
+  let arrowButtonWidth = isPortrait ? '6vh' : '6vw'
+  // Factor to modify video size in landscape which has less space than portrait
+  let landscapeSizeFactor = 0.5
   // Define variables for width and height of video
-  const [width, setWidth] = useState(windowSize[0])
-  const [height, setHeight] = useState(windowSize[1])
+  const [imgWidth, setWidth] = useState(windowSize[0])
+  const [imgHeight, setHeight] = useState(windowSize[1])
 
   // Update the image size when the screen changes size.
   useEffect(() => {
     // Get the size of the robot's live video stream.
-    let { width: widthUpdate, height: heightUpdate } = scaleWidthHeightToWindow(
+    let { width: imgWidthUpdate, height: imgHeightUpdate } = scaleWidthHeightToWindow(
       windowSize,
       REALSENSE_WIDTH,
       REALSENSE_HEIGHT,
@@ -49,9 +59,12 @@ const PlateLocator = (props) => {
       margin,
       margin
     )
-    setWidth(widthUpdate)
-    setHeight(heightUpdate)
+    setWidth(imgWidthUpdate)
+    setHeight(imgHeightUpdate)
   }, [windowSize, margin])
+
+  let finalImgWidth = isPortrait ? imgWidth : landscapeSizeFactor * imgWidth
+  let finalImgHeight = isPortrait ? imgHeight : landscapeSizeFactor * imgHeight
 
   /**
    * Callback function for when the user presses one of the buttons to teleop
@@ -86,12 +99,12 @@ const PlateLocator = (props) => {
   const doneButton = useCallback(() => {
     return (
       <center>
-        <Button variant='success' onClick={doneClicked} style={{ width: '150px', fontSize: '25px' }}>
+        <Button variant='success' onClick={doneClicked} style={{ width: doneButtonWidth, height: buttonHeight, fontSize: textFontSize }}>
           ✅ Done
         </Button>
       </center>
     )
-  }, [doneClicked])
+  }, [doneClicked, textFontSize, buttonHeight, doneButtonWidth])
 
   /**
    * An array of directional buttons for the user to teleoperate the robot, and a
@@ -106,7 +119,14 @@ const PlateLocator = (props) => {
           <Row className='justify-content-center' noGutters={true}>
             <Button
               onClick={cartesianControlCommandReceived}
-              style={{ fontSize: '25px', alignItems: 'right', width: '55px' }}
+              style={{
+                fontSize: textFontSize,
+                alignItems: 'right',
+                justifyContent: 'center',
+                width: arrowButtonWidth,
+                height: buttonHeight,
+                marginTop: margin
+              }}
               value='forward'
               variant='primary'
             >
@@ -118,7 +138,13 @@ const PlateLocator = (props) => {
               <center>
                 <Button
                   onClick={cartesianControlCommandReceived}
-                  style={{ fontSize: '25px', alignItems: 'center', width: '55px' }}
+                  style={{
+                    fontSize: textFontSize,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: arrowButtonWidth,
+                    height: buttonHeight
+                  }}
                   value='left'
                   variant='primary'
                 >
@@ -131,7 +157,13 @@ const PlateLocator = (props) => {
               <center>
                 <Button
                   onClick={cartesianControlCommandReceived}
-                  style={{ fontSize: '25px', alignItems: 'left', width: '55px' }}
+                  style={{
+                    fontSize: textFontSize,
+                    alignItems: 'left',
+                    justifyContent: 'center',
+                    width: arrowButtonWidth,
+                    height: buttonHeight
+                  }}
                   value='right'
                   variant='primary'
                 >
@@ -143,7 +175,13 @@ const PlateLocator = (props) => {
           <Row className='justify-content-center' noGutters={true}>
             <Button
               onClick={cartesianControlCommandReceived}
-              style={{ fontSize: '25px', alignItems: 'center', width: '55px', marginBottom: '10px' }}
+              style={{
+                fontSize: textFontSize,
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: arrowButtonWidth,
+                marginBottom: margin
+              }}
               value='back'
               variant='primary'
             >
@@ -153,29 +191,23 @@ const PlateLocator = (props) => {
         </Container>
       </React.Fragment>
     )
-  }, [cartesianControlCommandReceived])
+  }, [cartesianControlCommandReceived, arrowButtonWidth, buttonHeight, textFontSize, margin])
 
   // Render the component
   return (
-    <div style={{ overflowX: 'hidden', overflowY: 'auto' }} className='justify-content-center'>
-      {isPortrait ? (
-        <React.Fragment>
-          <center>{showVideo(props.webVideoServerURL, width, height, null)}</center>
-          {directionalArrows()}
-          {doneButton()}
-        </React.Fragment>
-      ) : (
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: '0.5px' }}>
-          <View style={{ alignItems: 'center' }}>
-            {showVideo(props.webVideoServerURL, width * landscapeSizeFactor, height * landscapeSizeFactor, null)}
+    <>
+      <React.Fragment>
+        <View style={{ flex: 1, flexDirection: dimension, justifyContent: 'center', alignItems: 'center', margin: margin }}>
+          <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+            {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, null)}
           </View>
-          <View style={{ alignItems: 'center' }}>
+          <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
             {directionalArrows()}
             {doneButton()}
           </View>
         </View>
-      )}
-    </div>
+      </React.Fragment>
+    </>
   )
 }
 PlateLocator.propTypes = {

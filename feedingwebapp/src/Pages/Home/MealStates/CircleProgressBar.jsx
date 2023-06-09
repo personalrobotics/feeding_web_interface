@@ -2,6 +2,7 @@
 import { Circle } from './progressbar.js'
 // React imports
 import React, { useEffect, useState } from 'react'
+import { useMediaQuery } from 'react-responsive'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
 
@@ -14,6 +15,12 @@ import PropTypes from 'prop-types'
 export default function CircleProgressBar(props) {
   // define a local state variable to keep track of progress bar creation
   const [bar, setBar] = useState(null)
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // define sizes of progressbar (width, height, fontsize)
+  let textFontSize = isPortrait ? '5vh' : '5vw'
+  let circleSize = isPortrait ? '15vh' : '15vw'
+
   // useEffect React Hook is used to synchronize with RobotMotion.jsx data.
   useEffect(() => {
     // Effect: rendering circle progress bar
@@ -31,7 +38,7 @@ export default function CircleProgressBar(props) {
           text: {
             style: {
               fontFamily: '"Raleway", Helvetica, sans-serif',
-              fontSize: '5vh',
+              fontSize: textFontSize,
               position: 'absolute',
               left: '50%',
               top: '50%',
@@ -49,9 +56,9 @@ export default function CircleProgressBar(props) {
       bar.setText(Math.round(props.proportion * 100) + '%')
     }
     // everytime items in dependency array (the second argument) update, useEffect runs.
-  }, [setBar, bar, props.proportion])
+  }, [setBar, bar, props.proportion, textFontSize])
   // render HTML
-  return <div id='container' style={{ margin: '20px', width: '40vh', height: '40vh', position: 'relative' }}></div>
+  return <div id='container' style={{ margin: '20px', width: circleSize, height: circleSize, position: 'relative' }}></div>
 }
 
 // progress proportion corresponding with the motion the robot is executing

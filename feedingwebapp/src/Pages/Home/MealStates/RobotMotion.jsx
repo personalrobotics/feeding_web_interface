@@ -64,6 +64,11 @@ const RobotMotion = (props) => {
 
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // define sizes of progressbar (width, height, fontsize)
+  let waitingextFontSize = isPortrait ? '5vh' : '5vw'
+  let motionTextFontSize = isPortrait ? '4vh' : '4vw'
+  // Indicator of how to arrange screen elements based on orientation
+  let dimension = isPortrait ? 'column' : 'row'
 
   /**
    * Create the ROS Action Client. This is re-created every time props.mealState
@@ -249,27 +254,21 @@ const RobotMotion = (props) => {
               // Calling CircleProgessBar component to visualize robot motion of moving
               return (
                 <>
-                  {isPortrait ? (
-                    <React.Fragment>
-                      <center>
-                        <h3 style={{ fontSize: '4vh' }}>Robot is moving...</h3>
-                        <h3 style={{ fontSize: '4vh' }}>&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
-                        <CircleProgressBar proportion={progress} />
-                      </center>
-                    </React.Fragment>
-                  ) : (
-                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                      <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+                  <React.Fragment>
+                    <View style={{ flex: 1, flexDirection: dimension, alignItems: 'center', justifyContent: 'center' }}>
+                      <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
                         <React.Fragment>
-                          <h3 style={{ fontSize: '4vh' }}>Robot is moving...</h3>
-                          <h3 style={{ fontSize: '4vh' }}>&nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec</h3>
+                          <h3 style={{ fontSize: motionTextFontSize }}>Robot is moving...</h3>
+                          <h3 style={{ fontSize: motionTextFontSize }}>
+                            &nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec
+                          </h3>
                         </React.Fragment>
                       </View>
-                      <View style={{ flex: '1', alignItems: 'center', justifyContent: 'center' }}>
+                      <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
                         <CircleProgressBar proportion={progress} />
                       </View>
                     </View>
-                  )}
+                  </React.Fragment>
                 </>
               )
             } else {
@@ -277,8 +276,10 @@ const RobotMotion = (props) => {
               return (
                 <>
                   <center>
-                    <h3 style={{ fontSize: '4vh' }}>Robot is thinking...</h3>
-                    <h3 style={{ fontSize: '4vh' }}>&nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec</h3>
+                    <h3 style={{ fontSize: motionTextFontSize }}>Robot is thinking...</h3>
+                    <h3 style={{ fontSize: motionTextFontSize }}>
+                      &nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec
+                    </h3>
                   </center>
                 </>
               )
@@ -288,7 +289,7 @@ const RobotMotion = (props) => {
             return (
               <>
                 <center>
-                  <h3 style={{ fontSize: '4vh' }}>Robot is thinking...</h3>
+                  <h3 style={{ fontSize: motionTextFontSize }}>Robot is thinking...</h3>
                 </center>
               </>
             )
@@ -297,7 +298,7 @@ const RobotMotion = (props) => {
           return (
             <>
               <center>
-                <h3 style={{ fontSize: '4vh' }}>Robot has finished</h3>
+                <h3 style={{ fontSize: motionTextFontSize }}>Robot has finished</h3>
               </center>
             </>
           )
@@ -311,7 +312,7 @@ const RobotMotion = (props) => {
           return (
             <>
               <center>
-                <h3 style={{ fontSize: '4vh' }}>Robot encountered an error</h3>
+                <h3 style={{ fontSize: motionTextFontSize }}>Robot encountered an error</h3>
               </center>
             </>
           )
@@ -319,7 +320,7 @@ const RobotMotion = (props) => {
           return (
             <>
               <center>
-                <h3 style={{ fontSize: '4vh' }}>Robot is paused</h3>
+                <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
               </center>
             </>
           )
@@ -328,7 +329,7 @@ const RobotMotion = (props) => {
             return (
               <>
                 <center>
-                  <h3 style={{ fontSize: '4vh' }}>Robot is paused</h3>
+                  <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
                 </center>
               </>
             )
@@ -337,7 +338,7 @@ const RobotMotion = (props) => {
           }
       }
     },
-    [paused, isPortrait]
+    [paused, motionTextFontSize, dimension]
   )
 
   // Render the component
@@ -346,7 +347,7 @@ const RobotMotion = (props) => {
       {/* TODO: Consider vertically centering this element */}
       <Row className='justify-content-center mx-auto my-2 w-80'>
         <div>
-          <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: '5vh' }}>
+          <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: waitingextFontSize }}>
             {props.waitingText}
           </h1>
           {props.debug ? (

@@ -2,6 +2,7 @@
 import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
+import { useMediaQuery } from 'react-responsive'
 
 // Local Imports
 import '../Home.css'
@@ -15,6 +16,18 @@ import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 const PreMeal = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // Font size for text
+  let textFontSize = isPortrait ? '3vh' : '3vw'
+  // Font size for button
+  let buttonFontSize = isPortrait ? '5vh' : '5vw'
+  // Width for button
+  let buttonWidth = isPortrait ? '40vh' : '40vw'
+  // Height for button
+  let buttonHeight = isPortrait ? '10vh' : '10vw'
+  // Margin
+  let margin = isPortrait ? '5vh' : '5vw'
 
   /**
    * Callback function for when the user decides to start feeding using the app.
@@ -27,7 +40,7 @@ const PreMeal = () => {
   // Render the component
   return (
     <Row xs={1} md={1} className='justify-content-center mx-2 my-2'>
-      <p className='transitionMessage' style={{ marginBottom: '10px', marginTop: '0px', fontSize: '24px' }}>
+      <p className='transitionMessage' style={{ marginBottom: margin, marginTop: '0', fontSize: textFontSize }}>
         Hello!👋 I am ADA&apos;s faithful assistant, ADAWebapp! Bon Appétit! 😋
       </p>
       <Button
@@ -36,7 +49,7 @@ const PreMeal = () => {
         className='btn-huge'
         id='#startFeedingBtn'
         onClick={startFeedingClicked}
-        style={{ width: '75%', fontSize: '35px', marginTop: '30px' }}
+        style={{ width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, marginTop: margin }}
       >
         Start Feeding
       </Button>
