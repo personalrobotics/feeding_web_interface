@@ -131,7 +131,7 @@ const BiteAcquisitionCheck = () => {
    */
   const fullPageView = useCallback(() => {
     return (
-      <View style={{ flex: 1, flexDirection: dimension, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ flex: 'auto', flexDirection: dimension, alignItems: 'center', justifyContent: 'center' }}>
         <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
           {readyForBiteText()}
           {readyForBiteButton()}

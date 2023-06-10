@@ -419,20 +419,18 @@ const BiteSelection = (props) => {
    */
   const fullPageView = useCallback(() => {
     return (
-      <React.Fragment>
-        <View style={{ flexDirection: dimension, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
-            <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Click on image to select food.</h5>
-            {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, imageClicked)}
-          </View>
-          <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
-            {/* Display the action status and/or results */}
-            {actionStatusText()}
-            {withoutAcquireButton()}
-            {debugOptions()}
-          </View>
+      <View style={{ flex: 'auto', flexDirection: dimension, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+        <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+          <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Click on image to select food.</h5>
+          {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, imageClicked)}
         </View>
-      </React.Fragment>
+        <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+          {/* Display the action status and/or results */}
+          {actionStatusText()}
+          {withoutAcquireButton()}
+          {debugOptions()}
+        </View>
+      </View>
     )
   }, [
     dimension,

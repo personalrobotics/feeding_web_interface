@@ -3,7 +3,6 @@ import React, { useCallback } from 'react'
 import { MDBFooter } from 'mdb-react-ui-kit'
 import Button from 'react-bootstrap/Button'
 import { View } from 'react-native'
-import Row from 'react-bootstrap/Row'
 import { useMediaQuery } from 'react-responsive'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
@@ -59,53 +58,50 @@ const Footer = (props) => {
     (callback) => {
       return (
         <>
-          <Row className='justify-content-center'>
-            {/* Icon to pause */}
-            <Button
-              variant='danger'
-              onClick={callback}
+          {/* Icon to pause */}
+          <Button
+            variant='danger'
+            onClick={callback}
+            style={{
+              width: pauseButtonWidth,
+              height: footerButtonHeight,
+              margin: footerMargin,
+              '--bs-btn-padding-y': '0rem'
+            }}
+          >
+            <View
               style={{
-                width: pauseButtonWidth,
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: footerButtonHeight,
-                margin: footerMargin,
-                '--bs-btn-padding-y': '0rem'
+                flexDirection: 'row',
+                justifyContent: 'center'
               }}
             >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center'
-                }}
-              >
-                <View style={{ justifyContent: 'center' }}>
-                  <p
-                    className='transitionMessage'
-                    style={{
-                      fontSize: pauseFontSize,
-                      color: 'black',
-                      fontWeight: 'bold',
-                      padding: '0'
-                    }}
-                  >
-                    Pause
-                  </p>
-                </View>
-                <View>
-                  <img
-                    style={{
-                      width: pauseIconWidth,
-                      height: pauseIconHeight
-                    }}
-                    src={pauseIcon}
-                    alt='pause_icon'
-                    className='center'
-                  />
-                </View>
+              <View style={{ justifyContent: 'center' }}>
+                <p
+                  className='transitionMessage'
+                  style={{
+                    fontSize: pauseFontSize,
+                    color: 'black',
+                    fontWeight: 'bold',
+                    padding: '0',
+                    marginBottom: '0'
+                  }}
+                >
+                  Pause
+                </p>
               </View>
-            </Button>
-          </Row>
+              <View>
+                <img
+                  style={{
+                    width: pauseIconWidth,
+                    height: pauseIconHeight
+                  }}
+                  src={pauseIcon}
+                  alt='pause_icon'
+                  className='center'
+                />
+              </View>
+            </View>
+          </Button>
         </>
       )
     },
@@ -132,28 +128,32 @@ const Footer = (props) => {
             }}
           >
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <View style={{ justifyContent: 'center' }}>
+              <View style={{ flex: 1, justifyContent: 'center' }}>
                 <p
                   className='transitionMessage'
-                  style={{ marginBottom: '0', fontSize: backResumeFontSize, color: 'black', fontWeight: 'bold', padding: '0' }}
+                  style={{
+                    marginBottom: '0',
+                    fontSize: backResumeFontSize,
+                    color: 'black',
+                    fontWeight: 'bold',
+                    padding: '0',
+                    textAlign: 'right'
+                  }}
                 >
                   Back
                 </p>
               </View>
-              <View>
-                <img
-                  style={{ width: backResumeIconWidth, height: backResumeIconHeight }}
-                  src={backIcon}
-                  alt='back_icon'
-                  className='center'
-                />
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start' }}>
+                <div style={{ textAlign: 'left' }}>
+                  <img style={{ width: '100%', height: backResumeIconHeight }} src={backIcon} alt='back_icon' />
+                </div>
               </View>
             </View>
           </Button>
         </>
       )
     },
-    [backIcon, footerMargin, backResumeButtonWidth, backResumeFontSize, footerButtonHeight, backResumeIconHeight, backResumeIconWidth]
+    [backIcon, footerMargin, backResumeButtonWidth, backResumeFontSize, footerButtonHeight, backResumeIconHeight]
   )
 
   /**
@@ -172,37 +172,36 @@ const Footer = (props) => {
               margin: footerMargin,
               width: backResumeButtonWidth,
               height: footerButtonHeight,
-              '--bs-btn-padding-y': '0rem'
+              '--bs-btn-padding-y': '0rem',
+              '--bs-btn-padding-x': '0rem'
             }}
           >
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <View style={{ justifyContent: 'center' }}>
+              <View style={{ flex: 1, justifyContent: 'center' }}>
                 <p
                   className='transitionMessage'
                   style={{
                     marginBottom: '0',
                     fontSize: backResumeFontSize,
                     color: 'black',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    textAlign: 'right'
                   }}
                 >
                   Resume
                 </p>
               </View>
-              <View>
-                <img
-                  style={{ width: backResumeIconWidth, height: backResumeIconHeight }}
-                  src={resumeIcon}
-                  alt='resume_icon'
-                  className='center'
-                />
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start' }}>
+                <div style={{ textAlign: 'left' }}>
+                  <img style={{ width: '100%', height: backResumeIconHeight }} src={resumeIcon} alt='resume_icon' />
+                </div>
               </View>
             </View>
           </Button>
         </>
       )
     },
-    [resumeIcon, footerMargin, backResumeButtonWidth, backResumeFontSize, footerButtonHeight, backResumeIconHeight, backResumeIconWidth]
+    [resumeIcon, footerMargin, backResumeButtonWidth, backResumeFontSize, footerButtonHeight, backResumeIconHeight]
   )
 
   /**
@@ -240,8 +239,8 @@ const Footer = (props) => {
 
   // Render the component
   return (
-    <>
-      <MDBFooter bgColor='dark' className='text-center text-lg-left fixed-bottom'>
+    <View>
+      <MDBFooter bgColor='dark' className='text-center text-lg-left' style={{ width: '100vw' }}>
         <div className='text-center' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)', paddingBottom: '5px', paddingTop: '5px' }}>
           {props.paused ? (
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
@@ -249,11 +248,13 @@ const Footer = (props) => {
               <View>{props.resumeCallback ? renderResumeButton(props.resumeCallback) : renderPhantomButton()}</View>
             </View>
           ) : (
-            renderPauseButton(props.pauseCallback)
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <View>{renderPauseButton(props.pauseCallback)}</View>
+            </View>
           )}
         </div>
       </MDBFooter>
-    </>
+    </View>
   )
 }
 Footer.propTypes = {

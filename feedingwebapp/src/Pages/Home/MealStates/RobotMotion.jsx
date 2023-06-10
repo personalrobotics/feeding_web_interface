@@ -6,7 +6,6 @@ import { View } from 'react-native'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
-import Row from 'react-bootstrap/Row'
 // Local Imports
 import { useROS, createROSActionClient, callROSAction, cancelROSAction, destroyActionClient } from '../../../ros/ros_helpers'
 import Footer from '../../Footer/Footer'
@@ -345,8 +344,8 @@ const RobotMotion = (props) => {
   return (
     <>
       {/* TODO: Consider vertically centering this element */}
-      <Row className='justify-content-center mx-auto my-2 w-80'>
-        <div>
+      <View style={{ flex: 'auto', justifyContent: 'center', width: '100%' }}>
+        <div style={{ width: '100%' }}>
           <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: waitingextFontSize }}>
             {props.waitingText}
           </h1>
@@ -360,7 +359,7 @@ const RobotMotion = (props) => {
           <br />
           {actionStatusText(actionStatus)}
         </div>
-      </Row>
+      </View>
       {/**
        * Display the footer with the Pause button.
        */}

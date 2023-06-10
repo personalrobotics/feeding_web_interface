@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+import { View } from 'react-native'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <View style={{ flex: 1, height: '100vh' }}>
+      <App />
+    </View>
   </React.StrictMode>,
   document.getElementById('root')
 )

@@ -2,6 +2,7 @@
 import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
+import { View } from 'react-native'
 import { useMediaQuery } from 'react-responsive'
 
 // Local Imports
@@ -39,21 +40,23 @@ const PreMeal = () => {
 
   // Render the component
   return (
-    <Row xs={1} md={1} className='justify-content-center mx-2 my-2'>
-      <p className='transitionMessage' style={{ marginBottom: margin, marginTop: '0', fontSize: textFontSize }}>
-        Hello!👋 I am ADA&apos;s faithful assistant, ADAWebapp! Bon Appétit! 😋
-      </p>
-      <Button
-        variant='primary'
-        size='lg'
-        className='btn-huge'
-        id='#startFeedingBtn'
-        onClick={startFeedingClicked}
-        style={{ width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, marginTop: margin }}
-      >
-        Start Feeding
-      </Button>
-    </Row>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Row xs={1} md={1} className='justify-content-center mx-2 my-2'>
+        <p className='transitionMessage' style={{ marginBottom: margin, marginTop: '0', fontSize: textFontSize }}>
+          Hello!👋 I am ADA&apos;s faithful assistant, ADAWebapp! Bon Appétit! 😋
+        </p>
+        <Button
+          variant='primary'
+          size='lg'
+          className='btn-huge'
+          id='#startFeedingBtn'
+          onClick={startFeedingClicked}
+          style={{ width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, marginTop: margin }}
+        >
+          Start Feeding
+        </Button>
+      </Row>
+    </View>
   )
 }
 
