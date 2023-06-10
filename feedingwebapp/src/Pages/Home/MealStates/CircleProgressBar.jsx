@@ -19,7 +19,7 @@ export default function CircleProgressBar(props) {
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // define sizes of progressbar (width, height, fontsize)
   let textFontSize = isPortrait ? '5vh' : '5vw'
-  let circleSize = isPortrait ? '15vh' : '15vw'
+  let circleSize = isPortrait ? '75vw' : '17vw'
 
   // useEffect React Hook is used to synchronize with RobotMotion.jsx data.
   useEffect(() => {
