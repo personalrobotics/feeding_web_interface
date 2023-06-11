@@ -114,7 +114,7 @@ const PlateLocator = (props) => {
    */
   const directionalArrows = useCallback(() => {
     return (
-      <React.Fragment>
+      <>
         <Container fluid>
           <Row className='justify-content-center' noGutters={true}>
             <Button
@@ -189,7 +189,7 @@ const PlateLocator = (props) => {
             </Button>
           </Row>
         </Container>
-      </React.Fragment>
+      </>
     )
   }, [cartesianControlCommandReceived, arrowButtonWidth, buttonHeight, textFontSize, margin])
 

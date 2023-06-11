@@ -43,16 +43,23 @@ const BiteSelection = (props) => {
   let moveToMouthImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
   // Factor to modify video and mask size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.5
+  let portraitSizeFactor = 0.95
   // Factor to modify mask button size with regards to window size
   let maskButtonSizeFactor = 0.11
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // Flag to check if the current device has minimum width of 1367px
+  const matches = useMediaQuery({ query: '(min-width:1367px)' })
+  // Flag to check if the current device has minimum width of 1025px
+  const biggerThanIpadPortrait = useMediaQuery({ query: '(min-width:1025px)' })
+  // Flag to check if the current device has maximum width of 1366px
+  const matchesIpadLandscape = useMediaQuery({ query: '(max-width:1366px)' })
   // Margin to make space between header and top text in portrait mode
   let portraitMargin = isPortrait ? '8vh' : 0
   // text font size
   let textFontSize = isPortrait ? '2.5vh' : '2.5vw'
   // done button width
-  let skipButtonWidth = isPortrait ? '96vw' : '43vw'
+  let skipButtonWidth = isPortrait ? '92vw' : '43vw'
   // button height
   let skipButtonHeight = isPortrait ? '8vh' : '8vw'
   // Indicator of how to arrange screen elements based on orientation
@@ -112,11 +119,11 @@ const BiteSelection = (props) => {
 
   /**
    * The imgWidth/imgHeight outputted by scaleWidthHeightToWindow is designed
-   * to fill up the whole window width. However, in landscape mode, we want
-   * the video to take up only a portion of the window width.
+   * to fill up nearly the whole window width (95%). However, in landscape mode, we want
+   * the video to take up only a portion of the window width (50%).
    */
-  let finalImgWidth = isPortrait ? imgWidth : landscapeSizeFactor * imgWidth
-  let finalImgHeight = isPortrait ? imgHeight : landscapeSizeFactor * imgHeight
+  let finalImgWidth = imgWidth * (isPortrait ? portraitSizeFactor : landscapeSizeFactor)
+  let finalImgHeight = imgHeight * (isPortrait ? portraitSizeFactor : landscapeSizeFactor)
 
   /**
    * Callback function for when the user wants to move to mouth position.
@@ -251,23 +258,40 @@ const BiteSelection = (props) => {
         if (actionStatus.feedback) {
           let elapsed_time = actionStatus.feedback.elapsed_time.sec + actionStatus.feedback.elapsed_time.nanosec / 10 ** 9
           return (
-            <React.Fragment>
+            <>
               <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>
                 Detecting food... ({Math.round(elapsed_time * 100) / 100} sec)
               </h5>
-              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
-              <h4 style={{ textAlign: 'center' }}>&nbsp;</h4>
-              <h6 style={{ textAlign: 'center' }}>&nbsp;</h6>
-            </React.Fragment>
+              <h6>&nbsp;</h6>
+              <h1>&nbsp;</h1>
+              <h1>&nbsp;</h1>
+              {matches ? (
+                <>
+                  <h1>&nbsp;</h1>
+                  <h1>&nbsp;</h1>
+                  <h1>&nbsp;</h1>
+                  <h1>&nbsp;</h1>
+                </>
+              ) : (
+                <></>
+              )}
+              {matchesIpadLandscape && biggerThanIpadPortrait ? (
+                <>
+                  <h1>&nbsp;</h1>
+                </>
+              ) : (
+                <></>
+              )}
+            </>
           )
         } else {
           return (
-            <React.Fragment>
+            <>
               <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Detecting food... </h5>
-              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
-              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
-              <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
-            </React.Fragment>
+              <h3>&nbsp;</h3>
+              <h3>&nbsp;</h3>
+              <h3>&nbsp;</h3>
+            </>
           )
         }
       case ROS_ACTION_STATUS_SUCCEED:
@@ -290,7 +314,7 @@ const BiteSelection = (props) => {
           // Compute mask scale factor from sizes of the mask button and the mask
           let maskScaleFactor = Math.min(buttonSize.width / maxWidth, buttonSize.height / maxHeight)
           // Choose suitable mask factor based on screen orientation
-          let finalMaskScaleFactor = isPortrait ? maskScaleFactor : landscapeSizeFactor * maskScaleFactor
+          let finalMaskScaleFactor = maskScaleFactor * (isPortrait ? portraitSizeFactor : landscapeSizeFactor)
           // Define image size for mask buttons
           let imgSize = {
             width: Math.round(REALSENSE_WIDTH * finalMaskScaleFactor),
@@ -301,6 +325,8 @@ const BiteSelection = (props) => {
           return (
             <>
               <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Select a food, or retry by clicking image.</h5>
+              {matches ? <h1>&nbsp;</h1> : <></>}
+              {matchesIpadLandscape && biggerThanIpadPortrait ? <h5>&nbsp;</h5> : <></>}
               <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                 {actionResult.detected_items.map((detected_item, i) => (
                   <View key={i}>
@@ -335,19 +361,31 @@ const BiteSelection = (props) => {
         return <h3 style={{ textAlign: 'center', fontSize: textFontSize }}>Food detection canceled</h3>
       default:
         return (
-          <React.Fragment>
-            <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
-            <h3 style={{ textAlign: 'center' }}>&nbsp;</h3>
-            <h5 style={{ textAlign: 'center' }}>&nbsp;</h5>
-            <h6 style={{ textAlign: 'center' }}>&nbsp;</h6>
-          </React.Fragment>
+          <>
+            <h3>&nbsp;</h3>
+            <h3>&nbsp;</h3>
+            <h5>&nbsp;</h5>
+            <h6>&nbsp;</h6>
+            {matchesIpadLandscape && biggerThanIpadPortrait ? (
+              <>
+                <h1>&nbsp;</h1>
+                <h1>&nbsp;</h1>
+              </>
+            ) : (
+              <></>
+            )}
+          </>
         )
     }
   }, [
     actionStatus,
+    biggerThanIpadPortrait,
+    matchesIpadLandscape,
     actionResult,
+    matches,
     foodItemClicked,
     landscapeSizeFactor,
+    portraitSizeFactor,
     props.webVideoServerURL,
     isPortrait,
     windowSize,
@@ -415,11 +453,21 @@ const BiteSelection = (props) => {
       <View style={{ flex: 'auto', flexDirection: dimension, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
         <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center', marginTop: portraitMargin }}>
           <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Click on image to select food.</h5>
+          <h5>&nbsp;</h5>
           {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, imageClicked)}
         </View>
         <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
           {/* Display the action status and/or results */}
           {actionStatusText()}
+          {matches || (matchesIpadLandscape && biggerThanIpadPortrait) ? (
+            <>
+              <h1>&nbsp;</h1>
+              <h1>&nbsp;</h1>
+              <h1>&nbsp;</h1>
+            </>
+          ) : (
+            <></>
+          )}
           {withoutAcquireButton()}
           {debugOptions()}
         </View>
@@ -427,6 +475,9 @@ const BiteSelection = (props) => {
     )
   }, [
     dimension,
+    matches,
+    biggerThanIpadPortrait,
+    matchesIpadLandscape,
     portraitMargin,
     actionStatusText,
     debugOptions,
