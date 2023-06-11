@@ -141,8 +141,8 @@ const Footer = (props) => {
                   </div>
                 </View>
               </View>
-          </Button>
-        </Row>
+            </Button>
+          </Row>
         </>
       )
     }
