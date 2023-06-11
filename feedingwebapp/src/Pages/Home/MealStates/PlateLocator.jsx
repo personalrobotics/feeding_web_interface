@@ -195,19 +195,15 @@ const PlateLocator = (props) => {
 
   // Render the component
   return (
-    <>
-      <React.Fragment>
-        <View style={{ flex: 1, flexDirection: dimension, justifyContent: 'center', alignItems: 'center', margin: margin }}>
-          <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
-            {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, null)}
-          </View>
-          <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
-            {directionalArrows()}
-            {doneButton()}
-          </View>
-        </View>
-      </React.Fragment>
-    </>
+    <View style={{ flex: 'auto', flexDirection: dimension, justifyContent: 'center', alignItems: 'center', margin: margin, width: '100%' }}>
+      <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+        {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, null)}
+      </View>
+      <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+        {directionalArrows()}
+        {doneButton()}
+      </View>
+    </View>
   )
 }
 PlateLocator.propTypes = {

@@ -3,8 +3,8 @@ import React from 'react'
 import { MDBFooter } from 'mdb-react-ui-kit'
 import Button from 'react-bootstrap/Button'
 import { View } from 'react-native'
-import Row from 'react-bootstrap/Row'
 import { useMediaQuery } from 'react-responsive'
+import Row from 'react-bootstrap/Row'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
 
@@ -91,7 +91,6 @@ const Footer = (props) => {
       return (
         <>
           <Row className='justify-content-center'>
-            {/* Icon to pause */}
             <Button
               variant={variants[index]}
               onClick={callbacks[index]}
@@ -142,8 +141,8 @@ const Footer = (props) => {
                   </div>
                 </View>
               </View>
-            </Button>
-          </Row>
+          </Button>
+        </Row>
         </>
       )
     }
@@ -151,8 +150,8 @@ const Footer = (props) => {
 
   // Render the component
   return (
-    <>
-      <MDBFooter bgColor='dark' className='text-center text-lg-left fixed-bottom'>
+    <View>
+      <MDBFooter bgColor='dark' className='text-center text-lg-left' style={{ width: '100vw' }}>
         <div className='text-center' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)', paddingBottom: '5px', paddingTop: '5px' }}>
           {props.paused ? (
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
@@ -164,7 +163,7 @@ const Footer = (props) => {
           )}
         </div>
       </MDBFooter>
-    </>
+    </View>
   )
 }
 Footer.propTypes = {

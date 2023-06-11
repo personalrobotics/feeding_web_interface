@@ -1,6 +1,7 @@
 // React imports
 import React, { useCallback, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { View } from 'react-native'
 
 // Local imports
 import './Home.css'
@@ -170,12 +171,12 @@ function Home(props) {
 
   // Render the component
   return (
-    <div>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       {/**
        * The main contents of the screen depends on the mealState.
        */}
       {getComponentByMealState()}
-    </div>
+    </View>
   )
 }
 Home.propTypes = {

@@ -47,6 +47,8 @@ const BiteSelection = (props) => {
   let maskButtonSizeFactor = 0.11
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // Margin to make space between header and top text in portrait mode
+  let portraitMargin = isPortrait ? '8vh' : 0
   // text font size
   let textFontSize = isPortrait ? '2.5vh' : '2.5vw'
   // done button width
@@ -117,28 +119,10 @@ const BiteSelection = (props) => {
   let finalImgHeight = isPortrait ? imgHeight : landscapeSizeFactor * imgHeight
 
   /**
-   * Callback function for when the user indicates that they want to move the
-   * robot to locate the plate.
-   */
-  const locatePlateClicked = useCallback(() => {
-    console.log('locatePlateClicked')
-    setMealState(MEAL_STATE.U_PlateLocator)
-  }, [setMealState])
-
-  /**
    * Callback function for when the user wants to move to mouth position.
    */
   const moveToMouth = useCallback(() => {
     setMealState(MEAL_STATE.R_MovingToMouth)
-  }, [setMealState])
-
-  /**
-   * Callback function for when the user indicates that they are done with their
-   * meal.
-   */
-  const doneEatingClicked = useCallback(() => {
-    console.log('doneEatingClicked')
-    setMealState(MEAL_STATE.R_StowingArm)
   }, [setMealState])
 
   /**
@@ -428,23 +412,22 @@ const BiteSelection = (props) => {
    */
   const fullPageView = useCallback(() => {
     return (
-      <React.Fragment>
-        <View style={{ flexDirection: dimension, flex: 1, alignItems: 'center' }}>
-          <View style={{ flex: 5, alignItems: 'center' }}>
-            <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Click on image to select food.</h5>
-            {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, imageClicked)}
-          </View>
-          <View style={{ flex: 5, alignItems: 'center' }}>
-            {/* Display the action status and/or results */}
-            {actionStatusText()}
-            {withoutAcquireButton()}
-            {debugOptions()}
-          </View>
+      <View style={{ flex: 'auto', flexDirection: dimension, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+        <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center', marginTop: portraitMargin }}>
+          <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Click on image to select food.</h5>
+          {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, imageClicked)}
         </View>
-      </React.Fragment>
+        <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+          {/* Display the action status and/or results */}
+          {actionStatusText()}
+          {withoutAcquireButton()}
+          {debugOptions()}
+        </View>
+      </View>
     )
   }, [
     dimension,
+    portraitMargin,
     actionStatusText,
     debugOptions,
     imageClicked,
@@ -456,27 +439,7 @@ const BiteSelection = (props) => {
   ])
 
   // Render the component
-  return (
-    <>
-      {/**
-       * In addition to selecting their desired food item, the user has two
-       * other options on this page:
-       *   - If their desired food item is not visible on the plate, they can
-       *     decide to teleoperate the robot until it is visible.
-       *   - Instead of selecting their next bite, the user can indicate that
-       *     they are done eating.
-       */}
-      <div style={{ display: 'block', textAlign: 'center' }}>
-        <Button className='doneButton' style={{ fontSize: textFontSize, marginTop: margin }} onClick={locatePlateClicked}>
-          🍽️ Locate Plate
-        </Button>
-        <Button className='doneButton' style={{ fontSize: textFontSize, marginTop: margin }} onClick={doneEatingClicked}>
-          ✅ Done Eating
-        </Button>
-      </div>
-      {fullPageView()}
-    </>
-  )
+  return <>{fullPageView()}</>
 }
 BiteSelection.propTypes = {
   /**
