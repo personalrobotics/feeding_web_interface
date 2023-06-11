@@ -47,12 +47,18 @@ const BiteSelection = (props) => {
   let maskButtonSizeFactor = 0.12
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // Flag to check if the width matches iPhone portrait
+  const isPhoneWidth = useMediaQuery({ query: '(max-width:428px)' })
+  // Margin to make space between header and top text in portrait mode
+  let portraitMargin = isPortrait ? '8vh' : 0
   // text font size
   let textFontSize = isPortrait ? '2.5vh' : '2.5vw'
   // done button width
   let skipButtonWidth = isPortrait ? '25vh' : '25vw'
   // button height
   let skipButtonHeight = isPortrait ? '5vh' : '5vw'
+  // Indicator of how to arrange screen elements based on orientation
+  let dimension = isPortrait ? 'column' : 'row'
 
   /**
    * Create a local state variable to store the detected masks, the
@@ -92,8 +98,6 @@ const BiteSelection = (props) => {
   const [imgWidth, setImgWidth] = useState(windowSize[0])
   const [imgHeight, setImgHeight] = useState(windowSize[1])
   const [scaleFactor, setScaleFactor] = useState(0)
-  // Indicator of how to arrange screen elements based on orientation
-  let dimension = isPortrait ? 'column' : 'row'
 
   // Update the image size when the screen changes size.
   useEffect(() => {
@@ -420,7 +424,7 @@ const BiteSelection = (props) => {
   const fullPageView = useCallback(() => {
     return (
       <View style={{ flex: 'auto', flexDirection: dimension, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-        <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center', marginTop: portraitMargin }}>
           <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Click on image to select food.</h5>
           {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, imageClicked)}
         </View>
@@ -434,6 +438,7 @@ const BiteSelection = (props) => {
     )
   }, [
     dimension,
+    portraitMargin,
     actionStatusText,
     debugOptions,
     imageClicked,
@@ -455,14 +460,18 @@ const BiteSelection = (props) => {
        *   - Instead of selecting their next bite, the user can indicate that
        *     they are done eating.
        */}
-      <div style={{ display: 'block', textAlign: 'center' }}>
-        <Button className='doneButton' style={{ fontSize: textFontSize, marginTop: margin }} onClick={locatePlateClicked}>
-          🍽️ Locate Plate
-        </Button>
-        <Button className='doneButton' style={{ fontSize: textFontSize, marginTop: margin }} onClick={doneEatingClicked}>
-          ✅ Done Eating
-        </Button>
-      </div>
+      {isPhoneWidth ? (
+        <div style={{ display: 'block', textAlign: 'center' }}>
+          <Button className='doneButton' style={{ fontSize: textFontSize, marginTop: margin }} onClick={locatePlateClicked}>
+            Locate Plate
+          </Button>
+          <Button className='doneButton' style={{ fontSize: textFontSize, marginTop: margin }} onClick={doneEatingClicked}>
+            Meal Done
+          </Button>
+        </div>
+      ) : (
+        <></>
+      )}
       {fullPageView()}
     </>
   )

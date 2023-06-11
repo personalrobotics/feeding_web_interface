@@ -32,13 +32,17 @@ const Header = (props) => {
   // continues showing even if the state changes. Is this desirable? Perhaps
   // it should close if the state changes?
   const [videoShow, setVideoShow] = useState(false)
+  // Get the relevant global variables
+  const setMealState = useGlobalState((state) => state.setMealState)
   // useROS gives us access to functions to configure and interact with ROS.
   let { ros } = useROS()
   const [isConnected, setIsConncected] = useState(ros.isConnected)
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // Flag to check if the width matches intended devices' width
+  const deviceWidthMatches = useMediaQuery({ query: '(min-width:429px)' })
   // Sizes of header elements (fontSize, width, height)
-  let textFontSize = isPortrait ? '2.5vh' : '2.5vw'
+  let textFontSize = isPortrait ? '2.2vh' : '2.2vw'
   let lockIconWidth = isPortrait ? '4vh' : '4vw'
   let lockIconHeight = isPortrait ? '5vh' : '5vw'
   let lockImageHeight = isPortrait ? '4vh' : '4vw'
@@ -64,6 +68,24 @@ const Header = (props) => {
   const homeClicked = useCallback(() => {
     setAppPage(APP_PAGE.Home)
   }, [setAppPage])
+
+  /**
+   * Callback function for when the user indicates that they want to move the
+   * robot to locate the plate.
+   */
+  const locatePlateClicked = useCallback(() => {
+    console.log('locatePlateClicked')
+    setMealState(MEAL_STATE.U_PlateLocator)
+  }, [setMealState])
+
+  /**
+   * Callback function for when the user indicates that they are done with their
+   * meal.
+   */
+  const doneEatingClicked = useCallback(() => {
+    console.log('doneEatingClicked')
+    setMealState(MEAL_STATE.R_StowingArm)
+  }, [setMealState])
 
   /**
    * When the Settings button in the header is clicked, if the meal has not yet
@@ -104,7 +126,7 @@ const Header = (props) => {
           variant='dark'
           style={{ '--bs-navbar-padding-x': '0rem', '--bs-navbar-padding-y': '0.2rem' }}
         >
-          <Nav className='me-auto'>
+          <Nav className='m-auto'>
             <Nav.Link
               onClick={homeClicked}
               className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
@@ -119,47 +141,65 @@ const Header = (props) => {
             >
               Settings
             </Nav.Link>
-          </Nav>
-          {NON_MOVING_STATES.has(mealState) || paused || (mealState === MEAL_STATE.U_PlateLocator && teleopIsMoving === false) ? (
-            <div>
-              <Button
-                variant='danger'
-                disabled={true}
-                style={{
-                  marginLeft: headerMargin,
-                  marginRight: headerMargin,
-                  width: lockIconWidth,
-                  height: lockIconHeight,
-                  opacity: 1,
-                  '--bs-btn-padding-y': '0rem',
-                  '--bs-btn-padding-x': '0rem'
-                }}
-              >
-                <img
-                  style={{ width: lockIconWidth, height: lockImageHeight }}
-                  src='/robot_state_imgs/lock_icon_image.svg'
-                  alt='lock_icon_img'
-                  className='center'
-                />
-              </Button>
-            </div>
-          ) : (
-            <></>
-          )}
-          {isConnected ? (
-            <div>
-              <p className='connectedDiv' style={{ fontSize: textFontSize, margin: headerMargin }}>
-                🔌
-              </p>
-            </div>
-          ) : (
-            <div>
-              <p className='notConnectedDiv' style={{ fontSize: textFontSize, marginLeft: headerMargin, marginRight: headerMargin }}>
-                ⛔
-              </p>
-            </div>
-          )}
-          <Nav>
+            {deviceWidthMatches ? (
+              <>
+                <Nav.Link
+                  onClick={locatePlateClicked}
+                  className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
+                  style={{ fontSize: textFontSize }}
+                >
+                  Locate Plate
+                </Nav.Link>
+                <Nav.Link
+                  onClick={doneEatingClicked}
+                  className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
+                  style={{ fontSize: textFontSize }}
+                >
+                  Meal Done
+                </Nav.Link>
+              </>
+            ) : (
+              <></>
+            )}
+            {NON_MOVING_STATES.has(mealState) || paused || (mealState === MEAL_STATE.U_PlateLocator && teleopIsMoving === false) ? (
+              <div>
+                <Button
+                  variant='danger'
+                  disabled={true}
+                  style={{
+                    marginLeft: headerMargin,
+                    marginRight: headerMargin,
+                    width: lockIconWidth,
+                    height: lockIconHeight,
+                    opacity: 1,
+                    '--bs-btn-padding-y': '0rem',
+                    '--bs-btn-padding-x': '0rem'
+                  }}
+                >
+                  <img
+                    style={{ width: lockIconWidth, height: lockImageHeight }}
+                    src='/robot_state_imgs/lock_icon_image.svg'
+                    alt='lock_icon_img'
+                    className='center'
+                  />
+                </Button>
+              </div>
+            ) : (
+              <></>
+            )}
+            {isConnected ? (
+              <div>
+                <p className='connectedDiv' style={{ fontSize: textFontSize, margin: headerMargin }}>
+                  🔌
+                </p>
+              </div>
+            ) : (
+              <div>
+                <p className='notConnectedDiv' style={{ fontSize: textFontSize, marginLeft: headerMargin, marginRight: headerMargin }}>
+                  ⛔
+                </p>
+              </div>
+            )}
             <Nav.Link
               onClick={() => setVideoShow(true)}
               className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
