@@ -3,11 +3,11 @@ import { CAMERA_FEED_TOPIC } from './Pages/Constants'
 
 // Updates and returns the window size whenever the screen is re-sized.
 export function useWindowSize() {
-  const [windowSize, setWindowSize] = useState([0, 0])
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
   useLayoutEffect(() => {
     // set current window size
     function updateWindowSize() {
-      setWindowSize([window.innerWidth, window.innerHeight])
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight })
     }
     window.addEventListener('resize', updateWindowSize)
     updateWindowSize()
@@ -72,10 +72,9 @@ export function scaleWidthHeightToWindow(
   // Calculate the aspect ratio of the image
   let imageAspectRatio = imageWidth / imageHeight
   // Get the aspect ratio of the available subset of the window
-  let availableWidth = windowSize[0] - marginLeft - marginRight
-  let availableHeight = windowSize[1] - marginTop - marginBottom
+  let availableWidth = windowSize.width - marginLeft - marginRight
+  let availableHeight = windowSize.height - marginTop - marginBottom
   let availableAspectRatio = availableWidth / availableHeight
-  console.log('availableAspectRatio ' + availableAspectRatio)
 
   // Calculate the width and height of the image that fits within the window
   let returnWidth, returnHeight

@@ -64,8 +64,8 @@ const RobotMotion = (props) => {
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // define sizes of progressbar (width, height, fontsize)
-  let waitingextFontSize = isPortrait ? '5vh' : '5vw'
-  let motionTextFontSize = isPortrait ? '4vh' : '4vw'
+  let waitingTextFontSize = isPortrait ? '4.5vh' : '4.5vw'
+  let motionTextFontSize = isPortrait ? '3.5vh' : '3.5vw'
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
 
@@ -253,33 +253,32 @@ const RobotMotion = (props) => {
               // Calling CircleProgessBar component to visualize robot motion of moving
               return (
                 <>
-                  <React.Fragment>
-                    <View style={{ flex: 1, flexDirection: dimension, alignItems: 'center', justifyContent: 'center' }}>
-                      <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
-                        <React.Fragment>
-                          <h3 style={{ fontSize: motionTextFontSize }}>Robot is moving...</h3>
-                          <h3 style={{ fontSize: motionTextFontSize }}>
-                            &nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec
-                          </h3>
-                        </React.Fragment>
-                      </View>
-                      <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
-                        <CircleProgressBar proportion={progress} />
-                      </View>
+                  <View style={{ flex: 1, flexDirection: dimension, alignItems: 'center' }}>
+                    <View style={{ flex: 5, alignItems: 'center' }}>
+                      <h3 style={{ fontSize: motionTextFontSize }}>Robot is moving...</h3>
+                      <h3 style={{ fontSize: motionTextFontSize }}>
+                        &nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec
+                      </h3>
                     </View>
-                  </React.Fragment>
+                    <View style={{ flex: 5, alignItems: 'center' }}>
+                      <CircleProgressBar proportion={progress} />
+                    </View>
+                  </View>
                 </>
               )
             } else {
               let planning_elapsed_time = actionStatus.feedback.planning_time.sec + actionStatus.feedback.planning_time.nanosec / 10 ** 9
               return (
                 <>
-                  <center>
-                    <h3 style={{ fontSize: motionTextFontSize }}>Robot is thinking...</h3>
-                    <h3 style={{ fontSize: motionTextFontSize }}>
-                      &nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec
-                    </h3>
-                  </center>
+                  <View style={{ flex: 1, flexDirection: dimension, alignItems: 'center' }}>
+                    <View style={{ flex: 5, alignItems: 'center' }}>
+                      <h3 style={{ fontSize: motionTextFontSize }}>Robot is thinking...</h3>
+                      <h3 style={{ fontSize: motionTextFontSize }}>
+                        &nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec
+                      </h3>
+                    </View>
+                    <View style={{ flex: 5, alignItems: 'center' }}></View>
+                  </View>
                 </>
               )
             }
@@ -287,18 +286,24 @@ const RobotMotion = (props) => {
             // If you haven't gotten feedback yet, assume the robot is planning
             return (
               <>
-                <center>
-                  <h3 style={{ fontSize: motionTextFontSize }}>Robot is thinking...</h3>
-                </center>
+                <View style={{ flex: 1, flexDirection: dimension, alignItems: 'center' }}>
+                  <View style={{ flex: 5, alignItems: 'center' }}>
+                    <h3 style={{ fontSize: motionTextFontSize }}>Robot is thinking...</h3>
+                  </View>
+                  <View style={{ flex: 5, alignItems: 'center' }}></View>
+                </View>
               </>
             )
           }
         case ROS_ACTION_STATUS_SUCCEED:
           return (
             <>
-              <center>
-                <h3 style={{ fontSize: motionTextFontSize }}>Robot has finished</h3>
-              </center>
+              <View style={{ flex: 1, flexDirection: dimension, alignItems: 'center' }}>
+                <View style={{ flex: 5, alignItems: 'center' }}>
+                  <h3 style={{ fontSize: motionTextFontSize }}>Robot has finished</h3>
+                </View>
+                <View style={{ flex: 5, alignItems: 'center' }}></View>
+              </View>
             </>
           )
         case ROS_ACTION_STATUS_ABORT:
@@ -310,26 +315,35 @@ const RobotMotion = (props) => {
            */
           return (
             <>
-              <center>
-                <h3 style={{ fontSize: motionTextFontSize }}>Robot encountered an error</h3>
-              </center>
+              <View style={{ flex: 1, flexDirection: dimension, alignItems: 'center' }}>
+                <View style={{ flex: 5, alignItems: 'center' }}>
+                  <h3 style={{ fontSize: motionTextFontSize }}>Robot encountered an error</h3>
+                </View>
+                <View style={{ flex: 5, alignItems: 'center' }}></View>
+              </View>
             </>
           )
         case ROS_ACTION_STATUS_CANCELED:
           return (
             <>
-              <center>
-                <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
-              </center>
+              <View style={{ flex: 1, flexDirection: dimension, alignItems: 'center' }}>
+                <View style={{ flex: 5, alignItems: 'center' }}>
+                  <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
+                </View>
+                <View style={{ flex: 5, alignItems: 'center' }}></View>
+              </View>
             </>
           )
         default:
           if (paused) {
             return (
               <>
-                <center>
-                  <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
-                </center>
+                <View style={{ flex: 1, flexDirection: dimension, alignItems: 'center' }}>
+                  <View style={{ flex: 5, alignItems: 'center' }}>
+                    <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
+                  </View>
+                  <View style={{ flex: 5, alignItems: 'center' }}></View>
+                </View>
               </>
             )
           } else {

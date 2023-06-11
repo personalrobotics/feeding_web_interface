@@ -44,8 +44,8 @@ const PlateLocator = (props) => {
   // Factor to modify video size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.5
   // Define variables for width and height of video
-  const [imgWidth, setWidth] = useState(windowSize[0])
-  const [imgHeight, setHeight] = useState(windowSize[1])
+  const [imgWidth, setWidth] = useState(windowSize.width)
+  const [imgHeight, setHeight] = useState(windowSize.height)
 
   // Update the image size when the screen changes size.
   useEffect(() => {

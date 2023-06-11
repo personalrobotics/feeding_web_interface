@@ -41,10 +41,10 @@ const BiteSelection = (props) => {
   const setDesiredFoodItem = useGlobalState((state) => state.setDesiredFoodItem)
   // Get icon image for move to mouth
   let moveToMouthImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
-  // Factor to modify video size in landscape which has less space than portrait
+  // Factor to modify video and mask size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.5
   // Factor to modify mask button size with regards to window size
-  let maskButtonSizeFactor = 0.12
+  let maskButtonSizeFactor = 0.11
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Margin to make space between header and top text in portrait mode
@@ -52,9 +52,9 @@ const BiteSelection = (props) => {
   // text font size
   let textFontSize = isPortrait ? '2.5vh' : '2.5vw'
   // done button width
-  let skipButtonWidth = isPortrait ? '25vh' : '25vw'
+  let skipButtonWidth = isPortrait ? '96vw' : '43vw'
   // button height
-  let skipButtonHeight = isPortrait ? '5vh' : '5vw'
+  let skipButtonHeight = isPortrait ? '8vh' : '8vw'
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
 
@@ -93,8 +93,8 @@ const BiteSelection = (props) => {
   // Get current window size
   let windowSize = useWindowSize()
   // Define variables for width, height and scale factor of video
-  const [imgWidth, setImgWidth] = useState(windowSize[0])
-  const [imgHeight, setImgHeight] = useState(windowSize[1])
+  const [imgWidth, setImgWidth] = useState(windowSize.width)
+  const [imgHeight, setImgHeight] = useState(windowSize.height)
   const [scaleFactor, setScaleFactor] = useState(0)
 
   // Update the image size when the screen changes size.
@@ -110,6 +110,11 @@ const BiteSelection = (props) => {
     setScaleFactor(scaleFactor)
   }, [windowSize, margin])
 
+  /**
+   * The imgWidth/imgHeight outputted by scaleWidthHeightToWindow is designed
+   * to fill up the whole window width. However, in landscape mode, we want
+   * the video to take up only a portion of the window width.
+   */
   let finalImgWidth = isPortrait ? imgWidth : landscapeSizeFactor * imgWidth
   let finalImgHeight = isPortrait ? imgHeight : landscapeSizeFactor * imgHeight
 
@@ -277,48 +282,42 @@ const BiteSelection = (props) => {
               maxHeight = detected_item.roi.height
             }
           }
-          // fixed buttonSize takes 15% of view width and 21% of view height adjusting to window size
+          // Define mask button size
           let buttonSize = {
-            width: isPortrait ? maskButtonSizeFactor * windowSize[1] : maskButtonSizeFactor * windowSize[0],
-            height: isPortrait ? maskButtonSizeFactor * windowSize[1] : maskButtonSizeFactor * windowSize[0]
+            width: maskButtonSizeFactor * (isPortrait ? windowSize.height : windowSize.width),
+            height: maskButtonSizeFactor * (isPortrait ? windowSize.height : windowSize.width)
           }
+          // Compute mask scale factor from sizes of the mask button and the mask
           let maskScaleFactor = Math.min(buttonSize.width / maxWidth, buttonSize.height / maxHeight)
-          let finalMaskScaleFactor = isPortrait ? maskScaleFactor : 0.5 * maskScaleFactor
+          // Choose suitable mask factor based on screen orientation
+          let finalMaskScaleFactor = isPortrait ? maskScaleFactor : landscapeSizeFactor * maskScaleFactor
+          // Define image size for mask buttons
           let imgSize = {
             width: Math.round(REALSENSE_WIDTH * finalMaskScaleFactor),
             height: Math.round(REALSENSE_HEIGHT * finalMaskScaleFactor)
           }
           // Define a variable for robot's live video stream.
-          console.log('imgSize: width and height ' + imgSize.width + imgSize.height)
           let imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${imgSize.width}&height=${imgSize.height}&quality=20`
-          console.log('imgSrc: ' + imgSrc)
-          console.log('btnSizeWidth: ' + buttonSize.width)
-          console.log('maxWidth: ' + maxWidth)
-          console.log('btnSizeHeight: ' + buttonSize.height)
-          console.log('maxHeight: ' + maxHeight)
-          console.log('maskScaleFactor: ' + maskScaleFactor)
           return (
             <>
-              <center>
-                <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Select a food, or retry by clicking image.</h5>
-                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                  {actionResult.detected_items.map((detected_item, i) => (
-                    <View key={i}>
-                      <MaskButton
-                        buttonSize={buttonSize}
-                        imgSrc={imgSrc}
-                        imgSize={imgSize}
-                        maskSrc={'data:image/jpeg;base64,' + detected_item.mask.data}
-                        invertMask={true}
-                        maskScaleFactor={maskScaleFactor}
-                        maskBoundingBox={detected_item.roi}
-                        onClick={foodItemClicked}
-                        value={i.toString()}
-                      />
-                    </View>
-                  ))}
-                </View>
-              </center>
+              <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Select a food, or retry by clicking image.</h5>
+              <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                {actionResult.detected_items.map((detected_item, i) => (
+                  <View key={i}>
+                    <MaskButton
+                      buttonSize={buttonSize}
+                      imgSrc={imgSrc}
+                      imgSize={imgSize}
+                      maskSrc={'data:image/jpeg;base64,' + detected_item.mask.data}
+                      invertMask={true}
+                      maskScaleFactor={maskScaleFactor}
+                      maskBoundingBox={detected_item.roi}
+                      onClick={foodItemClicked}
+                      value={i.toString()}
+                    />
+                  </View>
+                ))}
+              </View>
             </>
           )
         } else {
@@ -344,7 +343,17 @@ const BiteSelection = (props) => {
           </React.Fragment>
         )
     }
-  }, [actionStatus, actionResult, foodItemClicked, props.webVideoServerURL, isPortrait, windowSize, textFontSize, maskButtonSizeFactor])
+  }, [
+    actionStatus,
+    actionResult,
+    foodItemClicked,
+    landscapeSizeFactor,
+    props.webVideoServerURL,
+    isPortrait,
+    windowSize,
+    textFontSize,
+    maskButtonSizeFactor
+  ])
 
   /** Get the button for continue without acquiring bite
    *
