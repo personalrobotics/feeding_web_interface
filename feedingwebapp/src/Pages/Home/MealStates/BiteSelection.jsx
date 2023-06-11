@@ -47,8 +47,6 @@ const BiteSelection = (props) => {
   let maskButtonSizeFactor = 0.12
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  // Flag to check if the width matches iPhone portrait
-  const isPhoneWidth = useMediaQuery({ query: '(max-width:428px)' })
   // Margin to make space between header and top text in portrait mode
   let portraitMargin = isPortrait ? '8vh' : 0
   // text font size
@@ -116,28 +114,10 @@ const BiteSelection = (props) => {
   let finalImgHeight = isPortrait ? imgHeight : landscapeSizeFactor * imgHeight
 
   /**
-   * Callback function for when the user indicates that they want to move the
-   * robot to locate the plate.
-   */
-  const locatePlateClicked = useCallback(() => {
-    console.log('locatePlateClicked')
-    setMealState(MEAL_STATE.U_PlateLocator)
-  }, [setMealState])
-
-  /**
    * Callback function for when the user wants to move to mouth position.
    */
   const moveToMouth = useCallback(() => {
     setMealState(MEAL_STATE.R_MovingToMouth)
-  }, [setMealState])
-
-  /**
-   * Callback function for when the user indicates that they are done with their
-   * meal.
-   */
-  const doneEatingClicked = useCallback(() => {
-    console.log('doneEatingClicked')
-    setMealState(MEAL_STATE.R_StowingArm)
   }, [setMealState])
 
   /**
@@ -450,31 +430,7 @@ const BiteSelection = (props) => {
   ])
 
   // Render the component
-  return (
-    <>
-      {/**
-       * In addition to selecting their desired food item, the user has two
-       * other options on this page:
-       *   - If their desired food item is not visible on the plate, they can
-       *     decide to teleoperate the robot until it is visible.
-       *   - Instead of selecting their next bite, the user can indicate that
-       *     they are done eating.
-       */}
-      {isPhoneWidth ? (
-        <div style={{ display: 'block', textAlign: 'center' }}>
-          <Button className='doneButton' style={{ fontSize: textFontSize, marginTop: margin }} onClick={locatePlateClicked}>
-            Locate Plate
-          </Button>
-          <Button className='doneButton' style={{ fontSize: textFontSize, marginTop: margin }} onClick={doneEatingClicked}>
-            Meal Done
-          </Button>
-        </div>
-      ) : (
-        <></>
-      )}
-      {fullPageView()}
-    </>
-  )
+  return <>{fullPageView()}</>
 }
 BiteSelection.propTypes = {
   /**

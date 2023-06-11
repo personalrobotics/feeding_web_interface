@@ -22,10 +22,17 @@ import LiveVideoModal from './LiveVideoModal'
 
 /**
  * The Header component consists of the navigation bar (which has buttons Home,
- * Settings, Lock and Robot Connection Icon and Video). Live video view is toggled on and off by
- * clicking "Video", and the ToastContainer popup that specifies when the user
- * cannot click Settings.
- */
+ * Settings, Plate Locator, Done Eating, Lock Icon and Robot Connection Icon and Video).
+ * Live video view is toggled on and off by clicking "Video", and the ToastContainer
+ * popup that specifies when the user cannot click Settings.
+ *
+ * In addition to selecting their desired food item, the user has two
+ * other options on the header:
+ * - If their desired food item is not visible on the plate, they can
+ * decide to teleoperate the robot until it is visible.
+ * - Instead of selecting their next bite, the user can indicate that
+ * they are done eating.
+ * */
 const Header = (props) => {
   // Create a local state variable to toggle on/off the video
   // TODO: Since this local state variable is in the header, the LiveVideoModal
@@ -39,10 +46,8 @@ const Header = (props) => {
   const [isConnected, setIsConncected] = useState(ros.isConnected)
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  // Flag to check if the width matches intended devices' width
-  const deviceWidthMatches = useMediaQuery({ query: '(min-width:429px)' })
   // Sizes of header elements (fontSize, width, height)
-  let textFontSize = isPortrait ? '2.2vh' : '2.2vw'
+  let textFontSize = isPortrait ? '1.9vh' : '1.9vw'
   let lockIconWidth = isPortrait ? '4vh' : '4vw'
   let lockIconHeight = isPortrait ? '5vh' : '5vw'
   let lockImageHeight = isPortrait ? '4vh' : '4vw'
@@ -141,26 +146,20 @@ const Header = (props) => {
             >
               Settings
             </Nav.Link>
-            {deviceWidthMatches ? (
-              <>
-                <Nav.Link
-                  onClick={locatePlateClicked}
-                  className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
-                  style={{ fontSize: textFontSize }}
-                >
-                  Locate Plate
-                </Nav.Link>
-                <Nav.Link
-                  onClick={doneEatingClicked}
-                  className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
-                  style={{ fontSize: textFontSize }}
-                >
-                  Meal Done
-                </Nav.Link>
-              </>
-            ) : (
-              <></>
-            )}
+            <Nav.Link
+              onClick={locatePlateClicked}
+              className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
+              style={{ fontSize: textFontSize }}
+            >
+              🍽️
+            </Nav.Link>
+            <Nav.Link
+              onClick={doneEatingClicked}
+              className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
+              style={{ fontSize: textFontSize }}
+            >
+              ✅
+            </Nav.Link>
             {NON_MOVING_STATES.has(mealState) || paused || (mealState === MEAL_STATE.U_PlateLocator && teleopIsMoving === false) ? (
               <div>
                 <Button
