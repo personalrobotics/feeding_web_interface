@@ -7,7 +7,6 @@ import { useMediaQuery } from 'react-responsive'
 import Row from 'react-bootstrap/Row'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
-
 // Local imports
 import { MOVING_STATE_ICON_DICT } from '../Constants'
 import { useGlobalState } from '../GlobalState'
@@ -34,9 +33,9 @@ const Footer = (props) => {
   let pauseIcon = '/robot_state_imgs/pause_button_icon.svg'
   let backIcon = props.backMealState ? MOVING_STATE_ICON_DICT[props.backMealState] : ''
   let resumeIcon = MOVING_STATE_ICON_DICT[mealState]
+  let phantomButtonIcon = '/robot_state_imgs/phantom_view_image.svg'
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  let phantomButtonIcon = '/robot_state_imgs/phantom_view_image.svg'
   // sizes for footer buttons and icons (width, height, fontsize)
   let pauseButtonWidth = '98vw'
   let backResumeButtonWidth = '47vw'
