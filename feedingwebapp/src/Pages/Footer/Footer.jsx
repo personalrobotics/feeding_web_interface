@@ -4,6 +4,7 @@ import { MDBFooter } from 'mdb-react-ui-kit'
 import Button from 'react-bootstrap/Button'
 import { View } from 'react-native'
 import { useMediaQuery } from 'react-responsive'
+import Row from 'react-bootstrap/Row'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
 

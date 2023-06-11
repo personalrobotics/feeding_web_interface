@@ -360,7 +360,7 @@ const RobotMotion = (props) => {
       {/* TODO: Consider vertically centering this element */}
       <View style={{ flex: 'auto', justifyContent: 'center', width: '100%' }}>
         <div style={{ width: '100%' }}>
-          <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: waitingextFontSize }}>
+          <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: waitingTextFontSize }}>
             {props.waitingText}
           </h1>
           {props.debug ? (
