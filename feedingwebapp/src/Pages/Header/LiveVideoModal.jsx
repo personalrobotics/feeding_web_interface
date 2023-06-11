@@ -32,8 +32,8 @@ function LiveVideoModal(props) {
   // Get current window size
   let windowSize = useWindowSize()
   // Define variables for width and height of video
-  const [width, setWidth] = useState(windowSize[0])
-  const [height, setHeight] = useState(windowSize[1])
+  const [width, setWidth] = useState(windowSize.width)
+  const [height, setHeight] = useState(windowSize.height)
 
   // Update the image size when the screen changes size.
   useEffect(() => {

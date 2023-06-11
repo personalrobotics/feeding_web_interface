@@ -44,15 +44,15 @@ const BiteSelection = (props) => {
   // Factor to modify video and mask size in landscape which has less space than portrait
   let landscapeSizeFactor = 0.5
   // Factor to modify mask button size with regards to window size
-  let maskButtonSizeFactor = 0.12
+  let maskButtonSizeFactor = 0.11
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // text font size
   let textFontSize = isPortrait ? '2.5vh' : '2.5vw'
   // done button width
-  let skipButtonWidth = isPortrait ? '25vh' : '25vw'
+  let skipButtonWidth = isPortrait ? '96vw' : '43vw'
   // button height
-  let skipButtonHeight = isPortrait ? '5vh' : '5vw'
+  let skipButtonHeight = isPortrait ? '8vh' : '8vw'
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
 
@@ -91,8 +91,8 @@ const BiteSelection = (props) => {
   // Get current window size
   let windowSize = useWindowSize()
   // Define variables for width, height and scale factor of video
-  const [imgWidth, setImgWidth] = useState(windowSize[0])
-  const [imgHeight, setImgHeight] = useState(windowSize[1])
+  const [imgWidth, setImgWidth] = useState(windowSize.width)
+  const [imgHeight, setImgHeight] = useState(windowSize.height)
   const [scaleFactor, setScaleFactor] = useState(0)
 
   // Update the image size when the screen changes size.
@@ -300,8 +300,8 @@ const BiteSelection = (props) => {
           }
           // Define mask button size
           let buttonSize = {
-            width: maskButtonSizeFactor * (isPortrait ? windowSize[1] : windowSize[0]),
-            height: maskButtonSizeFactor * (isPortrait ? windowSize[1] : windowSize[0])
+            width: maskButtonSizeFactor * (isPortrait ? windowSize.height : windowSize.width),
+            height: maskButtonSizeFactor * (isPortrait ? windowSize.height : windowSize.width)
           }
           // Compute mask scale factor from sizes of the mask button and the mask
           let maskScaleFactor = Math.min(buttonSize.width / maxWidth, buttonSize.height / maxHeight)
@@ -316,26 +316,24 @@ const BiteSelection = (props) => {
           let imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${imgSize.width}&height=${imgSize.height}&quality=20`
           return (
             <>
-              <center>
-                <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Select a food, or retry by clicking image.</h5>
-                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                  {actionResult.detected_items.map((detected_item, i) => (
-                    <View key={i}>
-                      <MaskButton
-                        buttonSize={buttonSize}
-                        imgSrc={imgSrc}
-                        imgSize={imgSize}
-                        maskSrc={'data:image/jpeg;base64,' + detected_item.mask.data}
-                        invertMask={true}
-                        maskScaleFactor={maskScaleFactor}
-                        maskBoundingBox={detected_item.roi}
-                        onClick={foodItemClicked}
-                        value={i.toString()}
-                      />
-                    </View>
-                  ))}
-                </View>
-              </center>
+              <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Select a food, or retry by clicking image.</h5>
+              <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                {actionResult.detected_items.map((detected_item, i) => (
+                  <View key={i}>
+                    <MaskButton
+                      buttonSize={buttonSize}
+                      imgSrc={imgSrc}
+                      imgSize={imgSize}
+                      maskSrc={'data:image/jpeg;base64,' + detected_item.mask.data}
+                      invertMask={true}
+                      maskScaleFactor={maskScaleFactor}
+                      maskBoundingBox={detected_item.roi}
+                      onClick={foodItemClicked}
+                      value={i.toString()}
+                    />
+                  </View>
+                ))}
+              </View>
             </>
           )
         } else {
@@ -431,12 +429,12 @@ const BiteSelection = (props) => {
   const fullPageView = useCallback(() => {
     return (
       <React.Fragment>
-        <View style={{ flexDirection: dimension, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ flexDirection: dimension, flex: 1, alignItems: 'center' }}>
+          <View style={{ flex: 5, alignItems: 'center' }}>
             <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Click on image to select food.</h5>
             {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, imageClicked)}
           </View>
-          <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ flex: 5, alignItems: 'center' }}>
             {/* Display the action status and/or results */}
             {actionStatusText()}
             {withoutAcquireButton()}
