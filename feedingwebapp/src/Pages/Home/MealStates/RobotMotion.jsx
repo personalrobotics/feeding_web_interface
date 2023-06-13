@@ -49,6 +49,8 @@ const RobotMotion = (props) => {
     actionStatus: null
   })
 
+  let phantomButtonIcon = '/robot_state_imgs/phantom_view_image.svg'
+
   // Get the relevant global variables
   const mealState = useGlobalState((state) => state.mealState)
   const setMealState = useGlobalState((state) => state.setMealState)
@@ -64,7 +66,7 @@ const RobotMotion = (props) => {
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // define sizes of progressbar (width, height, fontsize)
-  let waitingTextFontSize = isPortrait ? '4.5vh' : '4.5vw'
+  let waitingTextFontSize = isPortrait ? '4.5vh' : '4vw'
   let motionTextFontSize = isPortrait ? '3.5vh' : '3.5vw'
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
@@ -235,6 +237,27 @@ const RobotMotion = (props) => {
     setMealState(backMealState.current)
   }, [setPaused, setMealState, backMealState])
 
+  const phantomView = useCallback(() => {
+    return (
+      <>
+        <Button
+          variant='ghost'
+          disabled={true}
+          style={{
+            backgroundColor: 'transparent',
+            border: 'none',
+            marginLeft: 10,
+            marginRight: 10,
+            width: isPortrait ? '47vh' : '20vw',
+            height: isPortrait ? '47vh' : '20vw'
+          }}
+        >
+          <img style={{ width: '120px', height: '72px' }} src={phantomButtonIcon} alt='phantom_button_img' className='center' />
+        </Button>
+      </>
+    )
+  }, [isPortrait, phantomButtonIcon])
+
   /**
    * Get the action status text to render. Note that once Issue #22 is addressed,
    * this will likely no longer be necessary (since that issue focuses on
@@ -277,7 +300,7 @@ const RobotMotion = (props) => {
                         &nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec
                       </h3>
                     </View>
-                    <View style={{ flex: 5, alignItems: 'center' }}></View>
+                    <View style={{ flex: 5, alignItems: 'center' }}>{phantomView()}</View>
                   </View>
                 </>
               )
@@ -290,7 +313,7 @@ const RobotMotion = (props) => {
                   <View style={{ flex: 5, alignItems: 'center' }}>
                     <h3 style={{ fontSize: motionTextFontSize }}>Robot is thinking...</h3>
                   </View>
-                  <View style={{ flex: 5, alignItems: 'center' }}></View>
+                  <View style={{ flex: 5, alignItems: 'center' }}>{phantomView()}</View>
                 </View>
               </>
             )
@@ -302,7 +325,7 @@ const RobotMotion = (props) => {
                 <View style={{ flex: 5, alignItems: 'center' }}>
                   <h3 style={{ fontSize: motionTextFontSize }}>Robot has finished</h3>
                 </View>
-                <View style={{ flex: 5, alignItems: 'center' }}></View>
+                <View style={{ flex: 5, alignItems: 'center' }}>{phantomView()}</View>
               </View>
             </>
           )
@@ -319,7 +342,7 @@ const RobotMotion = (props) => {
                 <View style={{ flex: 5, alignItems: 'center' }}>
                   <h3 style={{ fontSize: motionTextFontSize }}>Robot encountered an error</h3>
                 </View>
-                <View style={{ flex: 5, alignItems: 'center' }}></View>
+                <View style={{ flex: 5, alignItems: 'center' }}>{phantomView()}</View>
               </View>
             </>
           )
@@ -330,7 +353,7 @@ const RobotMotion = (props) => {
                 <View style={{ flex: 5, alignItems: 'center' }}>
                   <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
                 </View>
-                <View style={{ flex: 5, alignItems: 'center' }}></View>
+                <View style={{ flex: 5, alignItems: 'center' }}>{phantomView()}</View>
               </View>
             </>
           )
@@ -342,7 +365,7 @@ const RobotMotion = (props) => {
                   <View style={{ flex: 5, alignItems: 'center' }}>
                     <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
                   </View>
-                  <View style={{ flex: 5, alignItems: 'center' }}></View>
+                  <View style={{ flex: 5, alignItems: 'center' }}>{phantomView()}</View>
                 </View>
               </>
             )
@@ -351,7 +374,7 @@ const RobotMotion = (props) => {
           }
       }
     },
-    [paused, motionTextFontSize, dimension]
+    [paused, motionTextFontSize, dimension, phantomView]
   )
 
   // Render the component
@@ -362,6 +385,7 @@ const RobotMotion = (props) => {
         <div style={{ width: '100%' }}>
           <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: waitingTextFontSize }}>
             {props.waitingText}
+            {isPortrait ? <h1>&nbsp;</h1> : <></>}
           </h1>
           {props.debug ? (
             <Button variant='secondary' className='justify-content-center mx-2 mb-2' size='lg' onClick={robotMotionDone}>

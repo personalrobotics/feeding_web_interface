@@ -17,13 +17,9 @@ export default function CircleProgressBar(props) {
   const [bar, setBar] = useState(null)
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  // Flag to check if the current device has minimum width of 1366px
-  const matches = useMediaQuery({ query: '(min-width:1366px)' })
   // define sizes of progressbar (width, height, fontsize) in portrait and landscape
-  let textSizeLandscape = matches ? '12vw' : '6vw'
-  let finalTextFontSize = isPortrait ? '23vw' : textSizeLandscape
-  let circleSizeLandscape = matches ? '33vw' : '18vw'
-  let finalCircleSize = isPortrait ? '86vw' : circleSizeLandscape
+  let textFontSize = isPortrait ? '9vh' : '5vw'
+  let circleSize = isPortrait ? '40vh' : '16vw'
 
   // useEffect React Hook is used to synchronize with RobotMotion.jsx data.
   useEffect(() => {
@@ -42,7 +38,7 @@ export default function CircleProgressBar(props) {
           text: {
             style: {
               fontFamily: '"Raleway", Helvetica, sans-serif',
-              fontSize: finalTextFontSize,
+              fontSize: textFontSize,
               position: 'absolute',
               left: '50%',
               top: '50%',
@@ -60,9 +56,9 @@ export default function CircleProgressBar(props) {
       bar.setText(Math.round(props.proportion * 100) + '%')
     }
     // everytime items in dependency array (the second argument) update, useEffect runs.
-  }, [setBar, bar, props.proportion, finalTextFontSize])
+  }, [setBar, bar, props.proportion, textFontSize])
   // render HTML
-  return <div id='container' style={{ margin: '20px', width: finalCircleSize, height: finalCircleSize, position: 'relative' }}></div>
+  return <div id='container' style={{ margin: '20px', width: circleSize, height: circleSize, position: 'relative' }}></div>
 }
 
 // progress proportion corresponding with the motion the robot is executing
