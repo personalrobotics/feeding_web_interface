@@ -36,12 +36,6 @@ const Footer = (props) => {
   let phantomButtonIcon = '/robot_state_imgs/phantom_view_image.svg'
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  // sizes for footer buttons and icons (width, height, fontsize)
-  let pauseButtonWidth = '98vw'
-  let backResumeButtonWidth = '47vw'
-  let footerHeight = isPortrait ? '10vh' : '10vw'
-  let pauseFontSize = isPortrait ? '7vh' : '7vw'
-  let backResumeFontSize = '6vw'
   // Margins around footer buttons
   let footerLeftRightMargin = isPortrait ? '1.6vh' : '1.6vw'
   let footerTopBottomMargin = isPortrait ? '0.3vh' : '0.3vw'
@@ -52,35 +46,51 @@ const Footer = (props) => {
       icon: pauseIcon,
       disabled: false,
       variant: 'danger',
-      callback: props.pauseCallback
+      callback: props.pauseCallback,
+      buttonWidth: '98vw',
+      buttonHeight: isPortrait ? '11vh' : '11vw',
+      fontSize: isPortrait ? '7vh' : '7vw',
+      backgroundColor: null
     },
     back: {
       text: 'Back',
       icon: backIcon,
       disabled: false,
       variant: 'warning',
-      callback: props.backCallback
+      callback: props.backCallback,
+      buttonWidth: '47vw',
+      buttonHeight: isPortrait ? '11vh' : '11vw',
+      fontSize: '6vw',
+      backgroundColor: null
     },
     resume: {
       text: 'Resume',
       icon: resumeIcon,
       disabled: false,
       variant: 'success',
-      callback: props.resumeCallback
+      callback: props.resumeCallback,
+      buttonWidth: '47vw',
+      buttonHeight: isPortrait ? '11vh' : '11vw',
+      fontSize: '6vw',
+      backgroundColor: null
     },
     phantom: {
       text: null,
       icon: phantomButtonIcon,
       disabled: true,
       variant: 'ghost',
-      callback: null
+      callback: null,
+      buttonWidth: '47vw',
+      buttonHeight: isPortrait ? '11vh' : '11vw',
+      fontSize: '6vw',
+      backgroundColor: 'transparent'
     }
   }
 
   /**
    * Get the footer text and button to render in footer.
    *
-   * @param {number} config - a single nested object with properties of
+   * @param {number} config - a single nested object with properties of footer buttons
    *
    * @returns {JSX.Element} the footer text and button
    */
@@ -94,14 +104,14 @@ const Footer = (props) => {
               disabled={config.disabled}
               onClick={config.callback}
               style={{
-                backgroundColor: config.text === null ? 'transparent' : null,
+                backgroundColor: config.backgroundColor,
                 border: 'none',
                 marginTop: footerTopBottomMargin,
                 marginLeft: footerLeftRightMargin,
                 marginRight: footerLeftRightMargin,
                 marginBottom: footerTopBottomMargin,
-                width: config.text === 'Pause' ? pauseButtonWidth : backResumeButtonWidth,
-                height: footerHeight,
+                width: config.buttonWidth,
+                height: config.buttonHeight,
                 justifyContent: 'center',
                 alignItems: 'center',
                 '--bs-btn-padding-y': '0rem',
@@ -119,7 +129,7 @@ const Footer = (props) => {
                     className='transitionMessage'
                     style={{
                       marginBottom: '0',
-                      fontSize: config.text === 'Pause' ? pauseFontSize : backResumeFontSize,
+                      fontSize: config.fontSize,
                       color: 'black',
                       fontWeight: 'bold',
                       padding: '0',
@@ -134,7 +144,7 @@ const Footer = (props) => {
                     <img
                       style={{
                         width: '100%',
-                        height: footerHeight
+                        height: config.buttonHeight
                       }}
                       src={config.icon}
                       alt='icon_img'
@@ -147,7 +157,7 @@ const Footer = (props) => {
         </>
       )
     },
-    [backResumeButtonWidth, pauseButtonWidth, pauseFontSize, backResumeFontSize, footerHeight, footerLeftRightMargin, footerTopBottomMargin]
+    [footerLeftRightMargin, footerTopBottomMargin]
   )
 
   // Render the component
