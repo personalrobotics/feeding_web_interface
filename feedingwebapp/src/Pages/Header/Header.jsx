@@ -22,32 +22,23 @@ import LiveVideoModal from './LiveVideoModal'
 
 /**
  * The Header component consists of the navigation bar (which has buttons Home,
- * Settings, Plate Locator, Done Eating, Lock Icon and Robot Connection Icon and Video).
- * Live video view is toggled on and off by clicking "Video", and the ToastContainer
- * popup that specifies when the user cannot click Settings.
- *
- * In addition to selecting their desired food item, the user has two
- * other options on the header:
- * - If their desired food item is not visible on the plate, they can
- * decide to teleoperate the robot until it is visible.
- * - Instead of selecting their next bite, the user can indicate that
- * they are done eating.
- * */
+ * Settings, Lock and Robot Connection Icon and Video). Live video view is toggled on and off by
+ * clicking "Video", and the ToastContainer popup that specifies when the user
+ * cannot click Settings.
+ */
 const Header = (props) => {
   // Create a local state variable to toggle on/off the video
   // TODO: Since this local state variable is in the header, the LiveVideoModal
   // continues showing even if the state changes. Is this desirable? Perhaps
   // it should close if the state changes?
   const [videoShow, setVideoShow] = useState(false)
-  // Get the relevant global variables
-  const setMealState = useGlobalState((state) => state.setMealState)
   // useROS gives us access to functions to configure and interact with ROS.
   let { ros } = useROS()
   const [isConnected, setIsConncected] = useState(ros.isConnected)
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Sizes of header elements (fontSize, width, height)
-  let textFontSize = isPortrait ? '1.9vh' : '1.9vw'
+  let textFontSize = isPortrait ? '2.5vh' : '2.5vw'
   let lockIconWidth = isPortrait ? '4vh' : '4vw'
   let lockIconHeight = isPortrait ? '5vh' : '5vw'
   let lockImageHeight = isPortrait ? '4vh' : '4vw'
@@ -75,24 +66,6 @@ const Header = (props) => {
   }, [setAppPage])
 
   /**
-   * Callback function for when the user indicates that they want to move the
-   * robot to locate the plate.
-   */
-  const locatePlateClicked = useCallback(() => {
-    console.log('locatePlateClicked')
-    setMealState(MEAL_STATE.U_PlateLocator)
-  }, [setMealState])
-
-  /**
-   * Callback function for when the user indicates that they are done with their
-   * meal.
-   */
-  const doneEatingClicked = useCallback(() => {
-    console.log('doneEatingClicked')
-    setMealState(MEAL_STATE.R_StowingArm)
-  }, [setMealState])
-
-  /**
    * When the Settings button in the header is clicked, if the meal has not yet
    * started, take the user to the settings menu. Else, ask them to complete
    * or terminate the meal because modifying settings.
@@ -112,10 +85,12 @@ const Header = (props) => {
        * The ToastContainer is an alert that pops up on the top of the screen
        * and has a timeout.
        */}
-      <ToastContainer style={{ fontSize: '4vh' }} />
+      <ToastContainer style={{ fontSize: textFontSize }} />
       {/**
-       * The NavBar has five elements, Home and Settings, on the left side and three
-       * elements: Lock Icon, Robot Connection Status Icon, and Video; on the right side.
+       * The NavBar has two elements, Home and Settings, on the left side and three
+       * elements, Lock, Robot Connection Icon and VideoVideo, on the right side.
+       * An image showing the connection status
+       * of the robot is placed in between Lock and Video.
        */}
       <Navbar
         collapseOnSelect
@@ -131,7 +106,7 @@ const Header = (props) => {
           variant='dark'
           style={{ '--bs-navbar-padding-x': '0rem', '--bs-navbar-padding-y': '0.2rem' }}
         >
-          <Nav className='m-auto'>
+          <Nav className='me-auto'>
             <Nav.Link
               onClick={homeClicked}
               className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
@@ -146,59 +121,47 @@ const Header = (props) => {
             >
               Settings
             </Nav.Link>
-            <Nav.Link
-              onClick={locatePlateClicked}
-              className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
-              style={{ fontSize: textFontSize }}
-            >
-              🍽️
-            </Nav.Link>
-            <Nav.Link
-              onClick={doneEatingClicked}
-              className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
-              style={{ fontSize: textFontSize }}
-            >
-              ✅
-            </Nav.Link>
-            {NON_MOVING_STATES.has(mealState) || paused || (mealState === MEAL_STATE.U_PlateLocator && teleopIsMoving === false) ? (
-              <div>
-                <Button
-                  variant='danger'
-                  disabled={true}
-                  style={{
-                    marginLeft: headerMargin,
-                    marginRight: headerMargin,
-                    width: lockIconWidth,
-                    height: lockIconHeight,
-                    opacity: 1,
-                    '--bs-btn-padding-y': '0rem',
-                    '--bs-btn-padding-x': '0rem'
-                  }}
-                >
-                  <img
-                    style={{ width: lockIconWidth, height: lockImageHeight }}
-                    src='/robot_state_imgs/lock_icon_image.svg'
-                    alt='lock_icon_img'
-                    className='center'
-                  />
-                </Button>
-              </div>
-            ) : (
-              <></>
-            )}
-            {isConnected ? (
-              <div>
-                <p className='connectedDiv' style={{ fontSize: textFontSize, margin: headerMargin }}>
-                  🔌
-                </p>
-              </div>
-            ) : (
-              <div>
-                <p className='notConnectedDiv' style={{ fontSize: textFontSize, marginLeft: headerMargin, marginRight: headerMargin }}>
-                  ⛔
-                </p>
-              </div>
-            )}
+          </Nav>
+          {NON_MOVING_STATES.has(mealState) || paused || (mealState === MEAL_STATE.U_PlateLocator && teleopIsMoving === false) ? (
+            <div>
+              <Button
+                variant='danger'
+                disabled={true}
+                style={{
+                  marginLeft: headerMargin,
+                  marginRight: headerMargin,
+                  width: lockIconWidth,
+                  height: lockIconHeight,
+                  opacity: 1,
+                  '--bs-btn-padding-y': '0rem',
+                  '--bs-btn-padding-x': '0rem'
+                }}
+              >
+                <img
+                  style={{ width: lockIconWidth, height: lockImageHeight }}
+                  src='/robot_state_imgs/lock_icon_image.svg'
+                  alt='lock_icon_img'
+                  className='center'
+                />
+              </Button>
+            </div>
+          ) : (
+            <></>
+          )}
+          {isConnected ? (
+            <div>
+              <p className='connectedDiv' style={{ fontSize: textFontSize, margin: headerMargin }}>
+                🔌
+              </p>
+            </div>
+          ) : (
+            <div>
+              <p className='notConnectedDiv' style={{ fontSize: textFontSize, marginLeft: headerMargin, marginRight: headerMargin }}>
+                ⛔
+              </p>
+            </div>
+          )}
+          <Nav>
             <Nav.Link
               onClick={() => setVideoShow(true)}
               className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
