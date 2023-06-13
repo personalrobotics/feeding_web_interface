@@ -1,5 +1,5 @@
 // React imports
-import React from 'react'
+import React, { useCallback } from 'react'
 import { MDBFooter } from 'mdb-react-ui-kit'
 import Button from 'react-bootstrap/Button'
 import { View } from 'react-native'
@@ -39,69 +39,71 @@ const Footer = (props) => {
   // sizes for footer buttons and icons (width, height, fontsize)
   let pauseButtonWidth = '98vw'
   let backResumeButtonWidth = '47vw'
-  let footerHeight = isPortrait ? '11vh' : '11vw'
+  let footerHeight = isPortrait ? '10vh' : '10vw'
   let pauseFontSize = isPortrait ? '7vh' : '7vw'
   let backResumeFontSize = '6vw'
   // Margins around footer buttons
-  let footerLeftRightMargin = isPortrait ? '1.5vh' : '1.5vw'
+  let footerLeftRightMargin = isPortrait ? '1.6vh' : '1.6vw'
   let footerTopBottomMargin = isPortrait ? '0.3vh' : '0.3vw'
-  // Text list for footer buttons
-  const texts = ['Pause', 'Back', 'Resume']
-  // Icon list for footer buttons
-  const icons = [pauseIcon, backIcon, resumeIcon]
-  // Variant list for footer buttons
-  const variants = ['danger', 'warning', 'success']
-  // font sizes for footer button texts
-  const fontSizes = [pauseFontSize, backResumeFontSize, backResumeFontSize]
-  // button widths for footer
-  const buttonWidths = [pauseButtonWidth, backResumeButtonWidth, backResumeButtonWidth]
-  // callback functions for footer button click
-  const callbacks = [props.pauseCallback, props.backCallback, props.resumeCallback]
+  // A single nested object with all footer buttons' properties
+  const buttonConfig = {
+    pause: {
+      text: 'Pause',
+      icon: pauseIcon,
+      disabled: false,
+      variant: 'danger',
+      callback: props.pauseCallback
+    },
+    back: {
+      text: 'Back',
+      icon: backIcon,
+      disabled: false,
+      variant: 'warning',
+      callback: props.backCallback
+    },
+    resume: {
+      text: 'Resume',
+      icon: resumeIcon,
+      disabled: false,
+      variant: 'success',
+      callback: props.resumeCallback
+    },
+    phantom: {
+      text: null,
+      icon: phantomButtonIcon,
+      disabled: true,
+      variant: 'ghost',
+      callback: null
+    }
+  }
 
   /**
    * Get the footer text and button to render in footer.
    *
+   * @param {number} config - a single nested object with properties of
+   *
    * @returns {JSX.Element} the footer text and button
    */
-  function renderFooterButton(index) {
-    if (index === 3) {
-      return (
-        <>
-          <Button
-            variant='ghost'
-            disabled={true}
-            style={{
-              backgroundColor: 'transparent',
-              border: 'none',
-              marginTop: footerTopBottomMargin,
-              marginLeft: footerLeftRightMargin,
-              marginRight: footerLeftRightMargin,
-              marginBottom: footerTopBottomMargin,
-              width: backResumeButtonWidth,
-              height: footerHeight,
-              '--bs-btn-padding-y': '0rem'
-            }}
-          >
-            <img style={{ width: '100%', height: footerHeight }} src={phantomButtonIcon} alt='phantom_button_img' className='center' />
-          </Button>
-        </>
-      )
-    } else {
+  const renderFooterButton = useCallback(
+    (config) => {
       return (
         <>
           <Row className='justify-content-center'>
             <Button
-              variant={variants[index]}
-              onClick={callbacks[index]}
+              variant={config.variant}
+              disabled={config.disabled}
+              onClick={config.callback}
               style={{
-                width: buttonWidths[index],
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: footerHeight,
+                backgroundColor: config.text === null ? 'transparent' : null,
+                border: 'none',
                 marginTop: footerTopBottomMargin,
                 marginLeft: footerLeftRightMargin,
                 marginRight: footerLeftRightMargin,
                 marginBottom: footerTopBottomMargin,
+                width: config.text === 'Pause' ? pauseButtonWidth : backResumeButtonWidth,
+                height: footerHeight,
+                justifyContent: 'center',
+                alignItems: 'center',
                 '--bs-btn-padding-y': '0rem',
                 '--bs-btn-padding-x': '0rem'
               }}
@@ -117,14 +119,14 @@ const Footer = (props) => {
                     className='transitionMessage'
                     style={{
                       marginBottom: '0',
-                      fontSize: fontSizes[index],
+                      fontSize: config.text === 'Pause' ? pauseFontSize : backResumeFontSize,
                       color: 'black',
                       fontWeight: 'bold',
                       padding: '0',
                       textAlign: 'right'
                     }}
                   >
-                    {texts[index]}
+                    {config.text}
                   </p>
                 </View>
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start' }}>
@@ -134,7 +136,7 @@ const Footer = (props) => {
                         width: '100%',
                         height: footerHeight
                       }}
-                      src={icons[index]}
+                      src={config.icon}
                       alt='icon_img'
                     />
                   </div>
@@ -144,8 +146,9 @@ const Footer = (props) => {
           </Row>
         </>
       )
-    }
-  }
+    },
+    [backResumeButtonWidth, pauseButtonWidth, pauseFontSize, backResumeFontSize, footerHeight, footerLeftRightMargin, footerTopBottomMargin]
+  )
 
   // Render the component
   return (
@@ -154,11 +157,11 @@ const Footer = (props) => {
         <div className='text-center' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)', paddingBottom: '5px', paddingTop: '5px' }}>
           {props.paused ? (
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <View>{props.backCallback ? renderFooterButton(1) : renderFooterButton(3)}</View>
-              <View>{props.resumeCallback ? renderFooterButton(2) : renderFooterButton(3)}</View>
+              <View>{props.backCallback ? renderFooterButton(buttonConfig.back) : renderFooterButton(buttonConfig.phantom)}</View>
+              <View>{props.resumeCallback ? renderFooterButton(buttonConfig.resume) : renderFooterButton(buttonConfig.phantom)}</View>
             </View>
           ) : (
-            renderFooterButton(0)
+            renderFooterButton(buttonConfig.pause)
           )}
         </div>
       </MDBFooter>

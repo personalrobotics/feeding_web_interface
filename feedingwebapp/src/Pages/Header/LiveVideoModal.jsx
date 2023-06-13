@@ -1,5 +1,6 @@
 // React imports
 import React, { useEffect, useRef, useState } from 'react'
+import { useMediaQuery } from 'react-responsive'
 // The Modal is a screen that appears on top of the main app, and can be toggled
 // on and off.
 import Modal from 'react-bootstrap/Modal'
@@ -34,6 +35,8 @@ function LiveVideoModal(props) {
   // Define variables for width and height of video
   const [width, setWidth] = useState(windowSize.width)
   const [height, setHeight] = useState(windowSize.height)
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
 
   // Update the image size when the screen changes size.
   useEffect(() => {
@@ -65,7 +68,9 @@ function LiveVideoModal(props) {
       fullscreen={true}
     >
       <Modal.Header closeButton>
-        <Modal.Title id='contained-modal-title-vcenter'>Live Video</Modal.Title>
+        <Modal.Title id='contained-modal-title-vcenter' style={{ fontSize: isPortrait ? '3vh' : '3vw' }}>
+          Live Video
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ overflow: 'hidden' }}>
         <center>{showVideo(props.webVideoServerURL, width, height, null)}</center>

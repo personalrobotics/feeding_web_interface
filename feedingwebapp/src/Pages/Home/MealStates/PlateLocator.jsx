@@ -116,7 +116,7 @@ const PlateLocator = (props) => {
     return (
       <>
         <Container fluid>
-          <Row className='justify-content-center' noGutters={true}>
+          <Row className='justify-content-center'>
             <Button
               onClick={cartesianControlCommandReceived}
               style={{
@@ -172,7 +172,7 @@ const PlateLocator = (props) => {
               </center>
             </Col>
           </Row>
-          <Row className='justify-content-center' noGutters={true}>
+          <Row className='justify-content-center'>
             <Button
               onClick={cartesianControlCommandReceived}
               style={{
