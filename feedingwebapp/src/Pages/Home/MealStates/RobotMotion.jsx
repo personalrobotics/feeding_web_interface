@@ -49,8 +49,6 @@ const RobotMotion = (props) => {
     actionStatus: null
   })
 
-  let phantomButtonIcon = '/robot_state_imgs/phantom_view_image.svg'
-
   // Get the relevant global variables
   const mealState = useGlobalState((state) => state.mealState)
   const setMealState = useGlobalState((state) => state.setMealState)
@@ -65,9 +63,13 @@ const RobotMotion = (props) => {
 
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  // define sizes of progressbar (width, height, fontsize)
+
+  // Define sizes for RobotMotion page items (width, height, fontsize)
   let waitingTextFontSize = isPortrait ? '4.5vh' : '4vw'
   let motionTextFontSize = isPortrait ? '3.5vh' : '3.5vw'
+  let phantomMargin = '15px'
+  let phantomImage = '/robot_state_imgs/phantom_view_image.svg'
+
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
 
@@ -237,33 +239,53 @@ const RobotMotion = (props) => {
     setMealState(backMealState.current)
   }, [setPaused, setMealState, backMealState])
 
-  const phantomView = useCallback(() => {
-    return (
-      <>
-        <Button
-          variant='ghost'
-          disabled={true}
-          style={{
-            backgroundColor: 'transparent',
-            border: 'none',
-            marginLeft: 10,
-            marginRight: 10,
-            width: isPortrait ? '47vh' : '20vw',
-            height: isPortrait ? '47vh' : '20vw'
-          }}
-        >
-          <img style={{ width: '120px', height: '72px' }} src={phantomButtonIcon} alt='phantom_button_img' className='center' />
-        </Button>
-      </>
-    )
-  }, [isPortrait, phantomButtonIcon])
+  /**
+   * Get the progress bar or phantom view to render.
+   *
+   * @param {flexSizeInner} - flexbox percentage for child element
+   * @param {progress} - progress proportion; if null progress bar not shown
+   *
+   * @returns {JSX.Element} the progress bar or phantom view
+   */
+  const actionStatusVisuals = useCallback(
+    (flexSizeInner, progress) => {
+      return (
+        <>
+          <View
+            style={{
+              flex: flexSizeInner,
+              alignItems: 'center',
+              width: isPortrait ? '78%' : null,
+              height: isPortrait ? null : '100%'
+            }}
+          >
+            {progress === null ? (
+              <img
+                style={{
+                  flex: 1,
+                  margin: phantomMargin,
+                  width: isPortrait ? '70%' : null,
+                  height: isPortrait ? null : '100%',
+                  justifyContent: 'center'
+                }}
+                src={phantomImage}
+                alt='phantom_img'
+                className='center'
+              />
+            ) : (
+              <CircleProgressBar proportion={progress} />
+            )}
+          </View>
+        </>
+      )
+    },
+    [phantomImage, phantomMargin, isPortrait]
+  )
 
   /**
-   * Get the action status text to render. Note that once Issue #22 is addressed,
-   * this will likely no longer be necessary (since that issue focuses on
-   * visually rendering robot progress).
+   * Get the action status elements to render in a view flexbox.
    *
-   * @returns {JSX.Element} the action status text to render
+   * @returns {JSX.Element} the action status elements (e.g., robot motion text, elapsed time, progress bar)
    */
   const actionStatusText = useCallback(
     (actionStatus, flexSizeOuter) => {
@@ -283,12 +305,11 @@ const RobotMotion = (props) => {
                       &nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec
                     </h3>
                   </View>
-                  <View style={{ flex: flexSizeInner, alignItems: 'center', height: '100%' }}>
-                    <CircleProgressBar proportion={progress} />
-                  </View>
+                  {actionStatusVisuals(flexSizeInner, progress)}
                 </View>
               )
             } else {
+              // Replace circle progress bar with phantom image view
               let planning_elapsed_time = actionStatus.feedback.planning_time.sec + actionStatus.feedback.planning_time.nanosec / 10 ** 9
               return (
                 <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center' }}>
@@ -298,7 +319,7 @@ const RobotMotion = (props) => {
                       &nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec
                     </h3>
                   </View>
-                  <View style={{ flex: flexSizeInner, alignItems: 'center' }}>{phantomView()}</View>
+                  {actionStatusVisuals(flexSizeInner, null)}
                 </View>
               )
             }
@@ -309,7 +330,7 @@ const RobotMotion = (props) => {
                 <View style={{ flex: flexSizeInner, alignItems: 'center', justifyContent: 'center' }}>
                   <h3 style={{ fontSize: motionTextFontSize }}>Robot is thinking...</h3>
                 </View>
-                <View style={{ flex: flexSizeInner, alignItems: 'center' }}>{phantomView()}</View>
+                {actionStatusVisuals(flexSizeInner, null)}
               </View>
             )
           }
@@ -319,7 +340,7 @@ const RobotMotion = (props) => {
               <View style={{ flex: flexSizeInner, alignItems: 'center', justifyContent: 'center' }}>
                 <h3 style={{ fontSize: motionTextFontSize }}>Robot has finished</h3>
               </View>
-              <View style={{ flex: flexSizeInner, alignItems: 'center' }}>{phantomView()}</View>
+              {actionStatusVisuals(flexSizeInner, null)}
             </View>
           )
         case ROS_ACTION_STATUS_ABORT:
@@ -334,7 +355,7 @@ const RobotMotion = (props) => {
               <View style={{ flex: flexSizeInner, alignItems: 'center', justifyContent: 'center' }}>
                 <h3 style={{ fontSize: motionTextFontSize }}>Robot encountered an error</h3>
               </View>
-              <View style={{ flex: flexSizeInner, alignItems: 'center' }}>{phantomView()}</View>
+              {actionStatusVisuals(flexSizeInner, null)}
             </View>
           )
         case ROS_ACTION_STATUS_CANCELED:
@@ -343,7 +364,7 @@ const RobotMotion = (props) => {
               <View style={{ flex: flexSizeInner, alignItems: 'center' }}>
                 <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
               </View>
-              <View style={{ flex: flexSizeInner, alignItems: 'center' }}>{phantomView()}</View>
+              {actionStatusVisuals(flexSizeInner, null)}
             </View>
           )
         default:
@@ -353,7 +374,7 @@ const RobotMotion = (props) => {
                 <View style={{ flex: flexSizeInner, alignItems: 'center', justifyContent: 'center' }}>
                   <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
                 </View>
-                <View style={{ flex: flexSizeInner, alignItems: 'center' }}>{phantomView()}</View>
+                {actionStatusVisuals(flexSizeInner, null)}
               </View>
             )
           } else {
@@ -365,13 +386,12 @@ const RobotMotion = (props) => {
           }
       }
     },
-    [isPortrait, paused, motionTextFontSize, dimension, phantomView]
+    [isPortrait, paused, motionTextFontSize, dimension, actionStatusVisuals]
   )
 
   // Render the component
   return (
     <>
-      {/* TODO: Consider vertically centering this element */}
       <View style={{ flex: 'auto', justifyContent: 'center', width: '100%' }}>
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <View style={{ flex: isPortrait ? null : 2, justifyContent: 'center' }}>

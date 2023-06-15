@@ -32,11 +32,21 @@ function LiveVideoModal(props) {
 
   // Get current window size
   let windowSize = useWindowSize()
-  // Define variables for width and height of video
-  const [width, setWidth] = useState(windowSize.width)
-  const [height, setHeight] = useState(windowSize.height)
+  // Define variables for width and height of image
+  const [imgWidth, setImgWidth] = useState(windowSize.width)
+  const [imgHeight, setImgHeight] = useState(windowSize.height)
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+
+  /** Factors to modify video size in landscape to fit space
+   *
+   * TODO: Adjust it accordingly when flexbox with directional arrows implemented
+   */
+  let landscapeSizeFactor = 0.9
+
+  // Get final image size according to screen orientation
+  let finalImgWidth = isPortrait ? imgWidth : landscapeSizeFactor * imgWidth
+  let finalImgHeight = isPortrait ? imgHeight : landscapeSizeFactor * imgHeight
 
   // Update the image size when the screen changes size.
   useEffect(() => {
@@ -50,8 +60,8 @@ function LiveVideoModal(props) {
       marginLeft,
       marginRight
     )
-    setWidth(widthUpdate)
-    setHeight(heightUpdate)
+    setImgWidth(widthUpdate)
+    setImgHeight(heightUpdate)
   }, [windowSize, marginTop, marginBottom, marginLeft, marginRight])
 
   return (
@@ -73,7 +83,7 @@ function LiveVideoModal(props) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ overflow: 'hidden' }}>
-        <center>{showVideo(props.webVideoServerURL, width, height, null)}</center>
+        <center>{showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, null)}</center>
       </Modal.Body>
     </Modal>
   )

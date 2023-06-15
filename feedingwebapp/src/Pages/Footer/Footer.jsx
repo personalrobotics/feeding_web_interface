@@ -33,7 +33,7 @@ const Footer = (props) => {
   let pauseIcon = '/robot_state_imgs/pause_button_icon.svg'
   let backIcon = props.backMealState ? MOVING_STATE_ICON_DICT[props.backMealState] : ''
   let resumeIcon = MOVING_STATE_ICON_DICT[mealState]
-  let phantomButtonIcon = '/robot_state_imgs/phantom_view_image.svg'
+  let phantomIcon = '/robot_state_imgs/phantom_view_image.svg'
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Margins around footer buttons
@@ -76,7 +76,7 @@ const Footer = (props) => {
     },
     phantom: {
       text: null,
-      icon: phantomButtonIcon,
+      icon: phantomIcon,
       disabled: true,
       variant: 'ghost',
       callback: null,
@@ -90,7 +90,7 @@ const Footer = (props) => {
   /**
    * Get the footer text and button to render in footer.
    *
-   * @param {number} config - a single nested object with properties of footer buttons
+   * @param {object} config - a single nested object with properties of footer buttons
    *
    * @returns {JSX.Element} the footer text and button
    */

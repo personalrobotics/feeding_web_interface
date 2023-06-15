@@ -14,7 +14,6 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 // ROS imports
 import { useROS } from '../../ros/ros_helpers'
-
 // Local imports
 import { ROS_CHECK_INTERVAL_MS, NON_MOVING_STATES } from '../Constants'
 import { useGlobalState, APP_PAGE, MEAL_STATE } from '../GlobalState'
