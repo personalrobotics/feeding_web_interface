@@ -3,8 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useMediaQuery } from 'react-responsive'
 import Button from 'react-bootstrap/Button'
 import { View } from 'react-native'
-// PropTypes is used to validate that the used props are in fact passed to this
-// Component
+// PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
 // Local Imports
 import { useROS, createROSActionClient, callROSAction, cancelROSAction, destroyActionClient } from '../../../ros/ros_helpers'
@@ -424,6 +423,7 @@ const RobotMotion = (props) => {
     </>
   )
 }
+
 RobotMotion.propTypes = {
   /**
    * Whether to run it in debug mode (e.g., if you aren't simulatenously running
