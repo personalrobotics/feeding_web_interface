@@ -10,7 +10,7 @@ import PropTypes from 'prop-types'
 // Local Imports
 import '../Home.css'
 import { useROS, createROSActionClient, callROSAction, destroyActionClient } from '../../../ros/ros_helpers'
-import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow, showVideo } from '../../../helpers'
+import { useWindowSize, convertRemToPixels } from '../../../helpers'
 import MaskButton from '../../../buttons/MaskButton'
 import {
   REALSENSE_WIDTH,
@@ -26,6 +26,7 @@ import {
   MOVING_STATE_ICON_DICT
 } from '../../Constants'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
+import VideoFeed from '../VideoFeed'
 
 /**
  * The BiteSelection component appears after the robot has moved above the plate,
@@ -40,23 +41,18 @@ const BiteSelection = (props) => {
   const setDesiredFoodItem = useGlobalState((state) => state.setDesiredFoodItem)
   // Get icon image for move to mouth
   let moveToMouthImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
-  // Factors to modify video and mask size in landscape and portrait to fit space
-  let landscapeSizeFactor = 0.43
-  let portraitSizeFactor = 0.95
-  // Factor to modify mask button size in landscape and portrait with regards to window size
-  let maskButtonSizeLandscapeFactor = 0.09
-  let maskButtonSizePortraitFactor = 0.1
+
+  // Reference to the DOM element of the parent of the video feed
+  const videoParentRef = useRef(null)
+  // Margin for the video feed and between the mask buttons
+  const margin = convertRemToPixels(1)
+
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Text font size
   let textFontSize = isPortrait ? '2.5vh' : '2vw'
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
-  // Image and margin for phantom view to replace action status elements
-  let phantomImage = '/robot_state_imgs/phantom_view_image.svg'
-  let phantomMargin = '1px'
-
-  const [showActionText, setShowActionText] = useState(false)
 
   /**
    * Create a local state variable to store the detected masks, the
@@ -106,38 +102,8 @@ const BiteSelection = (props) => {
     setMealState(MEAL_STATE.R_StowingArm)
   }, [setMealState])
 
-  // Margin for scaling video
-  const margin = convertRemToPixels(1)
   // Get current window size
   let windowSize = useWindowSize()
-  // Define variables for width, height and scale factor of video
-  const [imgWidth, setImgWidth] = useState(windowSize.width)
-  const [imgHeight, setImgHeight] = useState(windowSize.height)
-  const [scaleFactor, setScaleFactor] = useState(0)
-
-  // Update the image size when the screen changes size.
-  useEffect(() => {
-    // Get the size of the robot's live video stream.
-    let {
-      width: widthUpdate,
-      height: heightUpdate,
-      scaleFactor
-    } = scaleWidthHeightToWindow(windowSize, REALSENSE_WIDTH, REALSENSE_HEIGHT, margin, margin, margin, margin)
-    setImgWidth(widthUpdate)
-    setImgHeight(heightUpdate)
-    setScaleFactor(scaleFactor)
-  }, [windowSize, margin])
-
-  /**
-   * The imgWidth/imgHeight outputted by scaleWidthHeightToWindow is designed
-   * to fill up nearly the whole window width (95%) and half of window height (50%).
-   * However, in landscape mode, we want the video to take up only a portion of the
-   * window width (50%) and nearly whole window height (95%).
-   *
-   * TODO: modify these to be percentage of view flexbox instead to window size
-   */
-  let finalImgWidth = imgWidth * (isPortrait ? portraitSizeFactor : landscapeSizeFactor)
-  let finalImgHeight = imgHeight * (isPortrait ? portraitSizeFactor : landscapeSizeFactor)
 
   /**
    * Callback function for when the user wants to move to mouth position.
@@ -226,16 +192,7 @@ const BiteSelection = (props) => {
    * make that clear to the user.
    */
   const imageClicked = useCallback(
-    (event) => {
-      setShowActionText(true)
-      // Get the position of the click relative to the raw RealSense image.
-      let rect = event.target.getBoundingClientRect()
-      let x = event.clientX - rect.left // x position within the image.
-      let y = event.clientY - rect.top // y position within the image.
-      let x_raw = Math.round(x / scaleFactor) // x position within the raw image.
-      let y_raw = Math.round(y / scaleFactor) // y position within the raw image.
-      console.log('Left? : ' + x_raw + ' ; Top? : ' + y_raw + '.')
-
+    (x_raw, y_raw) => {
       // Call the food segmentation ROS action
       callROSAction(
         segmentFromPointAction.current,
@@ -249,7 +206,7 @@ const BiteSelection = (props) => {
       )
       setNumImageClicks(numImageClicks + 1)
     },
-    [segmentFromPointAction, scaleFactor, numImageClicks, feedbackCallback, responseCallback]
+    [segmentFromPointAction, numImageClicks, feedbackCallback, responseCallback]
   )
 
   /**
@@ -262,175 +219,44 @@ const BiteSelection = (props) => {
     }
   }, [segmentFromPointAction])
 
-  /** Get the button for continue without acquiring bite
-   *
-   * @returns {JSX.Element} the skip acquisition button
-   */
-  const withoutAcquireButton = useCallback(() => {
-    return (
-      <>
-        {/* Ask the user whether they want to skip acquisition and move above plate */}
-        <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Skip acquisition.</h5>
-        {/* Icon to move to mouth */}
-        <Button
-          variant='warning'
-          className='mx-2 btn-huge'
-          size='lg'
-          onClick={moveToMouth}
-          style={{
-            width: '100%',
-            height: '50%',
-            '--bs-btn-padding-x': '0rem',
-            '--bs-btn-padding-y': '0rem'
-          }}
-        >
-          <img
-            src={moveToMouthImage}
-            style={{
-              height: '90%',
-              '--bs-btn-padding-x': '0rem',
-              '--bs-btn-padding-y': '0rem'
-            }}
-            alt='move_to_mouth_image'
-            className='center'
-          />
-        </Button>
-      </>
-    )
-  }, [moveToMouth, moveToMouthImage, textFontSize])
-
   /** Get the continue button when debug mode is enabled
    *
    * @returns {JSX.Element} the continue debug button
    */
-  const debugOptions = useCallback(() => {
+  const debugButton = useCallback(() => {
     // If the user is in debug mode, give them the option to skip
-    props.debug ? (
+    return (
       <Button
         variant='secondary'
         className='justify-content-center mx-2 mb-2'
         size='lg'
         onClick={() => setMealState(MEAL_STATE.R_BiteAcquisition)}
-        style={{ fontSize: textFontSize }}
+        style={{ fontSize: textFontSize, width: '100%', height: '100%' }}
       >
         Continue (Debug Mode)
       </Button>
-    ) : (
-      <></>
     )
-  }, [setMealState, props.debug, textFontSize])
+  }, [setMealState, textFontSize])
 
   /**
    * Render the appropriate text and/or buttons based on the action status.
    *
-   * @returns {JSX.Element} the action status text to render
-   *
-   * TODO: After view flex boxes have been configured for Bite Selection page, maybe
-   * remove the phantom view elements if no longer needed. Otherwise, putting them
-   * in a helper function will help to avoid copy-pasted code.
+   * @returns {string} the action status text to render
    */
   const actionStatusText = useCallback(() => {
     switch (actionStatus.actionStatus) {
       case ROS_ACTION_STATUS_EXECUTE:
         if (actionStatus.feedback) {
           let elapsed_time = actionStatus.feedback.elapsed_time.sec + actionStatus.feedback.elapsed_time.nanosec / 10 ** 9
-          return (
-            <>
-              <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>
-                Detecting food... ({Math.round(elapsed_time * 100) / 100} sec)
-              </h5>
-              <img
-                style={{
-                  flex: 1,
-                  margin: phantomMargin,
-                  justifyContent: 'center'
-                }}
-                src={phantomImage}
-                alt='phantom_button_img'
-                className='center'
-              />
-              {withoutAcquireButton()}
-            </>
-          )
+          return 'Detecting food... ' + (Math.round(elapsed_time * 100) / 100).toString() + ' sec'
         } else {
-          return (
-            <>
-              <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Detecting food... </h5>
-              <h3>&nbsp;</h3>
-              <h3>&nbsp;</h3>
-              <h3>&nbsp;</h3>
-            </>
-          )
+          return 'Detecting food...'
         }
       case ROS_ACTION_STATUS_SUCCEED:
         if (actionResult && actionResult.detected_items && actionResult.detected_items.length > 0) {
-          // Get the parameters to display the mask as buttons
-          let [maxWidth, maxHeight] = [0, 0]
-          for (let detected_item of actionResult.detected_items) {
-            if (detected_item.roi.width > maxWidth) {
-              maxWidth = detected_item.roi.width
-            }
-            if (detected_item.roi.height > maxHeight) {
-              maxHeight = detected_item.roi.height
-            }
-          }
-          // Define mask button size
-          let buttonSize = {
-            width: isPortrait ? maskButtonSizePortraitFactor * windowSize.height : maskButtonSizeLandscapeFactor * windowSize.width,
-            height: isPortrait ? maskButtonSizePortraitFactor * windowSize.height : maskButtonSizeLandscapeFactor * windowSize.width
-          }
-          // Compute mask scale factor from sizes of the mask button and the mask
-          let maskScaleFactor = Math.min(buttonSize.width / maxWidth, buttonSize.height / maxHeight)
-          // Choose suitable mask factor based on screen orientation
-          let finalMaskScaleFactor = maskScaleFactor * (isPortrait ? portraitSizeFactor : landscapeSizeFactor)
-          // Define image size for mask buttons
-          let imgSize = {
-            width: Math.round(REALSENSE_WIDTH * finalMaskScaleFactor),
-            height: Math.round(REALSENSE_HEIGHT * finalMaskScaleFactor)
-          }
-          // Define a variable for robot's live video stream.
-          let imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${imgSize.width}&height=${imgSize.height}&quality=20`
-          return (
-            <>
-              {showActionText === true ? (
-                <>
-                  <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Select a food, or retry image click.</h5>
-                  <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                    {actionResult.detected_items.map((detected_item, i) => (
-                      <View key={i}>
-                        <MaskButton
-                          buttonSize={buttonSize}
-                          imgSrc={imgSrc}
-                          imgSize={imgSize}
-                          maskSrc={'data:image/jpeg;base64,' + detected_item.mask.data}
-                          invertMask={true}
-                          maskScaleFactor={maskScaleFactor}
-                          maskBoundingBox={detected_item.roi}
-                          onClick={foodItemClicked}
-                          value={i.toString()}
-                        />
-                      </View>
-                    ))}
-                  </View>
-                </>
-              ) : (
-                <img
-                  style={{
-                    flex: 1,
-                    margin: phantomMargin,
-                    justifyContent: 'center'
-                  }}
-                  src={phantomImage}
-                  alt='phantom_button_img'
-                  className='center'
-                />
-              )}
-              {withoutAcquireButton()}
-              {debugOptions()}
-            </>
-          )
+          return 'Select a food, or retry image click.'
         } else {
-          return <h4 style={{ textAlign: 'center', fontSize: textFontSize }}>Food detection succeeded</h4>
+          return 'Food detection succeeded'
         }
       case ROS_ACTION_STATUS_ABORT:
         /**
@@ -439,67 +265,182 @@ const BiteSelection = (props) => {
          * error cases might arise, and change the UI accordingly to instruct
          * users on how to troubleshoot/fix it.
          */
-        return <h3 style={{ textAlign: 'center', fontSize: textFontSize }}>Error in food detection</h3>
+        return 'Error in food detection'
       case ROS_ACTION_STATUS_CANCELED:
-        return <h3 style={{ textAlign: 'center', fontSize: textFontSize }}>Food detection canceled</h3>
+        return 'Food detection canceled'
       default:
+        return ''
+    }
+  }, [actionStatus, actionResult])
+
+  const maskButtonParentRef = useRef(null)
+  /**
+   * Renders the mask buttons
+   *
+   * @returns {JSX.Element} the mask buttons
+   */
+  const renderMaskButtons = useCallback(() => {
+    // If the action succeeded
+    if (actionStatus.actionStatus === ROS_ACTION_STATUS_SUCCEED) {
+      // If we have a result and there are detected items
+      if (actionResult && actionResult.detected_items && actionResult.detected_items.length > 0) {
+        // Get the size of the largest mask
+        let [maxWidth, maxHeight] = [0, 0]
+        for (let detected_item of actionResult.detected_items) {
+          if (detected_item.roi.width > maxWidth) {
+            maxWidth = detected_item.roi.width
+          }
+          if (detected_item.roi.height > maxHeight) {
+            maxHeight = detected_item.roi.height
+          }
+        }
+
+        // Get the allotted space per mask
+        let parentWidth, parentHeight
+        if (maskButtonParentRef.current) {
+          console.log('Get actual parent size')
+          parentWidth = maskButtonParentRef.current.clientWidth
+          parentHeight = maskButtonParentRef.current.clientHeight
+        } else {
+          /**
+           * The below are initial guesses for the parent size based on our
+           * allocation of views. As soon as the component is mounted, we will
+           * use the actual parent size.
+           */
+          console.log('Guess parent size')
+          parentWidth = isPortrait ? windowSize.width : windowSize.width / 2.0
+          parentHeight = isPortrait ? windowSize.height / 4.0 : windowSize.height / 3.0
+        }
+        let allottedSpaceWidth = parentWidth / actionResult.detected_items.length - margin * 2
+        let allottedSpaceHeight = parentHeight - margin * 2
+        let buttonSize = {
+          width: allottedSpaceWidth,
+          height: allottedSpaceHeight
+        }
+
+        /**
+         * Determine how much to scale the masks so that the largest mask fits
+         * into the alloted space.
+         */
+        let widthScaleFactor = allottedSpaceWidth / maxWidth
+        let heightScaleFactor = allottedSpaceHeight / maxHeight
+        let maskScaleFactor = Math.min(widthScaleFactor, heightScaleFactor)
+        // maskScaleFactor  = Math.min(maskScaleFactor, 1.0)
+
+        // Get the URL of the image based on the scale factor
+        let imgSize = {
+          width: Math.round(REALSENSE_WIDTH * maskScaleFactor),
+          height: Math.round(REALSENSE_HEIGHT * maskScaleFactor)
+        }
+        let imgSrc = `${props.webVideoServerURL}/stream?topic=${CAMERA_FEED_TOPIC}&width=${imgSize.width}&height=${imgSize.height}&quality=20`
         return (
-          <>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+            {actionResult.detected_items.map((detected_item, i) => (
+              <View key={i} style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                <MaskButton
+                  imgSrc={imgSrc}
+                  buttonSize={buttonSize}
+                  imgSize={imgSize}
+                  maskSrc={'data:image/jpeg;base64,' + detected_item.mask.data}
+                  invertMask={true}
+                  maskScaleFactor={maskScaleFactor}
+                  maskBoundingBox={detected_item.roi}
+                  onClick={foodItemClicked}
+                  value={i.toString()}
+                />
+              </View>
+            ))}
+          </View>
+        )
+      }
+    }
+  }, [actionStatus, actionResult, foodItemClicked, isPortrait, windowSize, props.webVideoServerURL, margin])
+
+  /** Get the button for continue without acquiring bite
+   *
+   * @returns {JSX.Element} the skip acquisition button
+   */
+  const skipAcquisisitionButton = useCallback(() => {
+    return (
+      <>
+        {/* Ask the user whether they want to skip acquisition and move above plate */}
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Skip acquisition</h5>
+        </View>
+        {/* Icon to move to mouth */}
+        <View
+          style={{
+            flex: 4,
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          <Button
+            variant='warning'
+            className='mx-2 btn-huge'
+            size='lg'
+            onClick={moveToMouth}
+            style={{
+              width: '90%',
+              height: '90%'
+            }}
+          >
             <img
+              src={moveToMouthImage}
               style={{
-                flex: 1,
-                margin: phantomMargin,
-                justifyContent: 'center'
+                height: '90%',
+                '--bs-btn-padding-x': '0rem',
+                '--bs-btn-padding-y': '0rem'
               }}
-              src={phantomImage}
-              alt='phantom_button_img'
+              alt='move_to_mouth_image'
               className='center'
             />
-            {withoutAcquireButton()}
-            {debugOptions()}
-          </>
-        )
-    }
-  }, [
-    actionStatus,
-    actionResult,
-    foodItemClicked,
-    landscapeSizeFactor,
-    portraitSizeFactor,
-    props.webVideoServerURL,
-    isPortrait,
-    windowSize,
-    textFontSize,
-    maskButtonSizeLandscapeFactor,
-    maskButtonSizePortraitFactor,
-    debugOptions,
-    phantomImage,
-    phantomMargin,
-    withoutAcquireButton,
-    showActionText
-  ])
+          </Button>
+        </View>
+      </>
+    )
+  }, [moveToMouth, moveToMouthImage, textFontSize])
 
   /** Get the full page view
    *
    * @returns {JSX.Element} the the full page view
    */
-  const fullPageView = useCallback(
-    (flexSizeOuter) => {
-      let flexSizeInner = isPortrait ? null : 1
-      return (
-        <>
-          {/**
-           * In addition to selecting their desired food item, the user has two
-           * other options on this page:
-           *   - If their desired food item is not visible on the plate, they can
-           *     decide to teleoperate the robot until it is visible.
-           *   - Instead of selecting their next bite, the user can indicate that
-           *     they are done eating.
-           *
-           * TODO: issue#65 will remove these two buttons, so final implementation
-           * will have flex box without these in Bite Selection page
-           */}
-          <div style={{ display: 'block', textAlign: 'center' }}>
+  const fullPageView = useCallback(() => {
+    return (
+      <>
+        {/**
+         * In addition to selecting their desired food item, the user has two
+         * other options on this page:
+         *   - If their desired food item is not visible on the plate, they can
+         *     decide to teleoperate the robot until it is visible.
+         *   - Instead of selecting their next bite, the user can indicate that
+         *     they are done eating.
+         */}
+        <View
+          style={{
+            flex: 3,
+            flexDirection: 'row',
+            alignItems: 'center',
+            width: '100%'
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'right'
+            }}
+          >
             <Button
               className='doneButton'
               style={{ fontSize: textFontSize, marginTop: '0', marginBottom: '0' }}
@@ -507,6 +448,14 @@ const BiteSelection = (props) => {
             >
               🍽️ Locate Plate
             </Button>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'left'
+            }}
+          >
             <Button
               className='doneButton'
               style={{ fontSize: textFontSize, marginTop: '0', marginBottom: '0' }}
@@ -514,58 +463,151 @@ const BiteSelection = (props) => {
             >
               ✅ Done Eating
             </Button>
-          </div>
-
+          </View>
+        </View>
+        {/**
+         * Below the buttons, one half of the screen will present the video feed.
+         * The other half will present the action status text, the food buttons
+         * if the action has succeeded, and a button to proceed without acquiring
+         * a bite.
+         */}
+        <View
+          style={{
+            flex: 17,
+            flexDirection: dimension,
+            alignItems: 'center',
+            width: '100%'
+          }}
+        >
           <View
             style={{
-              flex: flexSizeOuter,
-              flexDirection: dimension,
+              flex: 1,
+              flexDirection: 'column',
               alignItems: 'center',
-              width: '90%',
-              height: isPortrait ? '90%' : '80%'
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%'
             }}
           >
             <View
               style={{
-                flex: flexSizeInner,
+                flex: 1,
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '70%',
-                marginRight: isPortrait ? null : '3vw'
+                width: '100%',
+                height: '100%'
               }}
             >
               <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Click on image to select food.</h5>
-              {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, imageClicked)}
+            </View>
+            <View
+              ref={videoParentRef}
+              style={{
+                flex: 9,
+                alignItems: 'center',
+                width: '100%',
+                height: '100%'
+              }}
+            >
+              <VideoFeed
+                webVideoServerURL={props.webVideoServerURL}
+                parent={videoParentRef}
+                marginTop={margin}
+                marginBottom={margin}
+                marginLeft={margin}
+                marginRight={margin}
+                pointClicked={imageClicked}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              height: '100%'
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '100%'
+              }}
+            >
+              <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>{actionStatusText()}</h5>
             </View>
             <View
               style={{
-                flex: flexSizeInner,
-                justifyContent: 'center',
+                flex: 9,
                 alignItems: 'center',
-                width: '98%',
-                height: '20%'
+                justifyContent: 'center',
+                width: '100%',
+                height: '100%'
               }}
             >
-              {/* Display the action status and/or results */}
-              {actionStatusText()}
+              <View
+                ref={maskButtonParentRef}
+                style={{
+                  flex: 4,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  height: '100%'
+                }}
+              >
+                {renderMaskButtons()}
+              </View>
+              <View
+                style={{
+                  flex: 4,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  height: '100%'
+                }}
+              >
+                {skipAcquisisitionButton()}
+              </View>
+              {props.debug ? (
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '100%'
+                  }}
+                >
+                  {debugButton()}
+                </View>
+              ) : (
+                <></>
+              )}
             </View>
           </View>
-        </>
-      )
-    },
-    [
-      dimension,
-      actionStatusText,
-      imageClicked,
-      doneEatingClicked,
-      locatePlateClicked,
-      finalImgHeight,
-      finalImgWidth,
-      textFontSize,
-      props.webVideoServerURL,
-      isPortrait
-    ]
-  )
+        </View>
+      </>
+    )
+  }, [
+    locatePlateClicked,
+    doneEatingClicked,
+    dimension,
+    margin,
+    textFontSize,
+    actionStatusText,
+    renderMaskButtons,
+    skipAcquisisitionButton,
+    props.webVideoServerURL,
+    videoParentRef,
+    imageClicked,
+    props.debug,
+    debugButton
+  ])
 
   // Render the component
   return <>{fullPageView()}</>

@@ -1,5 +1,5 @@
 // React Imports
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useRef } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -10,9 +10,9 @@ import PropTypes from 'prop-types'
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import { REALSENSE_WIDTH, REALSENSE_HEIGHT } from '../../Constants'
-import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow, showVideo } from '../../../helpers'
+import { convertRemToPixels } from '../../../helpers'
 import { Col, Row, Container } from 'react-bootstrap'
+import VideoFeed from '../VideoFeed'
 
 /**
  * The PlateLocator component appears if the user decides to adjust the position
@@ -25,14 +25,16 @@ const PlateLocator = (props) => {
   const setMealState = useGlobalState((state) => state.setMealState)
   // Get robot motion flag for plate locator
   const setTeleopIsMoving = useGlobalState((state) => state.setTeleopIsMoving)
+
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
-  // Define margin for video
+
+  // Variables to render the VideoFeed
+  const videoParentRef = useRef(null)
   const margin = convertRemToPixels(1)
-  // Get current window size
-  let windowSize = useWindowSize()
+
   // text font size
   let textFontSize = isPortrait ? '3vh' : '3vw'
   // done button width
@@ -41,30 +43,6 @@ const PlateLocator = (props) => {
   let buttonHeight = isPortrait ? '6vh' : '6vw'
   // arrow button width
   let arrowButtonWidth = isPortrait ? '6vh' : '6vw'
-  // Factor to modify video size in landscape which has less space than portrait
-  let landscapeSizeFactor = 0.5
-  // Define variables for width and height of video
-  const [imgWidth, setWidth] = useState(windowSize.width)
-  const [imgHeight, setHeight] = useState(windowSize.height)
-
-  // Update the image size when the screen changes size.
-  useEffect(() => {
-    // Get the size of the robot's live video stream.
-    let { width: imgWidthUpdate, height: imgHeightUpdate } = scaleWidthHeightToWindow(
-      windowSize,
-      REALSENSE_WIDTH,
-      REALSENSE_HEIGHT,
-      margin,
-      margin,
-      margin,
-      margin
-    )
-    setWidth(imgWidthUpdate)
-    setHeight(imgHeightUpdate)
-  }, [windowSize, margin])
-
-  let finalImgWidth = isPortrait ? imgWidth : landscapeSizeFactor * imgWidth
-  let finalImgHeight = isPortrait ? imgHeight : landscapeSizeFactor * imgHeight
 
   /**
    * Callback function for when the user presses one of the buttons to teleop
@@ -195,9 +173,16 @@ const PlateLocator = (props) => {
 
   // Render the component
   return (
-    <View style={{ flex: 'auto', flexDirection: dimension, justifyContent: 'center', alignItems: 'center', margin: margin, width: '100%' }}>
-      <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
-        {showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, null)}
+    <View style={{ flex: 'auto', flexDirection: dimension, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+      <View ref={videoParentRef} style={{ flex: 5, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+        <VideoFeed
+          webVideoServerURL={props.webVideoServerURL}
+          parent={videoParentRef}
+          marginTop={margin}
+          marginBottom={margin}
+          marginLeft={margin}
+          marginRight={margin}
+        />
       </View>
       <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
         {directionalArrows()}
