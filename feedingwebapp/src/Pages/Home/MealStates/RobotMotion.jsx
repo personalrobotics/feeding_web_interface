@@ -66,8 +66,6 @@ const RobotMotion = (props) => {
   // Define sizes for RobotMotion page items (width, height, fontsize)
   let waitingTextFontSize = isPortrait ? '4.5vh' : '4vw'
   let motionTextFontSize = isPortrait ? '3.5vh' : '3.5vw'
-  let phantomMargin = '15px'
-  let phantomImage = '/robot_state_imgs/phantom_view_image.svg'
 
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
@@ -239,47 +237,30 @@ const RobotMotion = (props) => {
   }, [setPaused, setMealState, backMealState])
 
   /**
-   * Get the progress bar or phantom view to render.
+   * Get the progress bar or blank view to render.
    *
    * @param {flexSizeInner} - flexbox percentage for child element
    * @param {progress} - progress proportion; if null progress bar not shown
    *
-   * @returns {JSX.Element} the progress bar or phantom view
+   * @returns {JSX.Element} the progress bar or blank view
    */
-  const actionStatusVisuals = useCallback(
-    (flexSizeInner, progress) => {
-      return (
-        <>
-          <View
-            style={{
-              flex: flexSizeInner,
-              alignItems: 'center',
-              width: isPortrait ? '78%' : null,
-              height: isPortrait ? null : '100%'
-            }}
-          >
-            {progress === null ? (
-              <img
-                style={{
-                  flex: 1,
-                  margin: phantomMargin,
-                  width: isPortrait ? '70%' : null,
-                  height: isPortrait ? null : '100%',
-                  justifyContent: 'center'
-                }}
-                src={phantomImage}
-                alt='phantom_img'
-                className='center'
-              />
-            ) : (
-              <CircleProgressBar proportion={progress} />
-            )}
-          </View>
-        </>
-      )
-    },
-    [phantomImage, phantomMargin, isPortrait]
-  )
+  const actionStatusVisuals = useCallback((flexSizeInner, progress) => {
+    return (
+      <>
+        <View
+          style={{
+            flex: flexSizeInner,
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          {progress === null ? <></> : <CircleProgressBar proportion={progress} />}
+        </View>
+      </>
+    )
+  }, [])
 
   /**
    * Get the action status elements to render in a view flexbox.
@@ -288,7 +269,8 @@ const RobotMotion = (props) => {
    */
   const actionStatusText = useCallback(
     (actionStatus, flexSizeOuter) => {
-      let flexSizeInner = isPortrait ? null : 1
+      let flexSizeTextInner = isPortrait ? 2 : 1
+      let flexSizeVisualInner = isPortrait ? 8 : 1
       switch (actionStatus.actionStatus) {
         case ROS_ACTION_STATUS_EXECUTE:
           if (actionStatus.feedback) {
@@ -297,49 +279,54 @@ const RobotMotion = (props) => {
               let moving_elapsed_time = actionStatus.feedback.motion_time.sec + actionStatus.feedback.motion_time.nanosec / 10 ** 9
               // Calling CircleProgessBar component to visualize robot motion of moving
               return (
-                <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center' }}>
-                  <View style={{ flex: flexSizeInner, alignItems: 'center', justifyContent: 'center' }}>
+                <View
+                  style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}
+                >
+                  <View style={{ flex: flexSizeTextInner, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
                     <h3 style={{ fontSize: motionTextFontSize }}>Robot is moving...</h3>
                     <h3 style={{ fontSize: motionTextFontSize }}>
                       &nbsp;&nbsp;Elapsed Time: {Math.round(moving_elapsed_time * 100) / 100} sec
                     </h3>
                   </View>
-                  {actionStatusVisuals(flexSizeInner, progress)}
+                  {actionStatusVisuals(flexSizeVisualInner, progress)}
                 </View>
               )
             } else {
-              // Replace circle progress bar with phantom image view
               let planning_elapsed_time = actionStatus.feedback.planning_time.sec + actionStatus.feedback.planning_time.nanosec / 10 ** 9
               return (
-                <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center' }}>
-                  <View style={{ flex: flexSizeInner, alignItems: 'center', justifyContent: 'center' }}>
+                <View
+                  style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}
+                >
+                  <View style={{ flex: flexSizeTextInner, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
                     <h3 style={{ fontSize: motionTextFontSize }}>Robot is thinking...</h3>
                     <h3 style={{ fontSize: motionTextFontSize }}>
                       &nbsp;&nbsp;Elapsed Time: {Math.round(planning_elapsed_time * 100) / 100} sec
                     </h3>
                   </View>
-                  {actionStatusVisuals(flexSizeInner, null)}
+                  {actionStatusVisuals(flexSizeVisualInner, null)}
                 </View>
               )
             }
           } else {
             // If you haven't gotten feedback yet, assume the robot is planning
             return (
-              <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center' }}>
-                <View style={{ flex: flexSizeInner, alignItems: 'center', justifyContent: 'center' }}>
+              <View
+                style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}
+              >
+                <View style={{ flex: flexSizeTextInner, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
                   <h3 style={{ fontSize: motionTextFontSize }}>Robot is thinking...</h3>
                 </View>
-                {actionStatusVisuals(flexSizeInner, null)}
+                {actionStatusVisuals(flexSizeVisualInner, null)}
               </View>
             )
           }
         case ROS_ACTION_STATUS_SUCCEED:
           return (
-            <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center' }}>
-              <View style={{ flex: flexSizeInner, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+              <View style={{ flex: flexSizeTextInner, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
                 <h3 style={{ fontSize: motionTextFontSize }}>Robot has finished</h3>
               </View>
-              {actionStatusVisuals(flexSizeInner, null)}
+              {actionStatusVisuals(flexSizeVisualInner, null)}
             </View>
           )
         case ROS_ACTION_STATUS_ABORT:
@@ -350,35 +337,39 @@ const RobotMotion = (props) => {
            * users on how to troubleshoot/fix it.
            */
           return (
-            <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center' }}>
-              <View style={{ flex: flexSizeInner, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+              <View style={{ flex: flexSizeTextInner, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
                 <h3 style={{ fontSize: motionTextFontSize }}>Robot encountered an error</h3>
               </View>
-              {actionStatusVisuals(flexSizeInner, null)}
+              {actionStatusVisuals(flexSizeVisualInner, null)}
             </View>
           )
         case ROS_ACTION_STATUS_CANCELED:
           return (
-            <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center' }}>
-              <View style={{ flex: flexSizeInner, alignItems: 'center' }}>
+            <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+              <View style={{ flex: flexSizeTextInner, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
                 <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
               </View>
-              {actionStatusVisuals(flexSizeInner, null)}
+              {actionStatusVisuals(flexSizeVisualInner, null)}
             </View>
           )
         default:
           if (paused) {
             return (
-              <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center' }}>
-                <View style={{ flex: flexSizeInner, alignItems: 'center', justifyContent: 'center' }}>
+              <View
+                style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}
+              >
+                <View style={{ flex: flexSizeTextInner, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
                   <h3 style={{ fontSize: motionTextFontSize }}>Robot is paused</h3>
                 </View>
-                {actionStatusVisuals(flexSizeInner, null)}
+                {actionStatusVisuals(flexSizeVisualInner, null)}
               </View>
             )
           } else {
             return (
-              <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center' }}>
+              <View
+                style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}
+              >
                 <h3>&nbsp;</h3>
               </View>
             )
@@ -391,24 +382,22 @@ const RobotMotion = (props) => {
   // Render the component
   return (
     <>
-      <View style={{ flex: 'auto', justifyContent: 'center', width: '100%' }}>
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <View style={{ flex: isPortrait ? null : 2, justifyContent: 'center' }}>
-            <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: waitingTextFontSize }}>
-              {props.waitingText}
-              {isPortrait ? <h1>&nbsp;</h1> : <></>}
-            </h1>
-            <br />
-          </View>
-          {props.debug ? (
-            <Button variant='secondary' className='justify-content-center mx-2 mb-2' size='lg' onClick={robotMotionDone}>
-              Continue (Debug Mode)
-            </Button>
-          ) : (
-            <></>
-          )}
-          {actionStatusText(actionStatus, isPortrait ? null : 8)}
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+        <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+          <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: waitingTextFontSize }}>
+            {props.waitingText}
+            {isPortrait ? <h1>&nbsp;</h1> : <></>}
+          </h1>
+          <br />
         </View>
+        {props.debug ? (
+          <Button variant='secondary' className='justify-content-center mx-2 mb-2' size='lg' onClick={robotMotionDone}>
+            Continue (Debug Mode)
+          </Button>
+        ) : (
+          <></>
+        )}
+        {actionStatusText(actionStatus, 7)}
       </View>
       {/**
        * Display the footer with the Pause button.

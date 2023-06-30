@@ -33,7 +33,6 @@ const Footer = (props) => {
   let pauseIcon = '/robot_state_imgs/pause_button_icon.svg'
   let backIcon = props.backMealState ? MOVING_STATE_ICON_DICT[props.backMealState] : ''
   let resumeIcon = MOVING_STATE_ICON_DICT[mealState]
-  let phantomIcon = '/robot_state_imgs/phantom_view_image.svg'
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Margins around footer buttons
@@ -73,17 +72,6 @@ const Footer = (props) => {
       buttonHeight: isPortrait ? '11vh' : '11vw',
       fontSize: '6vw',
       backgroundColor: null
-    },
-    phantom: {
-      text: null,
-      icon: phantomIcon,
-      disabled: true,
-      variant: 'ghost',
-      callback: null,
-      buttonWidth: '47vw',
-      buttonHeight: isPortrait ? '11vh' : '11vw',
-      fontSize: '6vw',
-      backgroundColor: 'transparent'
     }
   }
 
@@ -166,9 +154,17 @@ const Footer = (props) => {
       <MDBFooter bgColor='dark' className='text-center text-lg-left' style={{ width: '100vw' }}>
         <div className='text-center' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)', paddingBottom: '5px', paddingTop: '5px' }}>
           {props.paused ? (
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <View>{props.backCallback ? renderFooterButton(buttonConfig.back) : renderFooterButton(buttonConfig.phantom)}</View>
-              <View>{props.resumeCallback ? renderFooterButton(buttonConfig.resume) : renderFooterButton(buttonConfig.phantom)}</View>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+              <View
+                style={{ flex: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}
+              >
+                {props.backCallback ? renderFooterButton(buttonConfig.back) : <></>}
+              </View>
+              <View
+                style={{ flex: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}
+              >
+                {props.resumeCallback ? renderFooterButton(buttonConfig.resume) : <></>}
+              </View>
             </View>
           ) : (
             renderFooterButton(buttonConfig.pause)
