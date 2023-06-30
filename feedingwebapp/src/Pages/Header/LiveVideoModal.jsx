@@ -1,5 +1,5 @@
 // React imports
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { useMediaQuery } from 'react-responsive'
 // The Modal is a screen that appears on top of the main app, and can be toggled
 // on and off.
@@ -9,8 +9,8 @@ import Modal from 'react-bootstrap/Modal'
 import PropTypes from 'prop-types'
 
 // Local imports
-import { REALSENSE_WIDTH, REALSENSE_HEIGHT } from '../Constants'
-import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow, showVideo } from '../../helpers'
+import { convertRemToPixels } from '../../helpers'
+import VideoFeed from '../Home/VideoFeed'
 
 /**
  * The LiveVideoModal displays to the user the live video feed from the robot.
@@ -18,51 +18,12 @@ import { useWindowSize, convertRemToPixels, scaleWidthHeightToWindow, showVideo 
  * TODO: Consider what will happen if the connection to ROS isn't working.
  */
 function LiveVideoModal(props) {
-  const ref = useRef(null)
-  // Use the default CSS properties of Modals to determine the margin around
-  // the image. This is necessary so the image is scaled to fit the window.
-  //
-  // NOTE: This must change if the CSS properties of the Modal change.
-  //
-  // marginTop: bs-modal-header-padding, h4 font size & line height, bs-modal-header-padding, bs-modal-padding
-  const marginTop = convertRemToPixels(1 + 1.5 * 1.5 + 1 + 1)
-  const marginBottom = convertRemToPixels(1)
-  const marginLeft = convertRemToPixels(1)
-  const marginRight = convertRemToPixels(1)
+  // Variables to render the VideoFeed
+  const modalBodyRef = useRef(null)
+  const margin = convertRemToPixels(1)
 
-  // Get current window size
-  let windowSize = useWindowSize()
-  // Define variables for width and height of image
-  const [imgWidth, setImgWidth] = useState(windowSize.width)
-  const [imgHeight, setImgHeight] = useState(windowSize.height)
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-
-  /** Factors to modify video size in landscape to fit space
-   *
-   * TODO: Adjust it accordingly when flexbox with directional arrows implemented
-   */
-  let landscapeSizeFactor = 0.9
-
-  // Get final image size according to screen orientation
-  let finalImgWidth = isPortrait ? imgWidth : landscapeSizeFactor * imgWidth
-  let finalImgHeight = isPortrait ? imgHeight : landscapeSizeFactor * imgHeight
-
-  // Update the image size when the screen changes size.
-  useEffect(() => {
-    // 640 x 480 is the standard dimension of images outputed by the RealSense
-    let { width: widthUpdate, height: heightUpdate } = scaleWidthHeightToWindow(
-      windowSize,
-      REALSENSE_WIDTH,
-      REALSENSE_HEIGHT,
-      marginTop,
-      marginBottom,
-      marginLeft,
-      marginRight
-    )
-    setImgWidth(widthUpdate)
-    setImgHeight(heightUpdate)
-  }, [windowSize, marginTop, marginBottom, marginLeft, marginRight])
 
   return (
     <Modal
@@ -74,7 +35,6 @@ function LiveVideoModal(props) {
       keyboard={false}
       centered
       id='liveVideoModal'
-      ref={ref}
       fullscreen={true}
     >
       <Modal.Header closeButton>
@@ -82,8 +42,17 @@ function LiveVideoModal(props) {
           Live Video
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ overflow: 'hidden' }}>
-        <center>{showVideo(props.webVideoServerURL, finalImgWidth, finalImgHeight, null)}</center>
+      <Modal.Body ref={modalBodyRef} style={{ overflow: 'hidden' }}>
+        <center>
+          <VideoFeed
+            webVideoServerURL={props.webVideoServerURL}
+            parent={modalBodyRef}
+            marginTop={margin}
+            marginBottom={margin}
+            marginLeft={margin}
+            marginRight={margin}
+          />
+        </center>
       </Modal.Body>
     </Modal>
   )
