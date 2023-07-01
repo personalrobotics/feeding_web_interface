@@ -1,9 +1,9 @@
 // React imports
 import React, { useCallback } from 'react'
+import { useMediaQuery } from 'react-responsive'
 import { MDBFooter } from 'mdb-react-ui-kit'
 import Button from 'react-bootstrap/Button'
 import { View } from 'react-native'
-import { useMediaQuery } from 'react-responsive'
 import Row from 'react-bootstrap/Row'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
@@ -35,9 +35,15 @@ const Footer = (props) => {
   let resumeIcon = MOVING_STATE_ICON_DICT[mealState]
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // Sizes (width, height, fontsize) of footer buttons
+  let pauseButtonWidth = '98vw'
+  let backResumeButtonWidth = '47vw'
+  let pauseFontSize = isPortrait ? '7vh' : '7vw'
+  let backResumeFontSize = '6vw'
+  let footerButtonHeight = isPortrait ? '11vh' : '11vw'
   // Margins around footer buttons
-  let footerLeftRightMargin = isPortrait ? '1.6vh' : '1.6vw'
-  let footerTopBottomMargin = isPortrait ? '0.3vh' : '0.3vw'
+  let footerLeftRightMargin = '1.6vw'
+  let footerTopBottomMargin = '0.3vw'
   // A single nested object with all footer buttons' properties
   const buttonConfig = {
     pause: {
@@ -46,9 +52,9 @@ const Footer = (props) => {
       disabled: false,
       variant: 'danger',
       callback: props.pauseCallback,
-      buttonWidth: '98vw',
-      buttonHeight: isPortrait ? '11vh' : '11vw',
-      fontSize: isPortrait ? '7vh' : '7vw',
+      buttonWidth: pauseButtonWidth,
+      buttonHeight: footerButtonHeight,
+      fontSize: pauseFontSize,
       backgroundColor: null
     },
     back: {
@@ -57,9 +63,9 @@ const Footer = (props) => {
       disabled: false,
       variant: 'warning',
       callback: props.backCallback,
-      buttonWidth: '47vw',
-      buttonHeight: isPortrait ? '11vh' : '11vw',
-      fontSize: '6vw',
+      buttonWidth: backResumeButtonWidth,
+      buttonHeight: footerButtonHeight,
+      fontSize: backResumeFontSize,
       backgroundColor: null
     },
     resume: {
@@ -68,9 +74,9 @@ const Footer = (props) => {
       disabled: false,
       variant: 'success',
       callback: props.resumeCallback,
-      buttonWidth: '47vw',
-      buttonHeight: isPortrait ? '11vh' : '11vw',
-      fontSize: '6vw',
+      buttonWidth: backResumeButtonWidth,
+      buttonHeight: footerButtonHeight,
+      fontSize: backResumeFontSize,
       backgroundColor: null
     }
   }
@@ -108,11 +114,14 @@ const Footer = (props) => {
             >
               <View
                 style={{
+                  flex: 1,
                   flexDirection: 'row',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%'
                 }}
               >
-                <View style={{ flex: 1, justifyContent: 'center' }}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
                   <p
                     className='transitionMessage'
                     style={{
@@ -127,7 +136,7 @@ const Footer = (props) => {
                     {config.text}
                   </p>
                 </View>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start' }}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start', width: '100%', height: '100%' }}>
                   <div style={{ textAlign: 'left' }}>
                     <img
                       style={{

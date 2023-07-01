@@ -239,6 +239,7 @@ const RobotMotion = (props) => {
   /**
    * Get the action status text and progress bar or blank view to render.
    *
+   * @param {flexSizeOuter} - flexbox percentage for parent element rendering everything
    * @param {flexSizeTextInner} - flexbox percentage for child element rendering text
    * @param {flexSizeVisualInner} - flexbox percentage for child element rendering visual
    * @param {progress} - progress proportion; if null progress bar not shown
