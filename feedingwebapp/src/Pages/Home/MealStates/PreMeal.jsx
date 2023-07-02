@@ -2,8 +2,6 @@
 import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
-import { View } from 'react-native'
-import { useMediaQuery } from 'react-responsive'
 
 // Local Imports
 import '../Home.css'
@@ -17,18 +15,14 @@ import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 const PreMeal = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
-  // Flag to check if the current orientation is portrait
-  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Font size for text
-  let textFontSize = isPortrait ? '3vh' : '3vw'
-  // Font size for button
-  let buttonFontSize = isPortrait ? '5vh' : '5vw'
+  let textFontSize = '4.2vh'
   // Width for button
-  let buttonWidth = isPortrait ? '40vh' : '40vw'
+  let buttonWidth = '40vh'
   // Height for button
-  let buttonHeight = isPortrait ? '10vh' : '10vw'
+  let buttonHeight = '10vh'
   // Margin
-  let margin = isPortrait ? '5vh' : '5vw'
+  let margin = '5vh'
 
   /**
    * Callback function for when the user decides to start feeding using the app.
@@ -40,23 +34,21 @@ const PreMeal = () => {
 
   // Render the component
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Row xs={1} md={1} className='justify-content-center mx-2 my-2'>
-        <p className='transitionMessage' style={{ marginBottom: margin, marginTop: '0', fontSize: textFontSize }}>
-          Hello!👋 I am ADA&apos;s faithful assistant, ADAWebapp! Bon Appétit! 😋
-        </p>
-        <Button
-          variant='primary'
-          size='lg'
-          className='btn-huge'
-          id='#startFeedingBtn'
-          onClick={startFeedingClicked}
-          style={{ width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, marginTop: margin }}
-        >
-          Start Feeding
-        </Button>
-      </Row>
-    </View>
+    <Row xs={1} md={1} className='justify-content-center mx-2 my-2'>
+      <p className='transitionMessage' style={{ marginBottom: margin, marginTop: '0', fontSize: textFontSize }}>
+        Hello!👋 I am ADA&apos;s faithful assistant, ADAWebapp! Bon Appétit! 😋
+      </p>
+      <Button
+        variant='primary'
+        size='lg'
+        className='btn-huge'
+        id='#startFeedingBtn'
+        onClick={startFeedingClicked}
+        style={{ width: buttonWidth, height: buttonHeight, fontSize: textFontSize, marginTop: margin }}
+      >
+        Start Feeding
+      </Button>
+    </Row>
   )
 }
 

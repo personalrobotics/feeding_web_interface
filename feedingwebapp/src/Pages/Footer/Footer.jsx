@@ -1,6 +1,5 @@
 // React imports
 import React, { useCallback } from 'react'
-import { useMediaQuery } from 'react-responsive'
 import { MDBFooter } from 'mdb-react-ui-kit'
 import Button from 'react-bootstrap/Button'
 import { View } from 'react-native'
@@ -33,14 +32,12 @@ const Footer = (props) => {
   let pauseIcon = '/robot_state_imgs/pause_button_icon.svg'
   let backIcon = props.backMealState ? MOVING_STATE_ICON_DICT[props.backMealState] : ''
   let resumeIcon = MOVING_STATE_ICON_DICT[mealState]
-  // Flag to check if the current orientation is portrait
-  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Sizes (width, height, fontsize) of footer buttons
   let pauseButtonWidth = '98vw'
   let backResumeButtonWidth = '47vw'
-  let pauseFontSize = isPortrait ? '7vh' : '7vw'
-  let backResumeFontSize = '6vw'
-  let footerButtonHeight = isPortrait ? '11vh' : '11vw'
+  let pauseButtonInnerSize = '6vw'
+  let backResumeButtonInnerSize = '6vw'
+  let footerButtonHeight = '12vh'
   // Margins around footer buttons
   let footerLeftRightMargin = '1.6vw'
   let footerTopBottomMargin = '0.3vw'
@@ -54,7 +51,8 @@ const Footer = (props) => {
       callback: props.pauseCallback,
       buttonWidth: pauseButtonWidth,
       buttonHeight: footerButtonHeight,
-      fontSize: pauseFontSize,
+      fontSize: pauseButtonInnerSize,
+      iconSize: pauseButtonInnerSize,
       backgroundColor: null
     },
     back: {
@@ -65,7 +63,8 @@ const Footer = (props) => {
       callback: props.backCallback,
       buttonWidth: backResumeButtonWidth,
       buttonHeight: footerButtonHeight,
-      fontSize: backResumeFontSize,
+      fontSize: backResumeButtonInnerSize,
+      iconSize: backResumeButtonInnerSize,
       backgroundColor: null
     },
     resume: {
@@ -76,7 +75,8 @@ const Footer = (props) => {
       callback: props.resumeCallback,
       buttonWidth: backResumeButtonWidth,
       buttonHeight: footerButtonHeight,
-      fontSize: backResumeFontSize,
+      fontSize: backResumeButtonInnerSize,
+      iconSize: backResumeButtonInnerSize,
       backgroundColor: null
     }
   }
@@ -118,7 +118,8 @@ const Footer = (props) => {
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  width: '100%'
+                  width: '100%',
+                  height: '100%'
                 }}
               >
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
@@ -141,7 +142,7 @@ const Footer = (props) => {
                     <img
                       style={{
                         width: '100%',
-                        height: config.buttonHeight
+                        height: config.iconSize
                       }}
                       src={config.icon}
                       alt='icon_img'

@@ -2,7 +2,6 @@
 import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
-import { useMediaQuery } from 'react-responsive'
 
 // Local Imports
 import '../Home.css'
@@ -15,18 +14,14 @@ import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 const PostMeal = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
-  // Flag to check if the current orientation is portrait
-  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Font size for text
-  let textFontSize = isPortrait ? '3vh' : '3vw'
-  // Font size for button
-  let buttonFontSize = isPortrait ? '5vh' : '5vw'
+  let textFontSize = '4.2vh'
   // Width for button
-  let buttonWidth = isPortrait ? '40vh' : '40vw'
+  let buttonWidth = '40vh'
   // Height for button
-  let buttonHeight = isPortrait ? '10vh' : '10vw'
+  let buttonHeight = '10vh'
   // Margin
-  let margin = isPortrait ? '5vh' : '5vw'
+  let margin = '5vh'
 
   /**
    * Callback function for when the user decides to return to the start of the app.
@@ -48,7 +43,7 @@ const PostMeal = () => {
         className='btn-huge'
         id='#returnToStartBtn'
         onClick={returnToStartClicked}
-        style={{ width: buttonWidth, height: buttonHeight, fontSize: buttonFontSize, marginTop: margin }}
+        style={{ width: buttonWidth, height: buttonHeight, fontSize: textFontSize, marginTop: margin }}
       >
         Return to Start
       </Button>

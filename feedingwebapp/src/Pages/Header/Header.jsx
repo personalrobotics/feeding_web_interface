@@ -1,6 +1,5 @@
 // React imports
 import React, { useCallback, useEffect, useState } from 'react'
-import { useMediaQuery } from 'react-responsive'
 // The NavBar is the navigation toolbar at the top
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
@@ -34,14 +33,13 @@ const Header = (props) => {
   // useROS gives us access to functions to configure and interact with ROS.
   let { ros } = useROS()
   const [isConnected, setIsConncected] = useState(ros.isConnected)
-  // Flag to check if the current orientation is portrait
-  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Sizes of header elements (fontSize, width, height)
-  let textFontSize = isPortrait ? '2.5vh' : '2.5vw'
-  let lockIconWidth = isPortrait ? '4vh' : '4vw'
-  let lockIconHeight = isPortrait ? '5vh' : '5vw'
-  let lockImageHeight = isPortrait ? '4vh' : '4vw'
-  let headerMargin = isPortrait ? '0.3vh' : '0.3vw'
+  let textFontSize = '2.5vh'
+  let lockIconWidth = '5vh'
+  let lockIconHeight = '5.5vh'
+  let lockImageHeight = '5vh'
+  let lockImageWidth = '5vh'
+  let headerMargin = '0.3vh'
 
   // Check ROS connection every ROS_CHECK_INTERVAL_MS milliseconds
   useEffect(() => {
@@ -137,7 +135,7 @@ const Header = (props) => {
                 }}
               >
                 <img
-                  style={{ width: lockIconWidth, height: lockImageHeight }}
+                  style={{ width: lockImageWidth, height: lockImageHeight }}
                   src='/robot_state_imgs/lock_icon_image.svg'
                   alt='lock_icon_img'
                   className='center'
