@@ -35,12 +35,12 @@ const Footer = (props) => {
   // Sizes (width, height, fontsize) of footer buttons
   let pauseButtonWidth = '98vw'
   let backResumeButtonWidth = '47vw'
-  let pauseButtonInnerSize = '6vw'
-  let backResumeButtonInnerSize = '6vw'
+  let pauseFontSize = '7vh'
+  let backResumeFontSize = '3.2vh'
   let footerButtonHeight = '12vh'
   // Margins around footer buttons
-  let footerLeftRightMargin = '1.6vw'
-  let footerTopBottomMargin = '0.3vw'
+  let footerLeftRightMargin = '1.6vh'
+  let footerTopBottomMargin = '0.3vh'
   // A single nested object with all footer buttons' properties
   const buttonConfig = {
     pause: {
@@ -51,8 +51,8 @@ const Footer = (props) => {
       callback: props.pauseCallback,
       buttonWidth: pauseButtonWidth,
       buttonHeight: footerButtonHeight,
-      fontSize: pauseButtonInnerSize,
-      iconSize: pauseButtonInnerSize,
+      fontSize: pauseFontSize,
+      iconSize: footerButtonHeight,
       backgroundColor: null
     },
     back: {
@@ -63,8 +63,8 @@ const Footer = (props) => {
       callback: props.backCallback,
       buttonWidth: backResumeButtonWidth,
       buttonHeight: footerButtonHeight,
-      fontSize: backResumeButtonInnerSize,
-      iconSize: backResumeButtonInnerSize,
+      fontSize: backResumeFontSize,
+      iconSize: footerButtonHeight,
       backgroundColor: null
     },
     resume: {
@@ -75,8 +75,8 @@ const Footer = (props) => {
       callback: props.resumeCallback,
       buttonWidth: backResumeButtonWidth,
       buttonHeight: footerButtonHeight,
-      fontSize: backResumeButtonInnerSize,
-      iconSize: backResumeButtonInnerSize,
+      fontSize: backResumeFontSize,
+      iconSize: footerButtonHeight,
       backgroundColor: null
     }
   }
@@ -122,7 +122,7 @@ const Footer = (props) => {
                   height: '100%'
                 }}
               >
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end', width: '100%', height: '100%' }}>
                   <p
                     className='transitionMessage'
                     style={{

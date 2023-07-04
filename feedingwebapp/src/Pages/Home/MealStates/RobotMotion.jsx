@@ -64,7 +64,7 @@ const RobotMotion = (props) => {
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
 
   // Define sizes for RobotMotion page items (width, height, fontsize)
-  let waitingTextFontSize = isPortrait ? '4.5vh' : '4vw'
+  //let waitingTextFontSize = isPortrait ? '4.5vh' : '4vw'
   let motionTextFontSize = isPortrait ? '3.5vh' : '3.5vw'
 
   // Indicator of how to arrange screen elements based on orientation
@@ -255,6 +255,10 @@ const RobotMotion = (props) => {
         <>
           <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
             <View style={{ flex: flexSizeTextInner, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+              <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: motionTextFontSize }}>
+                {props.waitingText}
+                <h1>&nbsp;</h1>
+              </h1>
               <h3 style={{ fontSize: motionTextFontSize }}>{text}</h3>
               {showTime ? <h3 style={{ fontSize: motionTextFontSize }}>&nbsp;&nbsp;Elapsed Time: {time} sec</h3> : <></>}
             </View>
@@ -273,7 +277,7 @@ const RobotMotion = (props) => {
         </>
       )
     },
-    [dimension, motionTextFontSize]
+    [dimension, motionTextFontSize, props.waitingText]
   )
 
   /**
@@ -283,8 +287,8 @@ const RobotMotion = (props) => {
    */
   const actionStatusText = useCallback(
     (actionStatus, flexSizeOuter) => {
-      let flexSizeTextInner = isPortrait ? 2 : 1
-      let flexSizeVisualInner = isPortrait ? 8 : 1
+      let flexSizeTextInner = 1
+      let flexSizeVisualInner = 1
       let text
       let time
       let showTime
@@ -351,20 +355,13 @@ const RobotMotion = (props) => {
           }
       }
     },
-    [isPortrait, paused, dimension, actionStatusTextAndVisual]
+    [paused, dimension, actionStatusTextAndVisual]
   )
 
   // Render the component
   return (
     <>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-        <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
-          <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: waitingTextFontSize }}>
-            {props.waitingText}
-            {isPortrait ? <h1>&nbsp;</h1> : <></>}
-          </h1>
-          <br />
-        </View>
         {props.debug ? (
           <Button variant='secondary' className='justify-content-center mx-2 mb-2' size='lg' onClick={robotMotionDone}>
             Continue (Debug Mode)
@@ -372,7 +369,7 @@ const RobotMotion = (props) => {
         ) : (
           <></>
         )}
-        {actionStatusText(actionStatus, 7)}
+        {actionStatusText(actionStatus, 1)}
       </View>
       {/**
        * Display the footer with the Pause button.

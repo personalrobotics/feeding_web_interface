@@ -7,7 +7,7 @@ import { View } from 'react-native'
 
 ReactDOM.render(
   <React.StrictMode>
-    <View style={{ flex: 1, height: '100vh' }}>
+    <View style={{ flex: 1, height: '90vh' }}>
       <App />
     </View>
   </React.StrictMode>,
