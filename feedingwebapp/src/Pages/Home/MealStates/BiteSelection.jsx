@@ -50,7 +50,7 @@ const BiteSelection = (props) => {
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Text font size
-  let textFontSize = isPortrait ? '2.5vh' : '2vw'
+  let textFontSize = '2.5vh'
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
 
@@ -298,7 +298,6 @@ const BiteSelection = (props) => {
         // Get the allotted space per mask
         let parentWidth, parentHeight
         if (maskButtonParentRef.current) {
-          console.log('Get actual parent size')
           parentWidth = maskButtonParentRef.current.clientWidth
           parentHeight = maskButtonParentRef.current.clientHeight
         } else {
@@ -307,7 +306,6 @@ const BiteSelection = (props) => {
            * allocation of views. As soon as the component is mounted, we will
            * use the actual parent size.
            */
-          console.log('Guess parent size')
           parentWidth = isPortrait ? windowSize.width : windowSize.width / 2.0
           parentHeight = isPortrait ? windowSize.height / 4.0 : windowSize.height / 3.0
         }

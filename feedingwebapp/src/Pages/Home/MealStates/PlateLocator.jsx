@@ -36,13 +36,13 @@ const PlateLocator = (props) => {
   const margin = convertRemToPixels(1)
 
   // text font size
-  let textFontSize = isPortrait ? '3vh' : '3vw'
+  let textFontSize = '3vh'
   // done button width
-  let doneButtonWidth = isPortrait ? '15vh' : '15vw'
+  let doneButtonWidth = '47vw'
   // button height
-  let buttonHeight = isPortrait ? '6vh' : '6vw'
+  let buttonHeight = '6.4vh'
   // arrow button width
-  let arrowButtonWidth = isPortrait ? '6vh' : '6vw'
+  let arrowButtonWidth = '13vw'
 
   /**
    * Callback function for when the user presses one of the buttons to teleop
@@ -158,6 +158,7 @@ const PlateLocator = (props) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: arrowButtonWidth,
+                height: buttonHeight,
                 marginBottom: margin
               }}
               value='back'

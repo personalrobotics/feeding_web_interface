@@ -18,7 +18,7 @@ const PreMeal = () => {
   // Font size for text
   let textFontSize = '4.2vh'
   // Width for button
-  let buttonWidth = '40vh'
+  let buttonWidth = '70vw'
   // Height for button
   let buttonHeight = '10vh'
   // Margin
