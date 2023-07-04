@@ -36,11 +36,11 @@ const PlateLocator = (props) => {
   const margin = convertRemToPixels(1)
 
   // text font size
-  let textFontSize = '3vh'
+  let textFontSize = isPortrait ? '2vh' : '2vw'
   // done button width
   let doneButtonWidth = '47vw'
   // button height
-  let buttonHeight = '6.4vh'
+  let buttonHeight = '8vh'
   // arrow button width
   let arrowButtonWidth = '13vw'
 

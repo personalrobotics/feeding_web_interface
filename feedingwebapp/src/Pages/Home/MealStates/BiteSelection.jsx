@@ -50,7 +50,7 @@ const BiteSelection = (props) => {
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Text font size
-  let textFontSize = '2.5vh'
+  let textFontSize = isPortrait ? '2.5vh' : '2vw'
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
 

@@ -35,10 +35,10 @@ const Header = (props) => {
   const [isConnected, setIsConncected] = useState(ros.isConnected)
   // Sizes of header elements (fontSize, width, height)
   let textFontSize = '2.5vh'
-  let lockIconWidth = '5vh'
+  let lockIconWidth = '5vw'
   let lockIconHeight = '5.5vh'
   let lockImageHeight = '5vh'
-  let lockImageWidth = '5vh'
+  let lockImageWidth = '4vw'
   let headerMargin = '0.3vh'
 
   // Check ROS connection every ROS_CHECK_INTERVAL_MS milliseconds
