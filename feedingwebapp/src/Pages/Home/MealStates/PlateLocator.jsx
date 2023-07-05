@@ -78,12 +78,7 @@ const PlateLocator = (props) => {
               value='forward'
               variant='primary'
             >
-              <img
-                style={{ width: '44px', height: 'auto' }}
-                src='/other_emoji_imgs/upArrow.svg'
-                alt='Up_Arrow_img'
-                className='center'
-              />
+              <img style={{ width: '44px', height: 'auto' }} src='/other_emoji_imgs/upArrow.svg' alt='Up_Arrow_img' className='center' />
             </Button>
           </div>
 
@@ -138,7 +133,7 @@ const PlateLocator = (props) => {
               onClick={doneClicked}
               style={{ width: '96%', fontSize: '25px', marginLeft: '10%', marginRight: '2%' }}
             >
-              <img style={{ width: '30px', height: 'auto' }} src="/other_emoji_imgs/done.svg" alt='done_icon' /> Done
+              <img style={{ width: '30px', height: 'auto' }} src='/other_emoji_imgs/done.svg' alt='done_icon' /> Done
             </Button>
           </div>
         </div>

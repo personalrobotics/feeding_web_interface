@@ -32,7 +32,8 @@ const PreMeal = () => {
   return (
     <Row xs={1} md={1} className='justify-content-center mx-2 my-2'>
       <p className='transitionMessage' style={{ marginBottom: '10px', marginTop: '0px', fontSize: '24px' }}>
-        Hello! <img style={{ width: '30px', height: 'auto' }} src={wave} alt='wave_icon' /> I am ADA&apos;s faithful assistant, ADAWebapp! Bon Appétit! <img style={{ width: '30px', height: 'auto' }} src={yummy} alt='yummy_emoji_icon'/>
+        Hello! <img style={{ width: '30px', height: 'auto' }} src={wave} alt='wave_icon' /> I am ADA&apos;s faithful assistant, ADAWebapp!
+        Bon Appétit! <img style={{ width: '30px', height: 'auto' }} src={yummy} alt='yummy_emoji_icon' />
       </p>
       <Button
         variant='primary'

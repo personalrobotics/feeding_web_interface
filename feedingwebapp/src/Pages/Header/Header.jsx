@@ -127,27 +127,27 @@ const Header = (props) => {
           )}
           {isConnected ? (
             <div>
-            <Button
-              variant='success'
-              disabled={true}
-              style={{
-                marginLeft: 3,
-                marginRight: 3,
-                width: '44px',
-                height: '56px',
-                opacity: 1,
-                '--bs-btn-padding-y': '0rem',
-                '--bs-btn-padding-x': '0rem'
-              }}
-            >
-              <img
-                style={{ width: '44px', height: '50px' }}
-                src='/other_emoji_imgs/pluggedIn.svg'
-                alt='plugged_in_img'
-                className='center'
-              />
-            </Button>
-          </div>
+              <Button
+                variant='success'
+                disabled={true}
+                style={{
+                  marginLeft: 3,
+                  marginRight: 3,
+                  width: '44px',
+                  height: '56px',
+                  opacity: 1,
+                  '--bs-btn-padding-y': '0rem',
+                  '--bs-btn-padding-x': '0rem'
+                }}
+              >
+                <img
+                  style={{ width: '44px', height: '50px' }}
+                  src='/other_emoji_imgs/pluggedIn.svg'
+                  alt='plugged_in_img'
+                  className='center'
+                />
+              </Button>
+            </div>
           ) : (
             <div>
               <Button
