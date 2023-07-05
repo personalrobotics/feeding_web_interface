@@ -127,7 +127,7 @@ const PlateLocator = (props) => {
               <img
                 style={{ width: '44px', height: 'auto' }}
                 src='/other_emoji_imgs/downArrow.svg'
-                alt='down_Arrow_img'
+                alt='Down_Arrow_img'
                 className='center'
               />
             </Button>

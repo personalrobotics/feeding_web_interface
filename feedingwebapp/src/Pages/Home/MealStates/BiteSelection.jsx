@@ -305,7 +305,7 @@ const BiteSelection = (props) => {
           <img style={{ width: '30px', height: 'auto' }} src="/other_emoji_imgs/plateLocator.svg" alt='platelocator_icon' /> Locate Plate
         </Button>
         <Button className='doneButton' style={{ fontSize: '21px', marginTop: '10px' }} onClick={doneEatingClicked}>
-          <img style={{ width: '30px', height: 'auto' }} src="/other_emoji_imgs/doneEating.svg" alt='platelocator_icon' /> Done Eating
+          <img style={{ width: '30px', height: 'auto' }} src="/other_emoji_imgs/doneEating.svg" alt='done_eating_icon' /> Done Eating
         </Button>
       </div>
 
