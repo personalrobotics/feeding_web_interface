@@ -27,7 +27,7 @@ const PostMeal = () => {
   return (
     <Row xs={1} md={1} className='justify-content-center mx-2 my-2'>
       <p className='transitionMessage' style={{ marginBottom: '10px', marginTop: '0px', fontSize: '24px' }}>
-        That was a delicious meal 😋 ! Cheers 🥂 to your good health!
+        That was a delicious meal <img style={{ width: '30px', height: 'auto' }} src="/other_emoji_imgs/yummy.svg" alt='yummy_emoji_icon'/> ! Cheers <img style={{ width: '30px', height: 'auto' }} src="/other_emoji_imgs/cheers.svg" alt='yummy_emoji_icon'/> to your good health!
       </p>
       <Button
         variant='primary'

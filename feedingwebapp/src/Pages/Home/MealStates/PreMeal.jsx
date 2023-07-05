@@ -16,6 +16,10 @@ const PreMeal = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
 
+  // Icons for rendering
+  let wave = '/other_emoji_imgs/wave.svg'
+  let yummy = '/other_emoji_imgs/yummy.svg'
+
   /**
    * Callback function for when the user decides to start feeding using the app.
    */
@@ -28,7 +32,7 @@ const PreMeal = () => {
   return (
     <Row xs={1} md={1} className='justify-content-center mx-2 my-2'>
       <p className='transitionMessage' style={{ marginBottom: '10px', marginTop: '0px', fontSize: '24px' }}>
-        Hello!👋 I am ADA&apos;s faithful assistant, ADAWebapp! Bon Appétit! 😋
+        Hello! <img style={{ width: '30px', height: 'auto' }} src={wave} alt='wave_icon' /> I am ADA&apos;s faithful assistant, ADAWebapp! Bon Appétit! <img style={{ width: '30px', height: 'auto' }} src={yummy} alt='yummy_emoji_icon'/>
       </p>
       <Button
         variant='primary'

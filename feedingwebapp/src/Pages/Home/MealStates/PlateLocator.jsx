@@ -78,7 +78,12 @@ const PlateLocator = (props) => {
               value='forward'
               variant='primary'
             >
-              ⬆
+              <img
+                style={{ width: '44px', height: 'auto' }}
+                src='/other_emoji_imgs/upArrow.svg'
+                alt='Up_Arrow_img'
+                className='center'
+              />
             </Button>
           </div>
 
@@ -86,7 +91,12 @@ const PlateLocator = (props) => {
 
           <div className='col-3'>
             <Button onClick={cartesianControlCommandReceived} style={{ fontSize: '25px', marginLeft: '2%' }} value='left' variant='primary'>
-              ⬅
+              <img
+                style={{ width: '44px', height: 'auto' }}
+                src='/other_emoji_imgs/leftArrow.svg'
+                alt='Left_Arrow_img'
+                className='center'
+              />
             </Button>
           </div>
 
@@ -97,7 +107,12 @@ const PlateLocator = (props) => {
               value='right'
               variant='primary'
             >
-              ➡
+              <img
+                style={{ width: '44px', height: 'auto' }}
+                src='/other_emoji_imgs/rightArrow.svg'
+                alt='Right_Arrow_img'
+                className='center'
+              />
             </Button>
           </div>
 
@@ -105,11 +120,16 @@ const PlateLocator = (props) => {
           <div className='col'>
             <Button
               onClick={cartesianControlCommandReceived}
-              style={{ fontSize: '25px', marginLeft: '30%', marginTop: '5%', marginRight: '15%' }}
+              style={{ fontSize: '25px', marginLeft: '30%', marginRight: '15%' }}
               value='back'
               variant='primary'
             >
-              ⬇
+              <img
+                style={{ width: '44px', height: 'auto' }}
+                src='/other_emoji_imgs/downArrow.svg'
+                alt='down_Arrow_img'
+                className='center'
+              />
             </Button>
           </div>
           <div className='col'>
@@ -118,7 +138,7 @@ const PlateLocator = (props) => {
               onClick={doneClicked}
               style={{ width: '96%', fontSize: '25px', marginLeft: '10%', marginRight: '2%' }}
             >
-              ✅ Done
+              <img style={{ width: '30px', height: 'auto' }} src="/other_emoji_imgs/done.svg" alt='done_icon' /> Done
             </Button>
           </div>
         </div>
