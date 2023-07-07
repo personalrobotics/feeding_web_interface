@@ -127,15 +127,49 @@ const Header = (props) => {
           )}
           {isConnected ? (
             <div>
-              <p className='connectedDiv' style={{ fontSize: '24px', margin: 3 }}>
-                🔌
-              </p>
+              <Button
+                variant='success'
+                disabled={true}
+                style={{
+                  marginLeft: 3,
+                  marginRight: 3,
+                  width: '44px',
+                  height: '56px',
+                  opacity: 1,
+                  '--bs-btn-padding-y': '0rem',
+                  '--bs-btn-padding-x': '0rem'
+                }}
+              >
+                <img
+                  style={{ width: '44px', height: '50px' }}
+                  src='/other_emoji_imgs/pluggedIn.svg'
+                  alt='plugged_in_img'
+                  className='center'
+                />
+              </Button>
             </div>
           ) : (
             <div>
-              <p className='notConnectedDiv' style={{ fontSize: '24px', marginLeft: 3, marginRight: 3 }}>
-                ⛔
-              </p>
+              <Button
+                variant='warning'
+                disabled={true}
+                style={{
+                  marginLeft: 3,
+                  marginRight: 3,
+                  width: '44px',
+                  height: '56px',
+                  opacity: 1,
+                  '--bs-btn-padding-y': '0rem',
+                  '--bs-btn-padding-x': '0rem'
+                }}
+              >
+                <img
+                  style={{ width: '44px', height: '50px' }}
+                  src='/other_emoji_imgs/notPluggedIn.svg'
+                  alt='not_plugged_in_img'
+                  className='center'
+                />
+              </Button>
             </div>
           )}
           <Nav>
