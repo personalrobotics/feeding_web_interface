@@ -4,12 +4,13 @@ import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { View } from 'react-native'
-import { use100vh } from 'react-div-100vh'
+import { useWindowSize } from './helpers'
 
 const HeightComponent = () => {
+  let currentWindowSize = useWindowSize()
   return (
     <>
-      <View style={{ flex: 1, height: use100vh() }}>
+      <View style={{ flex: 1, height: currentWindowSize.height }}>
         <App />
       </View>
     </>
