@@ -34,7 +34,7 @@ const Header = (props) => {
   let { ros } = useROS()
   const [isConnected, setIsConncected] = useState(ros.isConnected)
   // Sizes of header elements (fontSize, width, height)
-  let textFontSize = '2.5vh'
+  let textFontSize = '3.1vh'
   let lockIconWidth = '5vw'
   let lockIconHeight = '5.5vh'
   let lockImageHeight = '5vh'

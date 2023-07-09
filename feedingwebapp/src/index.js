@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useRef } from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
@@ -6,11 +6,21 @@ import reportWebVitals from './reportWebVitals'
 import { View } from 'react-native'
 import { useWindowSize } from './helpers'
 
-const HeightComponent = () => {
-  let currentWindowSize = useWindowSize()
+const AppComponent = () => {
+  // set initial value of window height
+  let windowHeight = useRef(0)
+  // set a variable for storing window inner height
+  let newHeight = window.innerHeight
+  // callback function when height is resized
+  const resizeHeight = useCallback(() => {
+    windowHeight.current = newHeight
+  }, [newHeight])
+  // update window size when orienttaion changes with callback
+  useWindowSize(resizeHeight)
+
   return (
     <>
-      <View style={{ flex: 1, height: currentWindowSize.height }}>
+      <View style={{ flex: 1, height: windowHeight.current }}>
         <App />
       </View>
     </>
@@ -19,7 +29,7 @@ const HeightComponent = () => {
 
 ReactDOM.render(
   <React.StrictMode>
-    <HeightComponent />
+    <AppComponent />
   </React.StrictMode>,
   document.getElementById('root')
 )
