@@ -1,5 +1,5 @@
 // React imports
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { View } from 'react-native'
 
@@ -49,6 +49,17 @@ function Home(props) {
   const desiredFoodItem = useGlobalState((state) => state.desiredFoodItem)
 
   /**
+   * All action inputs are constant. Note that we must be cautious if making
+   * them non-constant, because the robot will re-execute an action every time
+   * the action input changes (even on re-renders).
+   */
+  const moveAbovePlateActionInput = useMemo(() => ({}), [])
+  const biteAcquisitionActionInput = useMemo(() => ({ detected_food: desiredFoodItem }), [desiredFoodItem])
+  const moveToRestingPositionActionInput = useMemo(() => ({}), [])
+  const moveToMouthActionInput = useMemo(() => ({}), [])
+  const moveToStowPositionActionInput = useMemo(() => ({}), [])
+
+  /**
    * Determines what screen to render based on the meal state.
    */
   const getComponentByMealState = useCallback(() => {
@@ -64,14 +75,13 @@ function Home(props) {
          */
         let currentMealState = MEAL_STATE.R_MovingAbovePlate
         let nextMealState = MEAL_STATE.U_BiteSelection
-        let actionInput = {}
         let waitingText = 'Waiting to move above the plate...'
         return (
           <RobotMotion
             debug={props.debug}
             mealState={currentMealState}
             nextMealState={nextMealState}
-            actionInput={actionInput}
+            actionInput={moveAbovePlateActionInput}
             waitingText={waitingText}
           />
         )
@@ -89,14 +99,13 @@ function Home(props) {
          */
         let currentMealState = MEAL_STATE.R_BiteAcquisition
         let nextMealState = MEAL_STATE.U_BiteAcquisitionCheck
-        let actionInput = { detected_food: desiredFoodItem }
         let waitingText = 'Waiting to acquire the food...'
         return (
           <RobotMotion
             debug={props.debug}
             mealState={currentMealState}
             nextMealState={nextMealState}
-            actionInput={actionInput}
+            actionInput={biteAcquisitionActionInput}
             waitingText={waitingText}
           />
         )
@@ -104,14 +113,13 @@ function Home(props) {
       case MEAL_STATE.R_MovingToRestingPosition: {
         let currentMealState = MEAL_STATE.R_MovingToRestingPosition
         let nextMealState = MEAL_STATE.U_BiteAcquisitionCheck
-        let actionInput = {}
         let waitingText = 'Waiting to move to the resting position...'
         return (
           <RobotMotion
             debug={props.debug}
             mealState={currentMealState}
             nextMealState={nextMealState}
-            actionInput={actionInput}
+            actionInput={moveToRestingPositionActionInput}
             waitingText={waitingText}
           />
         )
@@ -126,14 +134,13 @@ function Home(props) {
          */
         let currentMealState = MEAL_STATE.R_MovingToMouth
         let nextMealState = MEAL_STATE.U_BiteDone
-        let actionInput = {}
         let waitingText = 'Waiting to move to your mouth...'
         return (
           <RobotMotion
             debug={props.debug}
             mealState={currentMealState}
             nextMealState={nextMealState}
-            actionInput={actionInput}
+            actionInput={moveToMouthActionInput}
             waitingText={waitingText}
           />
         )
@@ -148,14 +155,13 @@ function Home(props) {
          */
         let currentMealState = MEAL_STATE.R_StowingArm
         let nextMealState = MEAL_STATE.U_PostMeal
-        let actionInput = {}
         let waitingText = 'Waiting to get out of your way...'
         return (
           <RobotMotion
             debug={props.debug}
             mealState={currentMealState}
             nextMealState={nextMealState}
-            actionInput={actionInput}
+            actionInput={moveToStowPositionActionInput}
             waitingText={waitingText}
           />
         )
@@ -167,7 +173,16 @@ function Home(props) {
         return <div>Unknown meal state: {mealState}</div>
       }
     }
-  }, [desiredFoodItem, mealState, props.debug, props.webVideoServerURL])
+  }, [
+    mealState,
+    props.debug,
+    props.webVideoServerURL,
+    biteAcquisitionActionInput,
+    moveAbovePlateActionInput,
+    moveToMouthActionInput,
+    moveToRestingPositionActionInput,
+    moveToStowPositionActionInput
+  ])
 
   // Render the component
   return (

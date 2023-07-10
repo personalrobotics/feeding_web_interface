@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
@@ -7,23 +7,16 @@ import { View } from 'react-native'
 import { useWindowSize } from './helpers'
 
 const AppComponent = () => {
-  // set initial value of window height
-  let windowHeight = useRef(0)
-  // set a variable for storing window inner height
-  let newHeight = window.innerHeight
-  // callback function when height is resized
-  const resizeHeight = useCallback(() => {
-    windowHeight.current = newHeight
-  }, [newHeight])
-  // update window size when orienttaion changes with callback
-  useWindowSize(resizeHeight)
-
+  /**
+   * NOTE: windowSize.height is necessary as opposed to '100vh' because some
+   * browsers have footers (e.g., with control buttons) that are not accounted
+   * for in '100vh'.
+   */
+  let windowSize = useWindowSize()
   return (
-    <>
-      <View style={{ flex: 1, height: windowHeight.current }}>
-        <App />
-      </View>
-    </>
+    <View style={{ flex: 1, height: windowSize.height }}>
+      <App />
+    </View>
   )
 }
 
