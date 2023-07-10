@@ -1,5 +1,5 @@
 // React Imports
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -44,8 +44,10 @@ const BiteSelection = (props) => {
 
   // Reference to the DOM element of the parent of the video feed
   const videoParentRef = useRef(null)
-  // Margin for the video feed and between the mask buttons
-  const margin = convertRemToPixels(1)
+  // Margin for the video feed and between the mask buttons. Note this cannot
+  // be re-defined per render, otherwise it messes up re-rendering order upon
+  // resize in VideoFeed.
+  const margin = useMemo(() => convertRemToPixels(1), [])
 
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })

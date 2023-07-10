@@ -1,5 +1,5 @@
 // React imports
-import React, { useRef } from 'react'
+import React, { useMemo, useRef } from 'react'
 // The Modal is a screen that appears on top of the main app, and can be toggled
 // on and off.
 import Modal from 'react-bootstrap/Modal'
@@ -19,7 +19,10 @@ import VideoFeed from '../Home/VideoFeed'
 function LiveVideoModal(props) {
   // Variables to render the VideoFeed
   const modalBodyRef = useRef(null)
-  const margin = convertRemToPixels(1)
+  // Margin for the video feed and between the mask buttons. Note this cannot
+  // be re-defined per render, otherwise it messes up re-rendering order upon
+  // resize in VideoFeed.
+  const margin = useMemo(() => convertRemToPixels(1), [])
 
   return (
     <Modal
