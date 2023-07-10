@@ -63,9 +63,6 @@ const RobotMotion = (props) => {
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
 
-  // Define text's fontsize
-  let textFontSize = isPortrait ? '3.5vh' : '3.5vw'
-
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
 
@@ -254,12 +251,11 @@ const RobotMotion = (props) => {
         <>
           <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
             <View style={{ flex: flexSizeTextInner, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
-              <h1 id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: textFontSize }}>
+              <h1 id='Waiting for robot motion' className='waitingMsg'>
                 {props.waitingText}
-                <h1>&nbsp;</h1>
               </h1>
-              <h3 style={{ fontSize: textFontSize }}>{text}</h3>
-              {showTime ? <h3 style={{ fontSize: textFontSize }}>&nbsp;&nbsp;Elapsed Time: {time} sec</h3> : <></>}
+              <h2>{text}</h2>
+              {showTime ? <h2>&nbsp;&nbsp;Elapsed Time: {time} sec</h2> : <></>}
             </View>
             <View
               style={{
@@ -276,7 +272,7 @@ const RobotMotion = (props) => {
         </>
       )
     },
-    [dimension, textFontSize, props.waitingText]
+    [dimension, props.waitingText]
   )
 
   /**
