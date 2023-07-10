@@ -21,7 +21,7 @@ export default function CircleProgressBar(props) {
   // Size variables for progressbar (width, height, fontsize) in portrait and landscape
   let circleWidth = isPortrait ? '90%' : null
   let circleHeight = isPortrait ? null : '90%'
-  let textFontSize = '10vh'
+  let textFontSize = isPortrait ? '10vh' : '20vh'
 
   // useEffect React Hook is used to synchronize with RobotMotion.jsx data to render circle progress bar
   useEffect(() => {
@@ -55,6 +55,8 @@ export default function CircleProgressBar(props) {
       bar.set(props.proportion)
       // Sets text to given a string which is motion progress percentage here.
       bar.setText(Math.round(props.proportion * 100) + '%')
+      // Set the text font size. Necessary since this changes upon orientation change.
+      bar.text.style.fontSize = textFontSize
     }
     // Fverytime items in dependency array (the second argument) update, useEffect runs.
   }, [setBar, bar, props.proportion, textFontSize])
