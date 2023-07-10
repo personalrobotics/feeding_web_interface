@@ -3,8 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 // The NavBar is the navigation toolbar at the top
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
-// The Button is used for stop icon at the top
-import Button from 'react-bootstrap/Button'
+import { useMediaQuery } from 'react-responsive'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
@@ -33,13 +32,12 @@ const Header = (props) => {
   // useROS gives us access to functions to configure and interact with ROS.
   let { ros } = useROS()
   const [isConnected, setIsConncected] = useState(ros.isConnected)
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Sizes of header elements (fontSize, width, height)
-  let textFontSize = '3.1vh'
-  let lockIconWidth = '5vw'
-  let lockIconHeight = '5.5vh'
-  let lockImageHeight = '5vh'
+  let textFontSize = isPortrait ? '3vh' : '6vh'
+  let lockImageHeight = isPortrait ? '4vh' : '8vh'
   let lockImageWidth = '4vw'
-  let headerMargin = '0.3vh'
 
   // Check ROS connection every ROS_CHECK_INTERVAL_MS milliseconds
   useEffect(() => {
@@ -106,33 +104,24 @@ const Header = (props) => {
           <Nav className='me-auto'>
             <Nav.Link
               onClick={homeClicked}
-              className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
+              className='text-dark bg-info rounded mx-1 btn-lg btn-huge p-2'
               style={{ fontSize: textFontSize }}
             >
               Home
             </Nav.Link>
             <Nav.Link
               onClick={settingsClicked}
-              className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
+              className='text-dark bg-info rounded mx-1 btn-lg btn-huge p-2'
               style={{ fontSize: textFontSize }}
             >
               Settings
             </Nav.Link>
           </Nav>
           {NON_MOVING_STATES.has(mealState) || paused || (mealState === MEAL_STATE.U_PlateLocator && teleopIsMoving === false) ? (
-            <div>
-              <Button
-                variant='danger'
-                disabled={true}
-                style={{
-                  marginLeft: headerMargin,
-                  marginRight: headerMargin,
-                  width: lockIconWidth,
-                  height: lockIconHeight,
-                  opacity: 1,
-                  '--bs-btn-padding-y': '0rem',
-                  '--bs-btn-padding-x': '0rem'
-                }}
+            <Nav>
+              <Nav.Link
+                className='text-dark rounded mx-1 btn-lg btn-huge p-2'
+                style={{ fontSize: textFontSize, backgroundColor: '#dc3545' }}
               >
                 <img
                   style={{ width: lockImageWidth, height: lockImageHeight }}
@@ -140,28 +129,31 @@ const Header = (props) => {
                   alt='lock_icon_img'
                   className='center'
                 />
-              </Button>
-            </div>
+              </Nav.Link>
+            </Nav>
           ) : (
             <></>
           )}
           {isConnected ? (
-            <div>
-              <p className='connectedDiv' style={{ fontSize: textFontSize, margin: headerMargin }}>
+            <Nav>
+              <Nav.Link className='text-dark rounded mx-1 btn-lg btn-huge p-2' style={{ fontSize: textFontSize, backgroundColor: 'green' }}>
                 🔌
-              </p>
-            </div>
+              </Nav.Link>
+            </Nav>
           ) : (
-            <div>
-              <p className='notConnectedDiv' style={{ fontSize: textFontSize, marginLeft: headerMargin, marginRight: headerMargin }}>
+            <Nav>
+              <Nav.Link
+                className='text-dark rounded mx-1 btn-lg btn-huge p-2'
+                style={{ fontSize: textFontSize, backgroundColor: '#f0ad4e' }}
+              >
                 ⛔
-              </p>
-            </div>
+              </Nav.Link>
+            </Nav>
           )}
           <Nav>
             <Nav.Link
               onClick={() => setVideoShow(true)}
-              className='text-dark bg-info border border-info rounded mx-1 btn-lg btn-huge p-2'
+              className='text-dark bg-info rounded mx-1 btn-lg btn-huge p-2'
               style={{ fontSize: textFontSize }}
             >
               Video

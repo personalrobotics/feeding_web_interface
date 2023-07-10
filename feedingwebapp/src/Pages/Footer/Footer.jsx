@@ -4,6 +4,7 @@ import { MDBFooter } from 'mdb-react-ui-kit'
 import Button from 'react-bootstrap/Button'
 import { View } from 'react-native'
 import Row from 'react-bootstrap/Row'
+import { useMediaQuery } from 'react-responsive'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
 // Local imports
@@ -28,6 +29,8 @@ import { useGlobalState } from '../GlobalState'
 const Footer = (props) => {
   // Get the current meal state
   const mealState = useGlobalState((state) => state.mealState)
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Icons for the footer buttons
   let pauseIcon = '/robot_state_imgs/pause_button_icon.svg'
   let backIcon = props.backMealState ? MOVING_STATE_ICON_DICT[props.backMealState] : ''
@@ -36,7 +39,7 @@ const Footer = (props) => {
   let pauseButtonWidth = '98vw'
   let backResumeButtonWidth = '47vw'
   let pauseFontSize = '7vh'
-  let backResumeFontSize = '3.2vh'
+  let backResumeFontSize = isPortrait ? '3.2vh' : '7vh'
   let footerButtonHeight = '12vh'
   // Margins around footer buttons
   let footerLeftRightMargin = '1.6vh'
