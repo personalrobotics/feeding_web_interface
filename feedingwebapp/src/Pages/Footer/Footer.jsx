@@ -39,7 +39,7 @@ const Footer = (props) => {
   let pauseButtonWidth = '98vw'
   let backResumeButtonWidth = '47vw'
   let pauseFontSize = '7vh'
-  let backResumeFontSize = isPortrait ? '3.2vh' : '7vh'
+  let backResumeFontSize = isPortrait ? '3vh' : '7vh'
   let footerButtonHeight = '12vh'
   // Margins around footer buttons
   let footerLeftRightMargin = '1.6vh'
