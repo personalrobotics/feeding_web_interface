@@ -65,6 +65,10 @@ const RobotMotion = (props) => {
 
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
+  // Waiting text font size
+  let waitingTextFontSize = isPortrait ? '4.5vh' : '9vh'
+  // Motion text font size
+  let motionTextFontSize = isPortrait ? '3vh' : '6vh'
 
   /**
    * Create the ROS Action Client. This is re-created every time props.mealState
@@ -251,11 +255,11 @@ const RobotMotion = (props) => {
         <>
           <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
             <View style={{ flex: flexSizeTextInner, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
-              <h1 id='Waiting for robot motion' className='waitingMsg'>
+              <p id='Waiting for robot motion' className='waitingMsg' style={{ fontSize: waitingTextFontSize }}>
                 {props.waitingText}
-              </h1>
-              <h2>{text}</h2>
-              {showTime ? <h2>&nbsp;&nbsp;Elapsed Time: {time} sec</h2> : <></>}
+              </p>
+              <p style={{ fontSize: motionTextFontSize }}>{text}</p>
+              {showTime ? <p style={{ fontSize: motionTextFontSize }}>&nbsp;&nbsp;Elapsed Time: {time} sec</p> : <></>}
             </View>
             <View
               style={{
@@ -272,7 +276,7 @@ const RobotMotion = (props) => {
         </>
       )
     },
-    [dimension, props.waitingText]
+    [dimension, props.waitingText, motionTextFontSize, waitingTextFontSize]
   )
 
   /**

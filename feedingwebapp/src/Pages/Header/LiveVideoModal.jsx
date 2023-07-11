@@ -1,5 +1,6 @@
 // React imports
 import React, { useMemo, useRef } from 'react'
+import { useMediaQuery } from 'react-responsive'
 // The Modal is a screen that appears on top of the main app, and can be toggled
 // on and off.
 import Modal from 'react-bootstrap/Modal'
@@ -23,6 +24,10 @@ function LiveVideoModal(props) {
   // be re-defined per render, otherwise it messes up re-rendering order upon
   // resize in VideoFeed.
   const margin = useMemo(() => convertRemToPixels(1), [])
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // Text font size for portrait and landscape orientations
+  let textFontSize = isPortrait ? '3vh' : '6vh'
 
   return (
     <Modal
@@ -37,7 +42,7 @@ function LiveVideoModal(props) {
       fullscreen={true}
     >
       <Modal.Header closeButton>
-        <Modal.Title id='contained-modal-title-vcenter' style={{ fontSize: '3vh' }}>
+        <Modal.Title id='contained-modal-title-vcenter' style={{ fontSize: textFontSize }}>
           Live Video
         </Modal.Title>
       </Modal.Header>

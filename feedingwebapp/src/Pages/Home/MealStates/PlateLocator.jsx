@@ -43,7 +43,7 @@ const PlateLocator = (props) => {
   // done button width
   let doneButtonWidth = '47vw'
   // button height
-  let buttonHeight = '8vh'
+  let buttonHeight = isPortrait ? '6vh' : '12vh'
   // arrow button width
   let arrowButtonWidth = '13vw'
 
