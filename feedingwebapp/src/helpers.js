@@ -20,7 +20,7 @@ export function useWindowSize(resizeCallback = null) {
         if (resizeCallback) {
           resizeCallback()
         }
-      }, 100)
+      }, 200)
     }
     window.addEventListener('resize', updateWindowSize)
     updateWindowSize()
