@@ -1,5 +1,5 @@
 // React Imports
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -33,14 +33,17 @@ const PlateLocator = (props) => {
 
   // Variables to render the VideoFeed
   const videoParentRef = useRef(null)
-  const margin = convertRemToPixels(1)
+  // Margin for the video feed and between the mask buttons. Note this cannot
+  // be re-defined per render, otherwise it messes up re-rendering order upon
+  // resize in VideoFeed.
+  const margin = useMemo(() => convertRemToPixels(1), [])
 
   // text font size
   let textFontSize = isPortrait ? '2vh' : '2vw'
   // done button width
   let doneButtonWidth = '47vw'
   // button height
-  let buttonHeight = '8vh'
+  let buttonHeight = isPortrait ? '6vh' : '12vh'
   // arrow button width
   let arrowButtonWidth = '13vw'
 

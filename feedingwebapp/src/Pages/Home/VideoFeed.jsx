@@ -113,8 +113,15 @@ const VideoFeed = (props) => {
     resizeImage()
   }, [resizeImage])
 
-  // When the window is resized, resize the image
-  useWindowSize(resizeImage)
+  /** When the resize event is triggered, the elements have not yet been laid out,
+   * and hence the parent width/height might not be accurate yet based on the
+   * specified flex layout. Hence, we wait until the next event cycle to resize
+   * the video feed.
+   */
+  const resizeImageNextEventCycle = useCallback(() => {
+    setTimeout(resizeImage, 0)
+  }, [resizeImage])
+  useWindowSize(resizeImageNextEventCycle)
 
   // The callback for when the image is clicked.
   const imageClicked = useCallback(

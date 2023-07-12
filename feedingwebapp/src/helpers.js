@@ -11,10 +11,16 @@ export function useWindowSize(resizeCallback = null) {
   useLayoutEffect(() => {
     // set current window size
     function updateWindowSize() {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight })
-      if (resizeCallback) {
-        resizeCallback()
-      }
+      // There is a known bug in Chrome iOS, where the window's innerHeight
+      // is smaller than it should be immediately after a rotation from
+      // from landscape to portrait. To address this, we wait 100ms before
+      // updating the windowSize.
+      setTimeout(() => {
+        setWindowSize({ width: window.innerWidth, height: window.innerHeight })
+        if (resizeCallback) {
+          resizeCallback()
+        }
+      }, 200)
     }
     window.addEventListener('resize', updateWindowSize)
     updateWindowSize()
