@@ -47,20 +47,66 @@ const PlateLocator = (props) => {
   // arrow button width
   let arrowButtonWidth = '13vw'
 
-  /**
+   /**
    * Callback function for when the user presses one of the buttons to teleop
    * the robot.
    *
    * TODO: Implement this when ROS is connected to the robot!
-   */
+   *
   const cartesianControlCommandReceived = useCallback(
     (event) => {
       let direction = event.target.value
+      setMealState(MEAL_STATE.R_MovingToLeft)
       setTeleopIsMoving(true)
       console.log('cartesianControlCommandReceived', direction)
     },
-    [setTeleopIsMoving]
+    [setTeleopIsMoving, setMealState]
   )
+  */
+
+  /**
+   * Callback function for when the user presses left button to teleop
+   * the robot.
+   *
+   */
+  const moveLeftCommandReceived = useCallback(() => {
+    setMealState(MEAL_STATE.R_MovingToLeft)
+    setTeleopIsMoving(true)
+    console.log('moveLeftCommandReceived')
+  }, [setTeleopIsMoving, setMealState])
+
+  /**
+   * Callback function for when the user presses right button to teleop
+   * the robot.
+   *
+   */
+  const moveRightCommandReceived = useCallback(() => {
+    setMealState(MEAL_STATE.R_MovingToRight)
+    setTeleopIsMoving(true)
+    console.log('moveRightCommandReceived')
+  }, [setTeleopIsMoving, setMealState])
+
+  /**
+   * Callback function for when the user presses forward button to teleop
+   * the robot.
+   *
+   */
+  const moveForwardCommandReceived = useCallback(() => {
+    setMealState(MEAL_STATE.R_MovingToForward)
+    setTeleopIsMoving(true)
+    console.log('moveForwardCommandReceived')
+  }, [setTeleopIsMoving, setMealState])
+
+  /**
+   * Callback function for when the user presses backward button to teleop
+   * the robot.
+   *
+   */
+  const moveBackwardCommandReceived = useCallback(() => {
+    setMealState(MEAL_STATE.R_MovingToBackward)
+    setTeleopIsMoving(true)
+    console.log('moveBackwardCommandReceived')
+  }, [setTeleopIsMoving, setMealState])
 
   /**
    * Callback function for when the user indicates that they are done
@@ -99,7 +145,7 @@ const PlateLocator = (props) => {
         <Container fluid>
           <Row className='justify-content-center'>
             <Button
-              onClick={cartesianControlCommandReceived}
+              onClick={moveForwardCommandReceived}
               style={{
                 fontSize: textFontSize,
                 alignItems: 'right',
@@ -118,7 +164,7 @@ const PlateLocator = (props) => {
             <Col>
               <center>
                 <Button
-                  onClick={cartesianControlCommandReceived}
+                  onClick={moveLeftCommandReceived}
                   style={{
                     fontSize: textFontSize,
                     alignItems: 'center',
@@ -137,7 +183,7 @@ const PlateLocator = (props) => {
             <Col>
               <center>
                 <Button
-                  onClick={cartesianControlCommandReceived}
+                  onClick={moveRightCommandReceived}
                   style={{
                     fontSize: textFontSize,
                     alignItems: 'left',
@@ -155,7 +201,7 @@ const PlateLocator = (props) => {
           </Row>
           <Row className='justify-content-center'>
             <Button
-              onClick={cartesianControlCommandReceived}
+              onClick={moveBackwardCommandReceived}
               style={{
                 fontSize: textFontSize,
                 alignItems: 'center',
@@ -173,7 +219,16 @@ const PlateLocator = (props) => {
         </Container>
       </>
     )
-  }, [cartesianControlCommandReceived, arrowButtonWidth, buttonHeight, textFontSize, margin])
+  }, [
+    moveBackwardCommandReceived,
+    moveForwardCommandReceived,
+    moveLeftCommandReceived,
+    moveRightCommandReceived,
+    arrowButtonWidth,
+    buttonHeight,
+    textFontSize,
+    margin
+  ])
 
   // Render the component
   return (

@@ -28,6 +28,10 @@ export const APP_PAGE = {
  *   - U_BiteSelection: Waiting for the user to select the food item they want.
  *   - U_PlateLocator: Allows the user to teleoperate the robot to center the
  *     the plate.
+ *   - R_MovingToLeft: Allows the user to move the robot to left.
+ *   - R_MovingToRight: Allows the user to teleoperate the robot to right.
+ *   - R_MovingToForward: Allows the user to teleoperate the robot to forward.
+ *   - R_MovingToBackward: Allows the user to teleoperate the robot to backward.
  *   - R_BiteAcquisition: Waiting for the robot to execute one bite acquisition
  *     attempt.
  *   - R_MovingToRestingPosition: Waiting for the robot to move to resting
@@ -46,6 +50,10 @@ export const MEAL_STATE = {
   R_MovingAbovePlate: 'R_MovingAbovePlate',
   U_BiteSelection: 'U_BiteSelection',
   U_PlateLocator: 'U_PlateLocator',
+  R_MovingToLeft: 'R_MovingToLeft',
+  R_MovingToRight: 'R_MovingToRigth',
+  R_MovingToForward: 'R_MovingToForward',
+  R_MovingToBackward: 'R_MovingToBackward',
   R_BiteAcquisition: 'R_BiteAcquisition',
   R_MovingToRestingPosition: 'R_MovingToRestingPosition',
   U_BiteAcquisitionCheck: 'U_BiteAcquisitionCheck',
@@ -54,6 +62,7 @@ export const MEAL_STATE = {
   R_StowingArm: 'R_StowingArm',
   U_PostMeal: 'U_PostMeal'
 }
+
 
 /**
  * The parameters that users can set (keys) and a list of human-readable values

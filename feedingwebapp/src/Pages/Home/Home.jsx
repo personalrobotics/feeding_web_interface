@@ -48,50 +48,126 @@ function Home(props) {
   // Get the relevant global variables
   const desiredFoodItem = useGlobalState((state) => state.desiredFoodItem)
 
-  /**
+   /**
    * All action inputs are constant. Note that we must be cautious if making
    * them non-constant, because the robot will re-execute an action every time
    * the action input changes (even on re-renders).
    */
-  const moveAbovePlateActionInput = useMemo(() => ({}), [])
-  const biteAcquisitionActionInput = useMemo(() => ({ detected_food: desiredFoodItem }), [desiredFoodItem])
-  const moveToRestingPositionActionInput = useMemo(() => ({}), [])
-  const moveToMouthActionInput = useMemo(() => ({}), [])
-  const moveToStowPositionActionInput = useMemo(() => ({}), [])
-
-  /**
-   * Determines what screen to render based on the meal state.
-   */
-  const getComponentByMealState = useCallback(() => {
-    console.log('getComponentByMealState', mealState, props.debug)
-    switch (mealState) {
-      case MEAL_STATE.U_PreMeal: {
-        return <PreMeal debug={props.debug} />
-      }
-      case MEAL_STATE.R_MovingAbovePlate: {
-        /**
-         * We recreate currentMealState due to a race condition where sometimes
-         * the app is performing a re-rendering and *then* the state is updated.
-         */
-        let currentMealState = MEAL_STATE.R_MovingAbovePlate
-        let nextMealState = MEAL_STATE.U_BiteSelection
-        let waitingText = 'Waiting to move above the plate...'
-        return (
-          <RobotMotion
-            debug={props.debug}
-            mealState={currentMealState}
-            nextMealState={nextMealState}
-            actionInput={moveAbovePlateActionInput}
-            waitingText={waitingText}
-          />
-        )
-      }
-      case MEAL_STATE.U_BiteSelection: {
-        return <BiteSelection debug={props.debug} webVideoServerURL={props.webVideoServerURL} />
-      }
-      case MEAL_STATE.U_PlateLocator: {
-        return <PlateLocator debug={props.debug} webVideoServerURL={props.webVideoServerURL} />
-      }
+   const moveAbovePlateActionInput = useMemo(() => ({}), [])
+   const moveToLeftActionInput = useMemo(() => ({}), [])
+   const moveToRightActionInput = useMemo(() => ({}), [])
+   const moveToForwardActionInput = useMemo(() => ({}), [])
+   const moveToBackwardActionInput = useMemo(() => ({}), [])
+   const biteAcquisitionActionInput = useMemo(() => ({ detected_food: desiredFoodItem }), [desiredFoodItem])
+   const moveToRestingPositionActionInput = useMemo(() => ({}), [])
+   const moveToMouthActionInput = useMemo(() => ({}), [])
+   const moveToStowPositionActionInput = useMemo(() => ({}), [])
+ 
+   /**
+    * Determines what screen to render based on the meal state.
+    */
+   const getComponentByMealState = useCallback(() => {
+     console.log('getComponentByMealState', mealState, props.debug)
+     switch (mealState) {
+       case MEAL_STATE.U_PreMeal: {
+         return <PreMeal debug={props.debug} />
+       }
+       case MEAL_STATE.R_MovingAbovePlate: {
+         /**
+          * We recreate currentMealState due to a race condition where sometimes
+          * the app is performing a re-rendering and *then* the state is updated.
+          */
+         let currentMealState = MEAL_STATE.R_MovingAbovePlate
+         let nextMealState = MEAL_STATE.U_BiteSelection
+         let waitingText = 'Waiting to move above the plate...'
+         return (
+           <RobotMotion
+             debug={props.debug}
+             mealState={currentMealState}
+             nextMealState={nextMealState}
+             actionInput={moveAbovePlateActionInput}
+             waitingText={waitingText}
+           />
+         )
+       }
+       case MEAL_STATE.U_BiteSelection: {
+         return <BiteSelection debug={props.debug} webVideoServerURL={props.webVideoServerURL} />
+       }
+       case MEAL_STATE.U_PlateLocator: {
+         return <PlateLocator debug={props.debug} webVideoServerURL={props.webVideoServerURL} />
+       }
+       case MEAL_STATE.R_MovingToLeft: {
+         /**
+          * We recreate currentMealState due to a race condition where sometimes
+          * the app is performing a re-rendering and *then* the state is updated.
+          */
+         let currentMealState = MEAL_STATE.R_MovingToLeft
+         let nextMealState = MEAL_STATE.U_PlateLocator
+         let waitingText = 'Waiting to move to left...'
+         return (
+           <RobotMotion
+             debug={props.debug}
+             mealState={currentMealState}
+             nextMealState={nextMealState}
+             actionInput={moveToLeftActionInput}
+             waitingText={waitingText}
+           />
+         )
+       }
+       case MEAL_STATE.R_MovingToRight: {
+         /**
+          * We recreate currentMealState due to a race condition where sometimes
+          * the app is performing a re-rendering and *then* the state is updated.
+          */
+         let currentMealState = MEAL_STATE.R_MovingToRight
+         let nextMealState = MEAL_STATE.U_PlateLocator
+         let waitingText = 'Waiting to move to right...'
+         return (
+           <RobotMotion
+             debug={props.debug}
+             mealState={currentMealState}
+             nextMealState={nextMealState}
+             actionInput={moveToRightActionInput}
+             waitingText={waitingText}
+           />
+         )
+       }
+       case MEAL_STATE.R_MovingToForward: {
+         /**
+          * We recreate currentMealState due to a race condition where sometimes
+          * the app is performing a re-rendering and *then* the state is updated.
+          */
+         let currentMealState = MEAL_STATE.R_MovingToForward
+         let nextMealState = MEAL_STATE.U_PlateLocator
+         let waitingText = 'Waiting to move to forward...'
+         return (
+           <RobotMotion
+             debug={props.debug}
+             mealState={currentMealState}
+             nextMealState={nextMealState}
+             actionInput={moveToForwardActionInput}
+             waitingText={waitingText}
+           />
+         )
+       }
+       case MEAL_STATE.R_MovingToBackward: {
+         /**
+          * We recreate currentMealState due to a race condition where sometimes
+          * the app is performing a re-rendering and *then* the state is updated.
+          */
+         let currentMealState = MEAL_STATE.R_MovingToBackward
+         let nextMealState = MEAL_STATE.U_PlateLocator
+         let waitingText = 'Waiting to move to backward...'
+         return (
+           <RobotMotion
+             debug={props.debug}
+             mealState={currentMealState}
+             nextMealState={nextMealState}
+             actionInput={moveToBackwardActionInput}
+             waitingText={waitingText}
+           />
+         )
+       }
       case MEAL_STATE.R_BiteAcquisition: {
         /**
          * We recreate currentMealState due to a race condition where sometimes
@@ -179,6 +255,10 @@ function Home(props) {
     props.webVideoServerURL,
     biteAcquisitionActionInput,
     moveAbovePlateActionInput,
+    moveToBackwardActionInput,
+    moveToForwardActionInput,
+    moveToLeftActionInput,
+    moveToRightActionInput,
     moveToMouthActionInput,
     moveToRestingPositionActionInput,
     moveToStowPositionActionInput
