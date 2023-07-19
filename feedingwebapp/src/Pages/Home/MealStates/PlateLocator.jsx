@@ -47,7 +47,7 @@ const PlateLocator = (props) => {
   // arrow button width
   let arrowButtonWidth = '13vw'
 
-   /**
+  /**
    * Callback function for when the user presses one of the buttons to teleop
    * the robot.
    *

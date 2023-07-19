@@ -63,7 +63,6 @@ export const MEAL_STATE = {
   U_PostMeal: 'U_PostMeal'
 }
 
-
 /**
  * The parameters that users can set (keys) and a list of human-readable values
  * they can take on.
