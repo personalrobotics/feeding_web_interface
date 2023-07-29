@@ -4,6 +4,7 @@ from std_srvs.srv import SetBool
 import cv2
 from cv_bridge import CvBridge
 from geometry_msgs.msg import PointStamped
+import numpy as np
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
@@ -160,12 +161,15 @@ class FaceDetectionNode(Node):
                 )
                 annotated_msg = self.bridge.cv2_to_imgmsg(cv_image, "bgr8")
                 annotated_img = annotated_msg
-                # Publish the detected mouth center
+                # Publish the detected mouth center. The below is a hardcoded
+                # rough position of the mouth from the side staging location,
+                # in "camera_color_optical_frame." We add 5cm of noise to the
+                # position for added realism
                 face_detection_msg.detected_mouth_center = PointStamped()
                 face_detection_msg.detected_mouth_center.header = msg.header
-                face_detection_msg.detected_mouth_center.point.x = 0.0
-                face_detection_msg.detected_mouth_center.point.y = 0.0
-                face_detection_msg.detected_mouth_center.point.z = 0.2
+                face_detection_msg.detected_mouth_center.point.x = 0.049+(np.random.rand()-0.5)/10
+                face_detection_msg.detected_mouth_center.point.y = -0.177+(np.random.rand()-0.5)/10
+                face_detection_msg.detected_mouth_center.point.z = 0.642+(np.random.rand()-0.5)/10
             else:
                 annotated_img = msg
             face_detection_msg.is_mouth_open = open_mouth_detected
