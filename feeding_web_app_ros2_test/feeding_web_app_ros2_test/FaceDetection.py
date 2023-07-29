@@ -80,9 +80,7 @@ class FaceDetectionNode(Node):
         Callback function for the SetBool service. Safely toggles
         the face detection on or off depending on the request.
         """
-        self.get_logger().info(
-            "Incoming service request. turn_on: %s" % (request.data)
-        )
+        self.get_logger().info("Incoming service request. turn_on: %s" % (request.data))
         if request.data:
             # Reset counters
             self.num_consecutive_images_without_face = 0
@@ -167,9 +165,15 @@ class FaceDetectionNode(Node):
                 # position for added realism
                 face_detection_msg.detected_mouth_center = PointStamped()
                 face_detection_msg.detected_mouth_center.header = msg.header
-                face_detection_msg.detected_mouth_center.point.x = 0.049+(np.random.rand()-0.5)/10
-                face_detection_msg.detected_mouth_center.point.y = -0.177+(np.random.rand()-0.5)/10
-                face_detection_msg.detected_mouth_center.point.z = 0.642+(np.random.rand()-0.5)/10
+                face_detection_msg.detected_mouth_center.point.x = (
+                    0.049 + (np.random.rand() - 0.5) / 10
+                )
+                face_detection_msg.detected_mouth_center.point.y = (
+                    -0.177 + (np.random.rand() - 0.5) / 10
+                )
+                face_detection_msg.detected_mouth_center.point.z = (
+                    0.642 + (np.random.rand() - 0.5) / 10
+                )
             else:
                 annotated_img = msg
             face_detection_msg.is_mouth_open = open_mouth_detected
