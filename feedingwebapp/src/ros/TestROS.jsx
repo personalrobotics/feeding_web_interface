@@ -45,9 +45,15 @@ function TestROS() {
       <hr />
 
       {/**
-       * Allow users to subscribe to a topic and display its data
+       * Allow users to subscribe to a topic (of type std_msgs/String) and display its data
        */}
-      <TestROSSubscribe />
+      <TestROSSubscribe topicType={'std_msgs/String'} />
+      <hr />
+
+      {/**
+       * Allow users to subscribe to a topic (of type std_msgs/Float32) and display its data
+       */}
+      <TestROSSubscribe topicType={'std_msgs/Float32'} />
       <hr />
 
       {/**
