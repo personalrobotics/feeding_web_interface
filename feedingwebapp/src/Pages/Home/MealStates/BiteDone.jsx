@@ -1,5 +1,5 @@
 // React Imports
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -35,30 +35,26 @@ const BiteDone = () => {
   let iconWidth = isPortrait ? '28vh' : '28vw'
   let iconHeight = isPortrait ? '18vh' : '18vw'
 
-  const [foodProb, setFoodProb] = useState([])
-
   // Connect to Ros
   const ros = useRef(useROS().ros)
 
+  const food_on_fork_callback = (message) => {
+    // setFoodProb((prevVal) => [...prevVal, Number(message.data)])
+    if (Number(message.data) < FOOD_ON_FORK_PROB_RANGE.lowerProb) {
+      console.log('moving above plate')
+      moveAbovePlate()
+      return
+    }
+  }
+
   useEffect(() => {
-    const food_on_fork_topic = subscribeToROSTopic(
-      ros.current,
-      FOOD_ON_FORK_TOPIC.name,
-      FOOD_ON_FORK_TOPIC.type,
-      (message) => setFoodProb((prevVal) => [...prevVal, Number(message.data)]),
-      1000
-    )
+    const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, food_on_fork_callback)
 
     return () => {
-      if (foodProb.length > 10 && foodProb[9] < FOOD_ON_FORK_PROB_RANGE.lowerProb) {
-        console.log('prob in range')
-        unsubscribeFromROSTopic(food_on_fork_topic, () => {
-          console.log('Unsubscribed from FoF!')
-        })
-        moveAbovePlate()
-      }
+      console.log('unscubscribed from FoF')
+      unsubscribeFromROSTopic(food_on_fork_topic)
     }
-  })
+  }, [setMealState])
 
   /**
    * Callback function for when the user wants to move above plate.
