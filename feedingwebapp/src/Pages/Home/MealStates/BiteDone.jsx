@@ -38,14 +38,15 @@ const BiteDone = () => {
   // Connect to Ros
   const ros = useRef(useROS().ros)
 
-  const food_on_fork_callback = (message) => {
+  const food_on_fork_callback = useCallback((message) => {
     // setFoodProb((prevVal) => [...prevVal, Number(message.data)])
+    console.log("Prob: " + message.data);
     if (Number(message.data) < FOOD_ON_FORK_PROB_RANGE.lowerProb) {
       console.log('moving above plate')
       moveAbovePlate()
       return
     }
-  }
+  })
 
   useEffect(() => {
     const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, food_on_fork_callback)
