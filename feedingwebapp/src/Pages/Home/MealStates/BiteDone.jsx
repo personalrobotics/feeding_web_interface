@@ -54,7 +54,7 @@ const BiteDone = () => {
       console.log('unscubscribed from FoF')
       unsubscribeFromROSTopic(food_on_fork_topic)
     }
-  }, [setMealState])
+  }, [setMealState, food_on_fork_callback])
 
   /**
    * Callback function for when the user wants to move above plate.
