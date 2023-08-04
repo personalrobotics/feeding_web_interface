@@ -45,7 +45,7 @@ export const FACE_DETECTION_TOPIC = '/face_detection'
 export const FACE_DETECTION_TOPIC_MSG = 'ada_feeding_msgs/FaceDetection'
 export const FACE_DETECTION_IMG_TOPIC = '/face_detection_img'
 // Name of the ROS topic and the type of response
-export const FOOD_ON_FORK_TOPIC = {name: '/food_on_fork', type: 'std_msgs/Float32'}
+export const FOOD_ON_FORK_TOPIC = { name: '/food_on_fork', type: 'std_msgs/Float32' }
 
 /**
  * For states that call ROS actions, this dictionary contains
@@ -110,4 +110,4 @@ export const ROS_ACTION_STATUS_CANCELED = '5'
 /**
  * Constant range of probability values that defines Food on Fork
  */
-export const FOOD_ON_FORK_PROB_RANGE = {lowerProb: 0.4, higherProb: 0.6}
+export const FOOD_ON_FORK_PROB_RANGE = { lowerProb: 0.4, higherProb: 0.6 }

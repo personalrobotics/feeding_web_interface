@@ -55,14 +55,14 @@ export function createROSTopic(ros, topicName, topicType) {
  * @param {string} topicType The type of the topic to create.
  * @param {function} callback The callback function to call when a message is
  *                   received.
- * @param {number} interval The interval value in ms (milliseconds) that the 
+ * @param {number} interval The interval value in ms (milliseconds) that the
  *                   topic should be listened at (for instance, 1000 would mean
- *                   that we subscribe to the particular topic and listen to it 
- *                   every 1000 ms). Default value is 0; which means as soon as 
+ *                   that we subscribe to the particular topic and listen to it
+ *                   every 1000 ms). Default value is 0; which means as soon as
  *                   the message is received
  * @returns {object} The ROSLIB.Topic, or null if ROS is not connected.
  */
-export function subscribeToROSTopic(ros, topicName, topicType, callback, interval=0) {
+export function subscribeToROSTopic(ros, topicName, topicType, callback, interval = 0) {
   if (ros === null) {
     console.log('ROS is not connected')
     return null
@@ -70,7 +70,7 @@ export function subscribeToROSTopic(ros, topicName, topicType, callback, interva
   let topic = new ROSLIB.Topic({
     ros: ros,
     name: topicName,
-    messageType: topicType, 
+    messageType: topicType,
     throttle_rate: interval
   })
   topic.subscribe(callback)

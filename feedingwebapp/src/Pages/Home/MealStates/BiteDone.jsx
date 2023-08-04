@@ -41,20 +41,24 @@ const BiteDone = () => {
   const ros = useRef(useROS().ros)
 
   useEffect(() => {
-    const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, (message) => setFoodProb(prevVal => [...prevVal, Number(message.data)]), 1000)
+    const food_on_fork_topic = subscribeToROSTopic(
+      ros.current,
+      FOOD_ON_FORK_TOPIC.name,
+      FOOD_ON_FORK_TOPIC.type,
+      (message) => setFoodProb((prevVal) => [...prevVal, Number(message.data)]),
+      1000
+    )
 
     return () => {
       if (foodProb.length > 10 && foodProb[9] < FOOD_ON_FORK_PROB_RANGE.lowerProb) {
-        console.log("prob in range")
+        console.log('prob in range')
         unsubscribeFromROSTopic(food_on_fork_topic, () => {
-          console.log("Unsubscribed from FoF!")
+          console.log('Unsubscribed from FoF!')
         })
         moveAbovePlate()
       }
     }
   })
-
-
 
   /**
    * Callback function for when the user wants to move above plate.
