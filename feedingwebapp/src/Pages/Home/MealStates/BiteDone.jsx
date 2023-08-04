@@ -1,5 +1,5 @@
 // React Imports
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -7,7 +7,10 @@ import { View } from 'react-native'
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import { MOVING_STATE_ICON_DICT } from '../../Constants'
+import { FOOD_ON_FORK_TOPIC, FOOD_ON_FORK_PROB_RANGE, MOVING_STATE_ICON_DICT } from '../../Constants'
+
+// Import subscriber to be able to subscribe to FoF topic
+import { subscribeToROSTopic, unsubscribeFromROSTopic, useROS } from '../../../ros/ros_helpers'
 
 /**
  * The BiteDone component appears after the robot has moved to the user's mouth,
@@ -31,6 +34,27 @@ const BiteDone = () => {
   let buttonHeight = isPortrait ? '20vh' : '20vw'
   let iconWidth = isPortrait ? '28vh' : '28vw'
   let iconHeight = isPortrait ? '18vh' : '18vw'
+
+  const [foodProb, setFoodProb] = useState([])
+
+  // Connect to Ros
+  const ros = useRef(useROS().ros)
+
+  useEffect(() => {
+    const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, (message) => setFoodProb(prevVal => [...prevVal, Number(message.data)]), 1000)
+
+    return () => {
+      if (foodProb.length > 10 && foodProb[9] < FOOD_ON_FORK_PROB_RANGE.lowerProb) {
+        console.log("prob in range")
+        unsubscribeFromROSTopic(food_on_fork_topic, () => {
+          console.log("Unsubscribed from FoF!")
+        })
+        moveAbovePlate()
+      }
+    }
+  })
+
+
 
   /**
    * Callback function for when the user wants to move above plate.
