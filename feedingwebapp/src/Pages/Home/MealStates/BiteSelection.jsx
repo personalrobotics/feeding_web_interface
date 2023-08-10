@@ -123,7 +123,7 @@ const BiteSelection = (props) => {
       setDesiredFoodItem({
         header: actionResult.header,
         camera_info: actionResult.camera_info,
-        detected_food: actionResult.detected_items[food_i],
+        detected_food: actionResult.detected_items[food_i]
       })
       setMealState(MEAL_STATE.R_BiteAcquisition)
     },
