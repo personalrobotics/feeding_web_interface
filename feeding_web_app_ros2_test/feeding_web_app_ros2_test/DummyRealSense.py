@@ -82,8 +82,9 @@ class DummyRealSense(Node):
         self.aligned_depth_publisher = self.create_publisher(
             Image, "~/aligned_depth", 1
         )
-        self.camera_info_publisher = self.create_publisher(CameraInfo, 
-            "~/camera_info", 1)
+        self.camera_info_publisher = self.create_publisher(
+            CameraInfo, "~/camera_info", 1
+        )
         if self.video is not None:
             self.num_frames = 0
         self.bridge = CvBridge()
@@ -137,12 +138,32 @@ class DummyRealSense(Node):
             camera_info_msg.width = 640
             camera_info_msg.distortion_model = "plumb_bob"
             camera_info_msg.d = [0.0, 0.0, 0.0, 0.0, 0.0]
-            camera_info_msg.k = [614.5933227539062, 0.0, 312.1358947753906, 
-                0.0, 614.6914672851562, 223.70831298828125, 0.0, 0.0, 1.0]
+            camera_info_msg.k = [
+                614.5933227539062,
+                0.0,
+                312.1358947753906,
+                0.0,
+                614.6914672851562,
+                223.70831298828125,
+                0.0,
+                0.0,
+                1.0,
+            ]
             camera_info_msg.r = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
-            camera_info_msg.p = [614.5933227539062, 0.0, 312.1358947753906, 
-                0.0, 0.0, 614.6914672851562, 223.70831298828125, 
-                0.0, 0.0, 0.0, 1.0, 0.0]
+            camera_info_msg.p = [
+                614.5933227539062,
+                0.0,
+                312.1358947753906,
+                0.0,
+                0.0,
+                614.6914672851562,
+                223.70831298828125,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+            ]
             self.camera_info_publisher.publish(camera_info_msg)
 
             rate.sleep()

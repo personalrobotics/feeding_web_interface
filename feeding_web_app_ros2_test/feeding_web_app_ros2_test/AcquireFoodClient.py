@@ -13,14 +13,13 @@ from ada_feeding_msgs.action import AcquireFood
 
 
 class AcquireFoodClient(Node):
-
     def __init__(self):
-        super().__init__('acquire_food_client')
-        self._action_client = ActionClient(self, AcquireFood, '/AcquireFood')
+        super().__init__("acquire_food_client")
+        self._action_client = ActionClient(self, AcquireFood, "/AcquireFood")
 
-        self.declare_parameter('request_path', rclpy.Parameter.Type.STRING)
-        request_path = self.get_parameter('request_path')
-        with open(request_path.value, 'rb') as file:
+        self.declare_parameter("request_path", rclpy.Parameter.Type.STRING)
+        request_path = self.get_parameter("request_path")
+        with open(request_path.value, "rb") as file:
             self.goal_msg = pickle.load(file)
 
     def send_goal(self):
@@ -54,5 +53,5 @@ def main(args=None):
     action_client.get_logger().info(f"Result: {result}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
