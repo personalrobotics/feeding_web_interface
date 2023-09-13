@@ -251,7 +251,7 @@ const RobotMotion = (props) => {
    * @returns {JSX.Element} the action status text, progress bar or blank view
    */
   const actionStatusTextAndVisual = useCallback(
-    (flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, progress, retry) => {
+    (flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime = false, time = 0, progress, retry = false) => {
       return (
         <>
           <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
@@ -260,7 +260,23 @@ const RobotMotion = (props) => {
                 {props.waitingText}
               </p>
               <p style={{ fontSize: motionTextFontSize }}>{text}</p>
-              {showTime ? <p style={{ fontSize: motionTextFontSize }}>&nbsp;&nbsp;Elapsed Time: {time} sec</p> : <></>}
+              {showTime === true ? <p style={{ fontSize: motionTextFontSize }}>&nbsp;&nbsp;Elapsed Time: {time} sec</p> : <></>}
+              {retry === true ? (
+                <Button
+                  variant='warning'
+                  className='mx-2 btn-huge'
+                  size='lg'
+                  onClick={resumeCallback}
+                  style={{
+                    width: '90%',
+                    height: '20%'
+                  }}
+                >
+                  <h5 style={{ textAlign: 'center', fontSize: motionTextFontSize }}>Retry</h5>
+                </Button>
+              ) : (
+                <></>
+              )}
             </View>
             <View
               style={{
@@ -272,22 +288,6 @@ const RobotMotion = (props) => {
               }}
             >
               {progress === null ? <></> : <CircleProgressBar proportion={progress} />}
-              {retry === false ? (
-                <></>
-              ) : (
-                <Button
-                  variant='warning'
-                  className='mx-2 btn-huge'
-                  size='lg'
-                  onClick={() => resumeCallback()}
-                  style={{
-                    width: '90%',
-                    height: '20%'
-                  }}
-                >
-                  <h5 style={{ textAlign: 'center', fontSize: motionTextFontSize }}>Retry</h5>
-                </Button>
-              )}
             </View>
           </View>
         </>
@@ -318,7 +318,6 @@ const RobotMotion = (props) => {
               text = 'Robot is moving...'
               time = Math.round(moving_elapsed_time * 100) / 100
               showTime = true
-              retry = false
               // Calling CircleProgessBar component to visualize robot motion of moving
               return (
                 <>
@@ -330,7 +329,6 @@ const RobotMotion = (props) => {
               text = 'Robot is thinking...'
               time = Math.round(planning_elapsed_time * 100) / 100
               showTime = true
-              retry = false
               return (
                 <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, null, retry)}</>
               )
@@ -338,18 +336,12 @@ const RobotMotion = (props) => {
           } else {
             // If you haven't gotten feedback yet, assume the robot is planning
             text = 'Robot is thinking...'
-            time = 0
-            showTime = false
-            retry = false
             return (
               <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, null, retry)}</>
             )
           }
         case ROS_ACTION_STATUS_SUCCEED:
           text = 'Robot has finished'
-          time = 0
-          showTime = false
-          retry = false
           return <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, null, retry)}</>
         case ROS_ACTION_STATUS_ABORT:
           /**
@@ -359,22 +351,14 @@ const RobotMotion = (props) => {
            * users on how to troubleshoot/fix it.
            */
           text = 'Robot encountered an error'
-          time = 0
-          showTime = false
           retry = true
           return <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, null, retry)}</>
         case ROS_ACTION_STATUS_CANCELED:
           text = 'Robot is paused'
-          time = 0
-          showTime = false
-          retry = false
           return <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, null, retry)}</>
         default:
           if (paused) {
             text = 'Robot is paused'
-            time = 0
-            showTime = false
-            retry = false
             return (
               <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, null, retry)}</>
             )
