@@ -89,6 +89,40 @@ class DummyRealSense(Node):
             self.num_frames = 0
         self.bridge = CvBridge()
 
+        # Define constant CameraInfo
+        self.camera_info_msg = CameraInfo()
+        self.camera_info_msg.header.frame_id = "camera_color_optical_frame"
+        self.camera_info_msg.height = 480
+        self.camera_info_msg.width = 640
+        self.camera_info_msg.distortion_model = "plumb_bob"
+        self.camera_info_msg.d = [0.0, 0.0, 0.0, 0.0, 0.0]
+        self.camera_info_msg.k = [
+            614.5933227539062,
+            0.0,
+            312.1358947753906,
+            0.0,
+            614.6914672851562,
+            223.70831298828125,
+            0.0,
+            0.0,
+            1.0,
+        ]
+        self.camera_info_msg.r = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        self.camera_info_msg.p = [
+            614.5933227539062,
+            0.0,
+            312.1358947753906,
+            0.0,
+            0.0,
+            614.6914672851562,
+            223.70831298828125,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+        ]
+
         # Launch the publisher in a separate thread
         self.thread = threading.Thread(target=self.publish_frames, daemon=True)
         self.thread.start()
@@ -131,40 +165,8 @@ class DummyRealSense(Node):
             self.aligned_depth_publisher.publish(depth_frame_msg)
 
             # Publish the Camera Info
-            camera_info_msg = CameraInfo()
-            camera_info_msg.header.frame_id = "camera_color_optical_frame"
-            camera_info_msg.header.stamp = compressed_frame_msg.header.stamp
-            camera_info_msg.height = 480
-            camera_info_msg.width = 640
-            camera_info_msg.distortion_model = "plumb_bob"
-            camera_info_msg.d = [0.0, 0.0, 0.0, 0.0, 0.0]
-            camera_info_msg.k = [
-                614.5933227539062,
-                0.0,
-                312.1358947753906,
-                0.0,
-                614.6914672851562,
-                223.70831298828125,
-                0.0,
-                0.0,
-                1.0,
-            ]
-            camera_info_msg.r = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
-            camera_info_msg.p = [
-                614.5933227539062,
-                0.0,
-                312.1358947753906,
-                0.0,
-                0.0,
-                614.6914672851562,
-                223.70831298828125,
-                0.0,
-                0.0,
-                0.0,
-                1.0,
-                0.0,
-            ]
-            self.camera_info_publisher.publish(camera_info_msg)
+            self.camera_info_msg.header.stamp = compressed_frame_msg.header.stamp
+            self.camera_info_publisher.publish(self.camera_info_msg)
 
             rate.sleep()
 
