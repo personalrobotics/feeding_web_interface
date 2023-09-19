@@ -11,10 +11,10 @@ setup(
     data_files=[
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         ("share/" + package_name, ["package.xml"]),
-        # Add the video used by the dummy RealSense publisher
+        # Add the data folder
         (
             "share/data",
-            ["data/2022_11_01_ada_picks_up_carrots_camera_compressed_ft_tf.mp4"],
+            glob(os.path.join("data", "*")),
         ),
         # Include all launch files.
         (
@@ -33,6 +33,7 @@ setup(
         "console_scripts": [
             # Scripts for the main app
             "AcquireFood = feeding_web_app_ros2_test.AcquireFood:main",
+            "AcquireFoodClient = feeding_web_app_ros2_test.AcquireFoodClient:main",
             "DummyRealSense = feeding_web_app_ros2_test.DummyRealSense:main",
             "FaceDetection = feeding_web_app_ros2_test.FaceDetection:main",
             "MoveAbovePlate = feeding_web_app_ros2_test.MoveAbovePlate:main",
