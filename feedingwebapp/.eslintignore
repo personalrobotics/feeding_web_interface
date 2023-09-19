@@ -6,8 +6,6 @@
 .pnp.js
 # don't lint progressbar.js because it is a third-party
 /src/Pages/Home/MealStates/progressbar.js
-# don't lint NoSleep.js because it is a third-party
-/src/Pages/Home/MealStates/NoSleep.js
 
 # testing
 /coverage
