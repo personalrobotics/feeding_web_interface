@@ -57,7 +57,6 @@ def main(args=None):
         action_client.get_logger().error("MoveAbovePlate Failed")
         return
 
-
     # Send Goal
     future = action_client.acquire_food()
     rclpy.spin_until_future_complete(action_client, future)
