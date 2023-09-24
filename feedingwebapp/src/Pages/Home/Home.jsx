@@ -54,7 +54,7 @@ function Home(props) {
    * the action input changes (even on re-renders).
    */
   const moveAbovePlateActionInput = useMemo(() => ({}), [])
-  const biteAcquisitionActionInput = useMemo(() => ({ detected_food: desiredFoodItem }), [desiredFoodItem])
+  const biteAcquisitionActionInput = useMemo(() => desiredFoodItem, [desiredFoodItem])
   const moveToRestingPositionActionInput = useMemo(() => ({}), [])
   const moveToMouthActionInput = useMemo(() => ({}), [])
   const moveToStowPositionActionInput = useMemo(() => ({}), [])
@@ -141,6 +141,38 @@ function Home(props) {
             mealState={currentMealState}
             nextMealState={nextMealState}
             actionInput={moveToMouthActionInput}
+            waitingText={waitingText}
+          />
+        )
+      }
+      case MEAL_STATE.R_MovingFromMouthToAbovePlate: {
+        /**
+         * We recreate currentMealState due to a race condition where sometimes
+         * the app is performing a re-rendering and *then* the state is updated.
+         */
+        let currentMealState = MEAL_STATE.R_MovingFromMouthToAbovePlate
+        let nextMealState = MEAL_STATE.U_BiteSelection
+        let waitingText = 'Waiting to move above the plate...'
+        return (
+          <RobotMotion
+            debug={props.debug}
+            mealState={currentMealState}
+            nextMealState={nextMealState}
+            actionInput={moveAbovePlateActionInput}
+            waitingText={waitingText}
+          />
+        )
+      }
+      case MEAL_STATE.R_MovingFromMouthToRestingPosition: {
+        let currentMealState = MEAL_STATE.R_MovingFromMouthToRestingPosition
+        let nextMealState = MEAL_STATE.U_BiteAcquisitionCheck
+        let waitingText = 'Waiting to move to the resting position...'
+        return (
+          <RobotMotion
+            debug={props.debug}
+            mealState={currentMealState}
+            nextMealState={nextMealState}
+            actionInput={moveToRestingPositionActionInput}
             waitingText={waitingText}
           />
         )
