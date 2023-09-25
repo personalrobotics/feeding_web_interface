@@ -118,6 +118,7 @@ export const ROS_ACTION_STATUS_ABORT = '4'
 export const ROS_ACTION_STATUS_CANCELED = '5'
 
 /**
- * Constant range of probability values that defines Food on Fork
+ * Constant range of probability values that defines Food on Fork and window size
  */
-export const FOOD_ON_FORK_PROB_RANGE = { lowerProb: 0.4, higherProb: 0.6 }
+export const FOOD_ON_FORK_PROB_RANGE = { lowerProb: 0.5, higherProb: 0.5 }
+export const FOOD_ON_FORK_WINDOW_SIZE = 200

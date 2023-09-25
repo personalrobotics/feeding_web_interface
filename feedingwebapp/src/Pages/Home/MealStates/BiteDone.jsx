@@ -7,7 +7,7 @@ import { View } from 'react-native'
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import { FOOD_ON_FORK_TOPIC, FOOD_ON_FORK_PROB_RANGE, MOVING_STATE_ICON_DICT } from '../../Constants'
+import { FOOD_ON_FORK_TOPIC, FOOD_ON_FORK_PROB_RANGE, FOOD_ON_FORK_WINDOW_SIZE, MOVING_STATE_ICON_DICT } from '../../Constants'
 
 // Import subscriber to be able to subscribe to FoF topic
 import { subscribeToROSTopic, unsubscribeFromROSTopic, useROS } from '../../../ros/ros_helpers'
@@ -20,6 +20,7 @@ import { subscribeToROSTopic, unsubscribeFromROSTopic, useROS } from '../../../r
 const BiteDone = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
+  const foodOnFork = useGlobalState((state) => state.foodOnFork)
   // Get icon image for move above plate
   let moveAbovePlateImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingFromMouthToAbovePlate]
   // Get icon image for move to resting position
@@ -37,11 +38,19 @@ const BiteDone = () => {
 
   // Connect to Ros
   const ros = useRef(useROS().ros)
-
+  let window = []
   const food_on_fork_callback = useCallback((message) => {
-    // setFoodProb((prevVal) => [...prevVal, Number(message.data)])
-    console.log("Prob: " + message.data);
-    if (Number(message.data) < FOOD_ON_FORK_PROB_RANGE.lowerProb) {
+    if (window.size == FOOD_ON_FORK_WINDOW_SIZE) {
+      window.shift()
+    }
+    window.push(Number(message.data))
+    let countLessThanRange = 0
+    for (const val of window) {
+      if (val < FOOD_ON_FORK_PROB_RANGE.lowerProb) {
+        countLessThanRange++
+      }
+    }
+    if (window.size == FOOD_ON_FORK_WINDOW_SIZE && countLessThanRange >= 0.75 * FOOD_ON_FORK_WINDOW_SIZE) {
       console.log('moving above plate')
       moveAbovePlate()
       return
@@ -49,11 +58,13 @@ const BiteDone = () => {
   })
 
   useEffect(() => {
-    const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, food_on_fork_callback)
+    if (foodOnFork == "Yes") {
+      const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, food_on_fork_callback)
 
-    return () => {
-      console.log('unscubscribed from FoF')
-      unsubscribeFromROSTopic(food_on_fork_topic)
+      return () => {
+        console.log('unscubscribed from FoF')
+        unsubscribeFromROSTopic(food_on_fork_topic)
+      }
     }
   }, [setMealState, food_on_fork_callback])
 

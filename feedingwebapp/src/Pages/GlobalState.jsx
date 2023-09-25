@@ -83,7 +83,8 @@ export const MEAL_STATE = {
 export const SETTINGS = {
   stagingPosition: ['In Front of Me', 'On My Right Side'],
   biteInitiation: ['Open Mouth', 'Say "I am Ready"', 'Press Button'],
-  biteSelection: ['Name of Food', 'Click on Food']
+  biteSelection: ['Name of Food', 'Click on Food'],
+  foodOnFork: ['Yes', 'No']
 }
 
 /**
@@ -110,6 +111,7 @@ export const useGlobalState = create(
       stagingPosition: SETTINGS.stagingPosition[0],
       biteInitiation: SETTINGS.biteInitiation[0],
       biteSelection: SETTINGS.biteSelection[0],
+      foodOnFork: SETTINGS.foodOnFork[0],
 
       // Setters for global state
       setMealState: (mealState) =>
@@ -144,7 +146,11 @@ export const useGlobalState = create(
       setBiteSelection: (biteSelection) =>
         set(() => ({
           biteSelection: biteSelection
-        }))
+        })),
+      setFoodOnFork: (foodOnFork) =>
+        set(() => ({
+          foodOnFork: foodOnFork
+        })),
     }),
     { name: 'ada_web_app_global_state' }
   )

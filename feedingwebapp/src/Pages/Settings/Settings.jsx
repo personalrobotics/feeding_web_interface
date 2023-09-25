@@ -60,6 +60,15 @@ const Settings = () => {
           valueSetter={useGlobalState((state) => state.setBiteSelection)}
         />
       </Row>
+
+      <Row className='justify-content-center mx-1 my-2'>
+        <Form.Label style={{ fontSize: '30px' }}>Would you like to use the Automatic Food on Fork detection? </Form.Label>
+        <ToggleButtonGroup
+          valueOptions={SETTINGS.foodOnFork}
+          currentValue={useGlobalState((state) => state.foodOnFork)}
+          valueSetter={useGlobalState((state) => state.setFoodOnFork)}
+        />
+      </Row>
     </div>
   )
 }
