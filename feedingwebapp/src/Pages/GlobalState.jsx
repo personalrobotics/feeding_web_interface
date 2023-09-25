@@ -150,7 +150,7 @@ export const useGlobalState = create(
       setFoodOnFork: (foodOnFork) =>
         set(() => ({
           foodOnFork: foodOnFork
-        })),
+        }))
     }),
     { name: 'ada_web_app_global_state' }
   )

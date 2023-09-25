@@ -40,7 +40,7 @@ const BiteDone = () => {
   const ros = useRef(useROS().ros)
   let window = []
   const food_on_fork_callback = useCallback((message) => {
-    if (window.size == FOOD_ON_FORK_WINDOW_SIZE) {
+    if (window.size === FOOD_ON_FORK_WINDOW_SIZE) {
       window.shift()
     }
     window.push(Number(message.data))
@@ -50,7 +50,7 @@ const BiteDone = () => {
         countLessThanRange++
       }
     }
-    if (window.size == FOOD_ON_FORK_WINDOW_SIZE && countLessThanRange >= 0.75 * FOOD_ON_FORK_WINDOW_SIZE) {
+    if (window.size === FOOD_ON_FORK_WINDOW_SIZE && countLessThanRange >= 0.75 * FOOD_ON_FORK_WINDOW_SIZE) {
       console.log('moving above plate')
       moveAbovePlate()
       return
@@ -58,7 +58,7 @@ const BiteDone = () => {
   })
 
   useEffect(() => {
-    if (foodOnFork == "Yes") {
+    if (foodOnFork === 'Yes') {
       const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, food_on_fork_callback)
 
       return () => {
@@ -66,7 +66,7 @@ const BiteDone = () => {
         unsubscribeFromROSTopic(food_on_fork_topic)
       }
     }
-  }, [setMealState, food_on_fork_callback])
+  }, [setMealState, food_on_fork_callback, foodOnFork])
 
   /**
    * Callback function for when the user wants to move above plate.
