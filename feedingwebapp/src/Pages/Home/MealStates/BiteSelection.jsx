@@ -59,11 +59,6 @@ const BiteSelection = (props) => {
   let dimension = isPortrait ? 'column' : 'row'
   // NoSleep object creation
   let noSleep = useMemo(() => new NoSleep(), [])
-  // Define wake lock boolean
-  // let wakeLockEnabled = false
-  const [wakeLockEnabled, setWakeLockEnabled] = useState(false)
-  // Wake lock text
-  const [wakeLockText, setWakeLockText] = useState('Wake lock off')
 
   /**
    * Create a local state variable to store the detected masks, the
@@ -109,9 +104,11 @@ const BiteSelection = (props) => {
    * meal.
    */
   const doneEatingClicked = useCallback(() => {
+    console.log('Wake Lock is enabled')
+    noSleep.enable() // keep the screen on!
     console.log('doneEatingClicked')
     setMealState(MEAL_STATE.R_StowingArm)
-  }, [setMealState])
+  }, [setMealState, noSleep])
 
   // Get current window size
   let windowSize = useWindowSize()
@@ -120,8 +117,10 @@ const BiteSelection = (props) => {
    * Callback function for when the user wants to move to mouth position.
    */
   const moveToMouth = useCallback(() => {
+    console.log('Wake Lock is enabled')
+    noSleep.enable() // keep the screen on!
     setMealState(MEAL_STATE.R_MovingToMouth)
-  }, [setMealState])
+  }, [setMealState, noSleep])
 
   /**
    * Callback function for when the user clicks the button for a food item.
@@ -134,6 +133,8 @@ const BiteSelection = (props) => {
         camera_info: actionResult.camera_info,
         detected_food: actionResult.detected_items[food_i]
       })
+      console.log('Wake Lock is enabled')
+      noSleep.enable() // keep the screen on!
       setMealState(MEAL_STATE.R_BiteAcquisition)
     },
     [actionResult, setDesiredFoodItem, setMealState]
@@ -424,23 +425,6 @@ const BiteSelection = (props) => {
     )
   }, [moveToMouth, moveToMouthImage, textFontSize])
 
-  /**
-   * Callback function for when the user clicks on the wake lock button.
-   */
-  const wakeLockClicked = useCallback(() => {
-    if (!wakeLockEnabled) {
-      console.log('Wake Lock is enabled')
-      noSleep.enable() // keep the screen on!
-      setWakeLockEnabled(true)
-      setWakeLockText('Wake lock on')
-    } else {
-      console.log('Wake Lock is disabled')
-      noSleep.disable() // let the screen turn off.
-      setWakeLockEnabled(false)
-      setWakeLockText('Wake lock off')
-    }
-  }, [setWakeLockEnabled, setWakeLockText, noSleep, wakeLockEnabled])
-
   /** Get the full page view
    *
    * @returns {JSX.Element} the the full page view
@@ -458,26 +442,7 @@ const BiteSelection = (props) => {
          */}
         <View
           style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%'
-          }}
-        >
-          <Button
-            variant={wakeLockEnabled ? 'success' : 'warning'}
-            size='lg'
-            className='btn-huge'
-            onClick={wakeLockClicked}
-            style={{ width: '90vw', height: '5vh', fontSize: '2.5vh', marginTop: margin }}
-          >
-            {wakeLockText}
-          </Button>
-        </View>
-        <View
-          style={{
-            flex: 2,
+            flex: 3,
             flexDirection: 'row',
             alignItems: 'center',
             width: '100%'
@@ -655,10 +620,7 @@ const BiteSelection = (props) => {
     videoParentRef,
     imageClicked,
     props.debug,
-    debugButton,
-    wakeLockClicked,
-    wakeLockEnabled,
-    wakeLockText
+    debugButton
   ])
 
   // Render the component
