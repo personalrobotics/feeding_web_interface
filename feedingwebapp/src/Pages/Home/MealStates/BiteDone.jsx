@@ -1,5 +1,5 @@
 // React Imports
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -44,7 +44,7 @@ const BiteDone = () => {
     console.log('Wake Lock is enabled')
     noSleep.enable() // keep the screen on!
     setMealState(MEAL_STATE.R_MovingFromMouthToAbovePlate)
-  }, [setMealState])
+  }, [setMealState, noSleep])
 
   /**
    * Callback function for when the user wants to move to resting position.
@@ -53,7 +53,7 @@ const BiteDone = () => {
     console.log('Wake Lock is enabled')
     noSleep.enable() // keep the screen on!
     setMealState(MEAL_STATE.R_MovingFromMouthToRestingPosition)
-  }, [setMealState])
+  }, [setMealState, noSleep])
 
   /**
    * Get the bite finished text to render.

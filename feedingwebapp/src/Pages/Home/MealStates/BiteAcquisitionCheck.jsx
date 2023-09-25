@@ -1,5 +1,5 @@
 // React Imports
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -45,7 +45,7 @@ const BiteAcquisitionCheck = () => {
     noSleep.enable() // keep the screen on!
     console.log('acquisitionSuccess')
     setMealState(MEAL_STATE.R_MovingToMouth)
-  }, [setMealState])
+  }, [setMealState, noSleep])
 
   /**
    * Callback function for when the user indicates that the bite acquisition
@@ -56,7 +56,7 @@ const BiteAcquisitionCheck = () => {
     noSleep.enable() // keep the screen on!
     console.log('acquisitionFailure')
     setMealState(MEAL_STATE.R_MovingAbovePlate)
-  }, [setMealState])
+  }, [setMealState, noSleep])
 
   /**
    * Get the ready for bite text to render.

@@ -137,7 +137,7 @@ const BiteSelection = (props) => {
       noSleep.enable() // keep the screen on!
       setMealState(MEAL_STATE.R_BiteAcquisition)
     },
-    [actionResult, setDesiredFoodItem, setMealState]
+    [actionResult, setDesiredFoodItem, setMealState, noSleep]
   )
 
   /**
