@@ -189,6 +189,7 @@ const RobotMotion = (props) => {
      */
     return () => {
       destroyActionClient(robotMotionAction)
+      setActionStatus({ actionStatus: ROS_ACTION_STATUS_ABORT })
     }
   }, [callRobotMotionAction, robotMotionAction, feedbackCallback, responseCallback])
 
