@@ -6,7 +6,6 @@ import { View } from 'react-native'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
-
 // Local Imports
 import '../Home.css'
 import { useROS, createROSActionClient, callROSAction, destroyActionClient } from '../../../ros/ros_helpers'

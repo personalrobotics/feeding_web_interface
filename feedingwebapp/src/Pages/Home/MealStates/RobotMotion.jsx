@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button'
 import { View } from 'react-native'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
+// External Library Imports
+import NoSleep from 'nosleep.js'
 // Local Imports
 import { useROS, createROSActionClient, callROSAction, cancelROSAction, destroyActionClient } from '../../../ros/ros_helpers'
 import Footer from '../../Footer/Footer'
@@ -69,6 +71,8 @@ const RobotMotion = (props) => {
   let waitingTextFontSize = isPortrait ? '4.5vh' : '9vh'
   // Motion text font size
   let motionTextFontSize = isPortrait ? '3vh' : '6vh'
+  // NoSleep object creation
+  let noSleep = useMemo(() => new NoSleep(), [])
 
   /**
    * Create the ROS Action Client. This is re-created every time props.mealState
@@ -182,6 +186,7 @@ const RobotMotion = (props) => {
    */
   useEffect(() => {
     callRobotMotionAction(feedbackCallback, responseCallback)
+    noSleep.enable() // keep the screen on!
     /**
      * In practice, because the values passed in in the second argument of
      * useEffect will not change on re-renders, this return statement will
@@ -189,8 +194,10 @@ const RobotMotion = (props) => {
      */
     return () => {
       destroyActionClient(robotMotionAction)
+      noSleep.disable() // let the screen turn off.
+      setActionStatus({ actionStatus: ROS_ACTION_STATUS_ABORT })
     }
-  }, [callRobotMotionAction, robotMotionAction, feedbackCallback, responseCallback])
+  }, [callRobotMotionAction, robotMotionAction, feedbackCallback, responseCallback, noSleep])
 
   /**
    * Callback function for when the resume button is pressed. It calls the
