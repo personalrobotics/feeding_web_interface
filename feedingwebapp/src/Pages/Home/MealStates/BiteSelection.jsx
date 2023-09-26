@@ -6,9 +6,6 @@ import { View } from 'react-native'
 // PropTypes is used to validate that the used props are in fact passed to this
 // Component
 import PropTypes from 'prop-types'
-// External Library Imports
-import NoSleep from 'nosleep.js'
-
 // Local Imports
 import '../Home.css'
 import { useROS, createROSActionClient, callROSAction, destroyActionClient } from '../../../ros/ros_helpers'
@@ -57,8 +54,6 @@ const BiteSelection = (props) => {
   let textFontSize = isPortrait ? '2.5vh' : '2vw'
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
-  // NoSleep object creation
-  let noSleep = useMemo(() => new NoSleep(), [])
 
   /**
    * Create a local state variable to store the detected masks, the
@@ -104,11 +99,9 @@ const BiteSelection = (props) => {
    * meal.
    */
   const doneEatingClicked = useCallback(() => {
-    console.log('Wake Lock is enabled')
-    noSleep.enable() // keep the screen on!
     console.log('doneEatingClicked')
     setMealState(MEAL_STATE.R_StowingArm)
-  }, [setMealState, noSleep])
+  }, [setMealState])
 
   // Get current window size
   let windowSize = useWindowSize()
@@ -117,10 +110,8 @@ const BiteSelection = (props) => {
    * Callback function for when the user wants to move to mouth position.
    */
   const moveToMouth = useCallback(() => {
-    console.log('Wake Lock is enabled')
-    noSleep.enable() // keep the screen on!
     setMealState(MEAL_STATE.R_MovingToMouth)
-  }, [setMealState, noSleep])
+  }, [setMealState])
 
   /**
    * Callback function for when the user clicks the button for a food item.
@@ -133,11 +124,9 @@ const BiteSelection = (props) => {
         camera_info: actionResult.camera_info,
         detected_food: actionResult.detected_items[food_i]
       })
-      console.log('Wake Lock is enabled')
-      noSleep.enable() // keep the screen on!
       setMealState(MEAL_STATE.R_BiteAcquisition)
     },
-    [actionResult, setDesiredFoodItem, setMealState, noSleep]
+    [actionResult, setDesiredFoodItem, setMealState]
   )
 
   /**

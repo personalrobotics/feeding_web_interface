@@ -107,11 +107,9 @@ const RobotMotion = (props) => {
    * location.
    */
   const robotMotionDone = useCallback(() => {
-    console.log('Wake Lock is disabled')
-    noSleep.disable() // let the screen turn off.
     console.log('robotMotionDone')
     setMealState(props.nextMealState)
-  }, [setMealState, props.nextMealState, noSleep])
+  }, [setMealState, props.nextMealState])
 
   /**
    * Callback function for when the action sends a response. It updates the
@@ -188,6 +186,7 @@ const RobotMotion = (props) => {
    */
   useEffect(() => {
     callRobotMotionAction(feedbackCallback, responseCallback)
+    noSleep.enable() // keep the screen on!
     /**
      * In practice, because the values passed in in the second argument of
      * useEffect will not change on re-renders, this return statement will
@@ -195,9 +194,10 @@ const RobotMotion = (props) => {
      */
     return () => {
       destroyActionClient(robotMotionAction)
+      noSleep.disable() // let the screen turn off.
       setActionStatus({ actionStatus: ROS_ACTION_STATUS_ABORT })
     }
-  }, [callRobotMotionAction, robotMotionAction, feedbackCallback, responseCallback])
+  }, [callRobotMotionAction, robotMotionAction, feedbackCallback, responseCallback, noSleep])
 
   /**
    * Callback function for when the resume button is pressed. It calls the

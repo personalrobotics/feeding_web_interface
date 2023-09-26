@@ -1,5 +1,5 @@
 // React Imports
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -8,9 +8,6 @@ import { View } from 'react-native'
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 import { MOVING_STATE_ICON_DICT } from '../../Constants'
-
-// External Library Imports
-import NoSleep from 'nosleep.js'
 
 /**
  * The BiteAcquisitionCheck component appears after the robot has attempted to
@@ -33,30 +30,24 @@ const BiteAcquisitionCheck = () => {
   let buttonHeight = isPortrait ? '20vh' : '20vw'
   let iconWidth = isPortrait ? '28vh' : '28vw'
   let iconHeight = isPortrait ? '18vh' : '18vw'
-  // NoSleep object creation
-  let noSleep = useMemo(() => new NoSleep(), [])
 
   /**
    * Callback function for when the user indicates that the bite acquisition
    * succeeded.
    */
   const acquisitionSuccess = useCallback(() => {
-    console.log('Wake Lock is enabled')
-    noSleep.enable() // keep the screen on!
     console.log('acquisitionSuccess')
     setMealState(MEAL_STATE.R_MovingToMouth)
-  }, [setMealState, noSleep])
+  }, [setMealState])
 
   /**
    * Callback function for when the user indicates that the bite acquisition
    * failed.
    */
   const acquisitionFailure = useCallback(() => {
-    console.log('Wake Lock is enabled')
-    noSleep.enable() // keep the screen on!
     console.log('acquisitionFailure')
     setMealState(MEAL_STATE.R_MovingAbovePlate)
-  }, [setMealState, noSleep])
+  }, [setMealState])
 
   /**
    * Get the ready for bite text to render.

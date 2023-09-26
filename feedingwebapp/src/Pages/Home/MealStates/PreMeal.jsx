@@ -1,14 +1,11 @@
 // React Imports
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
 
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-
-// External Library Imports
-import NoSleep from 'nosleep.js'
 
 /**
  * The PreMeal component appears before the meal starts, and gives the user a
@@ -26,18 +23,14 @@ const PreMeal = () => {
   let buttonHeight = '10vh'
   // Margin
   let margin = '5vh'
-  // NoSleep object creation
-  let noSleep = useMemo(() => new NoSleep(), [])
 
   /**
    * Callback function for when the user decides to start feeding using the app.
    */
   const startFeedingClicked = useCallback(() => {
-    console.log('Wake Lock is enabled')
-    noSleep.enable() // keep the screen on!
     console.log('startFeedingClicked')
     setMealState(MEAL_STATE.R_MovingAbovePlate)
-  }, [setMealState, noSleep])
+  }, [setMealState])
 
   // Render the component
   return (
