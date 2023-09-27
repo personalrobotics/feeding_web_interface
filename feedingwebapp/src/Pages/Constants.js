@@ -121,4 +121,5 @@ export const ROS_ACTION_STATUS_CANCELED = '5'
  * Constant range of probability values that defines Food on Fork and window size
  */
 export const FOOD_ON_FORK_PROB_RANGE = { lowerProb: 0.5, higherProb: 0.5 }
-export const FOOD_ON_FORK_WINDOW_SIZE = 200
+export const FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE = 120
+export const FOOD_ON_FORK_BITE_ACQUISITION_WINDOW_SIZE = 50

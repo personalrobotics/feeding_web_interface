@@ -7,7 +7,12 @@ import { View } from 'react-native'
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import { FOOD_ON_FORK_TOPIC, FOOD_ON_FORK_PROB_RANGE, FOOD_ON_FORK_WINDOW_SIZE, MOVING_STATE_ICON_DICT } from '../../Constants'
+import {
+  FOOD_ON_FORK_TOPIC,
+  FOOD_ON_FORK_PROB_RANGE,
+  FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE,
+  MOVING_STATE_ICON_DICT
+} from '../../Constants'
 
 // Import subscriber to be able to subscribe to FoF topic
 import { subscribeToROSTopic, unsubscribeFromROSTopic, useROS } from '../../../ros/ros_helpers'
@@ -40,7 +45,8 @@ const BiteDone = () => {
   const ros = useRef(useROS().ros)
   let window = []
   const food_on_fork_callback = useCallback((message) => {
-    if (window.size === FOOD_ON_FORK_WINDOW_SIZE) {
+    console.log('Inside FoF Callback')
+    if (window.length === Number(FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE)) {
       window.shift()
     }
     window.push(Number(message.data))
@@ -50,8 +56,9 @@ const BiteDone = () => {
         countLessThanRange++
       }
     }
-    if (window.size === FOOD_ON_FORK_WINDOW_SIZE && countLessThanRange >= 0.75 * FOOD_ON_FORK_WINDOW_SIZE) {
-      console.log('moving above plate')
+    console.log(window.length)
+    if (window.length === FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE && countLessThanRange >= 0.75 * FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE) {
+      console.log('Detecting no food on fork; moving above plate')
       moveAbovePlate()
       return
     }
