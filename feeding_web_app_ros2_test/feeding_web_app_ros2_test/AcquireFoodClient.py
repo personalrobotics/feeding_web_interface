@@ -25,15 +25,20 @@ class AcquireFoodClient(Node):
 
     def move_above_plate(self):
         self._above_client.wait_for_server()
-        return self._above_client.send_goal_async(MoveTo.Goal(), feedback_callback=self.feedback_callback)
+        return self._above_client.send_goal_async(
+            MoveTo.Goal(), feedback_callback=self.feedback_callback
+        )
 
     def acquire_food(self):
         self._action_client.wait_for_server()
-        return self._action_client.send_goal_async(self.goal_msg, feedback_callback=self.feedback_callback)
+        return self._action_client.send_goal_async(
+            self.goal_msg, feedback_callback=self.feedback_callback
+        )
 
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
         self.get_logger().info(f"Received feedback: {feedback}")
+
 
 def main(args=None):
     rclpy.init(args=args)
