@@ -155,12 +155,16 @@ class DummyRealSense(Node):
             compressed_frame_msg = self.bridge.cv2_to_compressed_imgmsg(frame)
             compressed_frame_msg.header.frame_id = "camera_color_optical_frame"
             compressed_frame_msg.header.stamp = self.get_clock().now().to_msg()
-            compressed_frame_msg.format = "jpeg" # web_video_server requires "jpeg" not "jpg"
+            compressed_frame_msg.format = (
+                "jpeg"  # web_video_server requires "jpeg" not "jpg"
+            )
 
             # Configure the depth Image message
             depth_frame_msg = self.bridge.cv2_to_imgmsg(self.depth_frame, "passthrough")
             depth_frame_msg.header.frame_id = "camera_color_optical_frame"
-            depth_frame_msg.header.stamp = (self.get_clock().now() - rclpy.duration.Duration(seconds=0.15)).to_msg()
+            depth_frame_msg.header.stamp = (
+                self.get_clock().now() - rclpy.duration.Duration(seconds=0.15)
+            ).to_msg()
 
             # Configure the Camera Info
             self.camera_info_msg.header.stamp = depth_frame_msg.header.stamp
