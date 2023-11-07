@@ -1,5 +1,5 @@
 // React Imports
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -7,7 +7,15 @@ import { View } from 'react-native'
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import { MOVING_STATE_ICON_DICT } from '../../Constants'
+import {
+  FOOD_ON_FORK_TOPIC,
+  FOOD_ON_FORK_PROB_RANGE,
+  FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE,
+  MOVING_STATE_ICON_DICT
+} from '../../Constants'
+
+// Import subscriber to be able to subscribe to FoF topic
+import { subscribeToROSTopic, unsubscribeFromROSTopic, useROS } from '../../../ros/ros_helpers'
 
 /**
  * The BiteDone component appears after the robot has moved to the user's mouth,
@@ -17,6 +25,7 @@ import { MOVING_STATE_ICON_DICT } from '../../Constants'
 const BiteDone = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
+  const foodOnFork = useGlobalState((state) => state.foodOnFork)
   // Get icon image for move above plate
   let moveAbovePlateImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingFromMouthToAbovePlate]
   // Get icon image for move to resting position
@@ -31,6 +40,40 @@ const BiteDone = () => {
   let buttonHeight = isPortrait ? '20vh' : '20vw'
   let iconWidth = isPortrait ? '28vh' : '28vw'
   let iconHeight = isPortrait ? '18vh' : '18vw'
+
+  // Connect to Ros
+  const ros = useRef(useROS().ros)
+  let window = []
+  const food_on_fork_callback = useCallback((message) => {
+    console.log('Subscribed to FoF')
+    if (window.length === Number(FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE)) {
+      window.shift()
+    }
+    window.push(Number(message.data))
+    let countLessThanRange = 0
+    for (const val of window) {
+      if (val < FOOD_ON_FORK_PROB_RANGE.lowerProb) {
+        countLessThanRange++
+      }
+    }
+    console.log(window.length)
+    if (window.length === FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE && countLessThanRange >= 0.75 * FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE) {
+      if (foodOnFork === "Yes") {
+        console.log('Detecting no food on fork; moving above plate')
+        moveAbovePlate()
+      }
+      return
+    }
+  })
+
+  useEffect(() => {
+    const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, food_on_fork_callback)
+
+    return () => {
+      console.log('unscubscribed from FoF')
+      unsubscribeFromROSTopic(food_on_fork_topic)
+    }
+  }, [setMealState, food_on_fork_callback, foodOnFork])
 
   /**
    * Callback function for when the user wants to move above plate.

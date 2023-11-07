@@ -1,5 +1,7 @@
 // React imports
 import React, { useState } from 'react'
+// Component
+import PropTypes from 'prop-types'
 
 // Local imports
 import { useROS, subscribeToROSTopic } from './ros_helpers'
@@ -8,7 +10,10 @@ import { useROS, subscribeToROSTopic } from './ros_helpers'
  * The TestROSSubscribe component demonstrates the functionality of subscribing
  * to a ROS topic.
  */
-function TestROSSubscribe() {
+function TestROSSubscribe(props) {
+  // get the value of props
+  let topicType = props.topicType
+
   // The defaults to use on this page
   let defaultTopicName = 'test_topic'
 
@@ -21,7 +26,7 @@ function TestROSSubscribe() {
   let [recvData, setRecvData] = useState('No message received yet.')
 
   // Callback function for when the user clicks the "Subscribe" button
-  function subscribeTopic(event) {
+  function subscribeTopic(event, topicType) {
     // Prevent the browser from reloading the page
     event.preventDefault()
 
@@ -34,7 +39,7 @@ function TestROSSubscribe() {
     }
 
     // Subscribe to the topic
-    subscribeToROSTopic(ros, topicName, 'std_msgs/String', callback)
+    subscribeToROSTopic(ros, topicName, topicType, callback)
   }
 
   // Render the component
@@ -43,8 +48,8 @@ function TestROSSubscribe() {
       {/**
        * Allow users to subscribe to a topic and display its data
        */}
-      <h4>Subscribe to a &apos;std_msgs/String&apos; Topic and Display Its Data:</h4>
-      <form method='post' onSubmit={subscribeTopic}>
+      <h4>Subscribe to a &apos;{topicType}&apos; Topic and Display Its Data:</h4>
+      <form method='post' onSubmit={(e) => subscribeTopic(e, topicType)}>
         Topic Name: <input type='text' name='topicName' defaultValue={defaultTopicName} />
         <button type='submit'>Subscribe</button>
         <br />
@@ -54,6 +59,9 @@ function TestROSSubscribe() {
       </form>
     </div>
   )
+}
+TestROSSubscribe.propTypes = {
+  topicType: PropTypes.string.isRequired
 }
 
 export default TestROSSubscribe
