@@ -45,7 +45,7 @@ const BiteDone = () => {
   const ros = useRef(useROS().ros)
   let window = []
   const food_on_fork_callback = useCallback((message) => {
-    console.log('Inside FoF Callback')
+    console.log('Subscribed to FoF')
     if (window.length === Number(FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE)) {
       window.shift()
     }
@@ -58,20 +58,20 @@ const BiteDone = () => {
     }
     console.log(window.length)
     if (window.length === FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE && countLessThanRange >= 0.75 * FOOD_ON_FORK_BITE_TRANSFER_WINDOW_SIZE) {
-      console.log('Detecting no food on fork; moving above plate')
-      moveAbovePlate()
+      if (foodOnFork === "Yes") {
+        console.log('Detecting no food on fork; moving above plate')
+        moveAbovePlate()
+      }
       return
     }
   })
 
   useEffect(() => {
-    if (foodOnFork === 'Yes') {
-      const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, food_on_fork_callback)
+    const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, food_on_fork_callback)
 
-      return () => {
-        console.log('unscubscribed from FoF')
-        unsubscribeFromROSTopic(food_on_fork_topic)
-      }
+    return () => {
+      console.log('unscubscribed from FoF')
+      unsubscribeFromROSTopic(food_on_fork_topic)
     }
   }, [setMealState, food_on_fork_callback, foodOnFork])
 

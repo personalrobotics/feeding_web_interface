@@ -76,6 +76,7 @@ export const MEAL_STATE = {
  *         enable multiple buttons if they so desire.
  *   - biteSelection: Options for how the user wants to tell the robot what food
  *     item they want next.
+ *   - foodOnFork: Options for user to toggle FoF detection on or off
  *
  * TODO (amaln): When we connect this to ROS, each of these settings types and
  * value options will have to have corresponding rosparam names and value options.

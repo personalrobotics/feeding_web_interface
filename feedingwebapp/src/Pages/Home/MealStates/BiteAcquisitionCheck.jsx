@@ -1,5 +1,5 @@
 // React Imports
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -25,6 +25,7 @@ const BiteAcquisitionCheck = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
   const foodOnFork = useGlobalState((state) => state.foodOnFork)
+  const [detectedFood, setDetectedFood] = useState("")
   // Get icon image for move above plate
   let moveAbovePlateImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate]
   // Get icon image for move to mouth
@@ -44,7 +45,6 @@ const BiteAcquisitionCheck = () => {
   const ros = useRef(useROS().ros)
   let window = []
   const food_on_fork_callback = useCallback((message) => {
-    console.log('Subscribed to FoF')
     if (window.length === Number(FOOD_ON_FORK_BITE_ACQUISITION_WINDOW_SIZE)) {
       console.log('entered')
       window.shift()
@@ -61,20 +61,23 @@ const BiteAcquisitionCheck = () => {
       window.length === FOOD_ON_FORK_BITE_ACQUISITION_WINDOW_SIZE &&
       countLessThanRange >= 0.75 * FOOD_ON_FORK_BITE_ACQUISITION_WINDOW_SIZE
     ) {
-      console.log('Detecting no food on fork (Acquisition Failure); moving above plate')
-      acquisitionFailure()
+      if (foodOnFork === "Yes") {
+        console.log('Detecting no food on fork (Acquisition Failure); moving above plate')
+        acquisitionFailure()
+      } else {
+        setDetectedFood("detected no food")
+      }
       return
-    }
+    } 
   })
 
   useEffect(() => {
-    if (foodOnFork === 'Yes') {
-      const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, food_on_fork_callback)
+    console.log('Subscribed to FoF')
+    const food_on_fork_topic = subscribeToROSTopic(ros.current, FOOD_ON_FORK_TOPIC.name, FOOD_ON_FORK_TOPIC.type, food_on_fork_callback)
 
-      return () => {
-        console.log('unscubscribed from FoF')
-        unsubscribeFromROSTopic(food_on_fork_topic)
-      }
+    return () => {
+      console.log('unscubscribed from FoF')
+      unsubscribeFromROSTopic(food_on_fork_topic)
     }
   }, [setMealState, food_on_fork_callback, foodOnFork])
 
@@ -187,6 +190,7 @@ const BiteAcquisitionCheck = () => {
           {reacquireBiteText()}
           {reacquireBiteButton()}
         </View>
+        <p>Currently detecting: {detectedFood}</p>
       </View>
     )
   }, [dimension, reacquireBiteButton, reacquireBiteText, readyForBiteButton, readyForBiteText])
