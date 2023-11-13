@@ -12,6 +12,7 @@ import CircleProgressBar from './CircleProgressBar'
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 import {
+  NON_RETRYABLE_STATES,
   ROS_ACTIONS_NAMES,
   MOTION_STATUS_SUCCESS,
   ROS_ACTION_STATUS_CANCEL_GOAL,
@@ -138,10 +139,13 @@ const RobotMotion = (props) => {
           setActionStatus({
             actionStatus: ROS_ACTION_STATUS_ABORT
           })
+          // In addition to displaying this error, we should also toggle the
+          // pause button to give the user options on what to do next.
+          setPaused(true)
         }
       }
     },
-    [robotMotionDone, setActionStatus]
+    [setActionStatus, setPaused, robotMotionDone]
   )
 
   /**
@@ -169,10 +173,15 @@ const RobotMotion = (props) => {
         setActionStatus({
           actionStatus: ROS_ACTION_STATUS_EXECUTE
         })
+        console.log('Calling action with input', props.actionInput)
         callROSAction(robotMotionAction, props.actionInput, feedbackCb, responseCb)
+        if (props.afterCallActionCallback) {
+          const afterCallActionCallback = props.afterCallActionCallback
+          afterCallActionCallback()
+        }
       }
     },
-    [robotMotionAction, paused, props.actionInput, setActionStatus]
+    [paused, robotMotionAction, props.actionInput, props.afterCallActionCallback]
   )
 
   /**
@@ -188,6 +197,7 @@ const RobotMotion = (props) => {
      * only be called when the component unmounts.
      */
     return () => {
+      console.log('Destroying action client')
       destroyActionClient(robotMotionAction)
     }
   }, [callRobotMotionAction, robotMotionAction, feedbackCallback, responseCallback])
@@ -309,6 +319,7 @@ const RobotMotion = (props) => {
       let showTime = false
       let time = 0
       let progress = null
+      let retry = false
       switch (actionStatus.actionStatus) {
         case ROS_ACTION_STATUS_EXECUTE:
           if (actionStatus.feedback) {
@@ -343,8 +354,9 @@ const RobotMotion = (props) => {
            * users on how to troubleshoot/fix it.
            */
           text = 'Robot encountered an error'
+          retry = NON_RETRYABLE_STATES.has(mealState) ? false : true
           return (
-            <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, progress, true)}</>
+            <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, progress, retry)}</>
           )
         case ROS_ACTION_STATUS_CANCELED:
           return <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, progress)}</>
@@ -362,7 +374,7 @@ const RobotMotion = (props) => {
           }
       }
     },
-    [paused, dimension, actionStatusTextAndVisual]
+    [paused, dimension, actionStatusTextAndVisual, mealState]
   )
 
   // Render the component
@@ -385,7 +397,7 @@ const RobotMotion = (props) => {
         pauseCallback={pauseCallback}
         backCallback={mealState === MEAL_STATE.R_MovingAbovePlate ? null : backCallback}
         backMealState={backMealState.current}
-        resumeCallback={mealState === MEAL_STATE.R_BiteAcquisition ? null : resumeCallback}
+        resumeCallback={NON_RETRYABLE_STATES.has(mealState) ? null : resumeCallback}
         paused={paused}
       />
     </>
@@ -405,7 +417,9 @@ RobotMotion.propTypes = {
   // The input to provide to the ROS action
   actionInput: PropTypes.object.isRequired,
   // The static text to display while the robot is executing the action
-  waitingText: PropTypes.string.isRequired
+  waitingText: PropTypes.string.isRequired,
+  // An optional function to be called after the action has been called
+  afterCallActionCallback: PropTypes.func
 }
 
 export default RobotMotion

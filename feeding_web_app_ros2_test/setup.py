@@ -38,6 +38,7 @@ setup(
             "FaceDetection = feeding_web_app_ros2_test.FaceDetection:main",
             "MoveAbovePlate = feeding_web_app_ros2_test.MoveAbovePlate:main",
             "MoveToRestingPosition = feeding_web_app_ros2_test.MoveToRestingPosition:main",
+            "MoveToStagingConfiguration = feeding_web_app_ros2_test.MoveToStagingConfiguration:main",
             "MoveToMouth = feeding_web_app_ros2_test.MoveToMouth:main",
             "MoveFromMouthToAbovePlate = feeding_web_app_ros2_test.MoveFromMouthToAbovePlate:main",
             "MoveFromMouthToRestingPosition = feeding_web_app_ros2_test.MoveFromMouthToRestingPosition:main",

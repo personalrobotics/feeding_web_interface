@@ -57,6 +57,8 @@ export const MEAL_STATE = {
   R_BiteAcquisition: 'R_BiteAcquisition',
   R_MovingToRestingPosition: 'R_MovingToRestingPosition',
   U_BiteAcquisitionCheck: 'U_BiteAcquisitionCheck',
+  R_MovingToStagingConfiguration: 'R_MovingToStagingConfiguration',
+  R_DetectingFace: 'R_DetectingFace',
   R_MovingToMouth: 'R_MovingToMouth',
   R_MovingFromMouthToAbovePlate: 'R_MovingFromMouthToAbovePlate',
   R_MovingFromMouthToRestingPosition: 'R_MovingFromMouthToRestingPosition',
@@ -100,8 +102,13 @@ export const useGlobalState = create(
       mealStateTransitionTime: Date.now(),
       // The current app page
       appPage: APP_PAGE.Home,
-      // The most recent food item that the user selected in "bite selection"
-      desiredFoodItem: null,
+      // The goal for the bite acquisition action, including the most recent
+      // food item that the user selected in "bite selection"
+      biteAcquisitionActionGoal: null,
+      // The goal for the move to mouth action, including the most recent
+      // message received from the face detection node where a
+      // face was detected and within the distance bounds of the camera.
+      moveToMouthActionGoal: null,
       // Whether or not the currently-executing robot motion was paused by the user
       paused: false,
       // Flag to indicate robot motion trough teleoperation interface
@@ -121,9 +128,13 @@ export const useGlobalState = create(
         set(() => ({
           appPage: appPage
         })),
-      setDesiredFoodItem: (desiredFoodItem) =>
+      setBiteAcquisitionActionGoal: (biteAcquisitionActionGoal) =>
         set(() => ({
-          desiredFoodItem: desiredFoodItem
+          biteAcquisitionActionGoal: biteAcquisitionActionGoal
+        })),
+      setMoveToMouthActionGoal: (moveToMouthActionGoal) =>
+        set(() => ({
+          moveToMouthActionGoal: moveToMouthActionGoal
         })),
       setPaused: (paused) =>
         set(() => ({
