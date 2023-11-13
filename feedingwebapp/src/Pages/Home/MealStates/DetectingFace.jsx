@@ -146,7 +146,7 @@ const DetectingFace = (props) => {
    */
   const fullPageView = useCallback(() => {
     return (
-      <>
+      <View style={{ flex: 'auto', flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
           <View
             style={{
@@ -197,7 +197,7 @@ const DetectingFace = (props) => {
             <img src={moveToMouthImage} alt='move_to_mouth_image' className='center' style={{ width: iconWidth, height: iconHeight }} />
           </Button>
         </View>
-      </>
+      </View>
     )
   }, [
     dimension,

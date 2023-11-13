@@ -231,8 +231,10 @@ const RobotMotion = (props) => {
    */
   const backMealState = useRef(MEAL_STATE.R_MovingAbovePlate)
   useEffect(() => {
-    if (mealState === MEAL_STATE.R_MovingToMouth) {
+    if (mealState === MEAL_STATE.R_MovingToStagingConfiguration) {
       backMealState.current = MEAL_STATE.R_MovingToRestingPosition
+    } else if (mealState === MEAL_STATE.R_MovingToMouth) {
+      backMealState.current = MEAL_STATE.R_MovingToStagingConfiguration
     } else {
       backMealState.current = MEAL_STATE.R_MovingAbovePlate
     }
