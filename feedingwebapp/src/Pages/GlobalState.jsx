@@ -121,6 +121,8 @@ export const useGlobalState = create(
       paused: false,
       // Flag to indicate robot motion trough teleoperation interface
       teleopIsMoving: false,
+      // Flag to indicate whether to auto-continue after face detection
+      faceDetectionAutoContinue: false,
       // Settings values
       stagingPosition: SETTINGS.stagingPosition[0],
       biteInitiation: SETTINGS.biteInitiation[0],
@@ -151,6 +153,10 @@ export const useGlobalState = create(
       setTeleopIsMoving: (teleopIsMoving) =>
         set(() => ({
           teleopIsMoving: teleopIsMoving
+        })),
+      setFaceDetectionAutoContinue: (faceDetectionAutoContinue) =>
+        set(() => ({
+          faceDetectionAutoContinue: faceDetectionAutoContinue
         })),
       setStagingPosition: (stagingPosition) =>
         set(() => ({

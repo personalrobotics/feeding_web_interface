@@ -32,6 +32,8 @@ const DetectingFace = (props) => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
   const setMoveToMouthActionGoal = useGlobalState((state) => state.setMoveToMouthActionGoal)
+  const faceDetectionAutoContinue = useGlobalState((state) => state.faceDetectionAutoContinue)
+  const setFaceDetectionAutoContinue = useGlobalState((state) => state.setFaceDetectionAutoContinue)
   // Get icon image for move to mouth
   let moveToMouthImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
   // Flag to check if the current orientation is portrait
@@ -90,11 +92,13 @@ const DetectingFace = (props) => {
             face_detection: message
           })
           // Automatically move on to the next stage if a face is detected
-          moveToMouthCallback()
+          if (faceDetectionAutoContinue) {
+            moveToMouthCallback()
+          }
         }
       }
     },
-    [setMouthDetected, setMoveToMouthActionGoal, moveToMouthCallback]
+    [faceDetectionAutoContinue, moveToMouthCallback, setMoveToMouthActionGoal]
   )
   useEffect(() => {
     let topic = subscribeToROSTopic(ros.current, FACE_DETECTION_TOPIC, FACE_DETECTION_TOPIC_MSG, faceDetectionCallback)
@@ -146,58 +150,87 @@ const DetectingFace = (props) => {
    */
   const fullPageView = useCallback(() => {
     return (
-      <View style={{ flex: 'auto', flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-              height: '100%'
-            }}
-          >
-            <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-              {mouthDetected ? 'Mouth detected!' : 'Waiting to detect mouth...'}
-            </p>
-          </View>
-          <View
-            ref={videoParentRef}
-            style={{
-              flex: 9,
-              alignItems: 'center',
-              width: '100%',
-              height: '100%'
-            }}
-          >
-            <VideoFeed
-              webVideoServerURL={props.webVideoServerURL}
-              parent={videoParentRef}
-              marginTop={margin}
-              marginBottom={margin}
-              marginLeft={margin}
-              marginRight={margin}
-              topic={FACE_DETECTION_IMG_TOPIC}
-              type='mjpeg&quality=20'
-            />
-          </View>
-        </View>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+      <>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%'
+          }}
+        >
           <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-            {mouthDetected ? 'Continue' : 'Continue without detecting mouth (may fail)'}
+            <input
+              name='faceDetectionAutoContinue'
+              type='checkbox'
+              checked={faceDetectionAutoContinue}
+              onChange={(e) => setFaceDetectionAutoContinue(e.target.checked)}
+              style={{ transform: 'scale(2.0)', verticalAlign: 'middle', marginRight: '15px' }}
+            />
+            Auto-continue
           </p>
-          {/* Icon to move to mouth position */}
-          <Button
-            variant='success'
-            className='mx-2 mb-2 btn-huge'
-            size='lg'
-            onClick={moveToMouthCallback}
-            style={{ width: buttonWidth, height: buttonHeight }}
-          >
-            <img src={moveToMouthImage} alt='move_to_mouth_image' className='center' style={{ width: iconWidth, height: iconHeight }} />
-          </Button>
         </View>
-      </View>
+        <View
+          style={{
+            flex: 9,
+            flexDirection: dimension,
+            alignItems: 'center',
+            width: '100%'
+          }}
+        >
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '100%'
+              }}
+            >
+              <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
+                {mouthDetected ? 'Mouth detected!' : 'Waiting to detect mouth...'}
+              </p>
+            </View>
+            <View
+              ref={videoParentRef}
+              style={{
+                flex: 9,
+                alignItems: 'center',
+                width: '100%',
+                height: '100%'
+              }}
+            >
+              <VideoFeed
+                webVideoServerURL={props.webVideoServerURL}
+                parent={videoParentRef}
+                marginTop={margin}
+                marginBottom={margin}
+                marginLeft={margin}
+                marginRight={margin}
+                topic={FACE_DETECTION_IMG_TOPIC}
+                type='mjpeg&quality=20'
+              />
+            </View>
+          </View>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+            <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
+              {mouthDetected ? 'Continue' : 'Continue without detecting mouth'}
+            </p>
+            {/* Icon to move to mouth position */}
+            <Button
+              variant='success'
+              className='mx-2 mb-2 btn-huge'
+              size='lg'
+              onClick={moveToMouthCallback}
+              style={{ width: buttonWidth, height: buttonHeight }}
+            >
+              <img src={moveToMouthImage} alt='move_to_mouth_image' className='center' style={{ width: iconWidth, height: iconHeight }} />
+            </Button>
+          </View>
+        </View>
+      </>
     )
   }, [
     dimension,
@@ -210,7 +243,9 @@ const DetectingFace = (props) => {
     buttonHeight,
     buttonWidth,
     iconHeight,
-    iconWidth
+    iconWidth,
+    faceDetectionAutoContinue,
+    setFaceDetectionAutoContinue
   ])
 
   // Render the component
