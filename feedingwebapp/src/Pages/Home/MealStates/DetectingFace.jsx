@@ -87,8 +87,7 @@ const DetectingFace = (props) => {
         if (distance > min_face_distance && distance < max_face_distance) {
           setMouthDetected(message.is_face_detected)
           setMoveToMouthActionGoal({
-            use_face_detection_msg: true,
-            face_detection_msg: message
+            face_detection: message
           })
           // Automatically move on to the next stage if a face is detected
           moveToMouthCallback()
@@ -147,8 +146,21 @@ const DetectingFace = (props) => {
    */
   const fullPageView = useCallback(() => {
     return (
-      <View style={{ flex: 'auto', flexDirection: dimension, alignItems: 'center', justifyContent: 'center' }}>
-        <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+      <>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%'
+            }}
+          >
+            <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
+              {mouthDetected ? 'Mouth detected!' : 'Waiting to detect mouth...'}
+            </p>
+          </View>
           <View
             ref={videoParentRef}
             style={{
@@ -169,21 +181,8 @@ const DetectingFace = (props) => {
               type='mjpeg&quality=20'
             />
           </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-              height: '100%'
-            }}
-          >
-            <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-              {mouthDetected ? 'Mouth detected!' : 'Waiting to detect mouth...'}
-            </p>
-          </View>
         </View>
-        <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
           <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
             {mouthDetected ? 'Continue' : 'Continue without detecting mouth (may fail)'}
           </p>
@@ -198,7 +197,7 @@ const DetectingFace = (props) => {
             <img src={moveToMouthImage} alt='move_to_mouth_image' className='center' style={{ width: iconWidth, height: iconHeight }} />
           </Button>
         </View>
-      </View>
+      </>
     )
   }, [
     dimension,

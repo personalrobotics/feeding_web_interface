@@ -175,13 +175,9 @@ const RobotMotion = (props) => {
         })
         console.log('Calling action with input', props.actionInput)
         callROSAction(robotMotionAction, props.actionInput, feedbackCb, responseCb)
-        if (props.afterCallActionCallback) {
-          const afterCallActionCallback = props.afterCallActionCallback
-          afterCallActionCallback()
-        }
       }
     },
-    [paused, robotMotionAction, props.actionInput, props.afterCallActionCallback]
+    [paused, robotMotionAction, props.actionInput]
   )
 
   /**
@@ -417,9 +413,7 @@ RobotMotion.propTypes = {
   // The input to provide to the ROS action
   actionInput: PropTypes.object.isRequired,
   // The static text to display while the robot is executing the action
-  waitingText: PropTypes.string.isRequired,
-  // An optional function to be called after the action has been called
-  afterCallActionCallback: PropTypes.func
+  waitingText: PropTypes.string.isRequired
 }
 
 export default RobotMotion

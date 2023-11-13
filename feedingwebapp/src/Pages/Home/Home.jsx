@@ -29,6 +29,7 @@ function Home(props) {
   // Get the relevant values from global state
   const mealState = useGlobalState((state) => state.mealState)
   const mealStateTransitionTime = useGlobalState((state) => state.mealStateTransitionTime)
+  const setBiteAcquisitionActionGoal = useGlobalState((state) => state.setBiteAcquisitionActionGoal)
   const setMoveToMouthActionGoal = useGlobalState((state) => state.setMoveToMouthActionGoal)
   const setMealState = useGlobalState((state) => state.setMealState)
   const setPaused = useGlobalState((state) => state.setPaused)
@@ -42,11 +43,12 @@ function Home(props) {
   useEffect(() => {
     if (Date.now() - mealStateTransitionTime >= TIME_TO_RESET_MS) {
       console.log('Reverting to PreMeal due to too much elapsed time in one state.')
+      setBiteAcquisitionActionGoal(null)
       setMoveToMouthActionGoal(null)
       setMealState(MEAL_STATE.U_PreMeal)
       setPaused(false)
     }
-  }, [mealStateTransitionTime, setMealState, setPaused, setMoveToMouthActionGoal])
+  }, [mealStateTransitionTime, setMealState, setPaused, setMoveToMouthActionGoal, setBiteAcquisitionActionGoal])
 
   // Get the relevant global variables
   const biteAcquisitionActionGoal = useGlobalState((state) => state.biteAcquisitionActionGoal)
@@ -63,25 +65,6 @@ function Home(props) {
   const moveToStagingConfigurationActionInput = useMemo(() => ({}), [])
   const moveToMouthActionInput = useMemo(() => moveToMouthActionGoal, [moveToMouthActionGoal])
   const moveToStowPositionActionInput = useMemo(() => ({}), [])
-
-  /**
-   * Once MoveToMouth has been called, we want to mark the perception result as
-   * stale so that we don't use it again (since the camera frame has moved,
-   * that message is no longer an accurate result of the face location relative
-   * to the robot).
-   *
-   * TODO: Since the detected mouth center is stamped, a better solution is to
-   * have the action server transform it into the robot's base frame at that
-   * timestamp. Look into this!
-   *
-   * NOTE: Food perception is another case where perception results are dangerous
-   * to reuse. Whatever we settle on for face detection, we should also apply to
-   * food detection.
-   */
-  const afterCallMoveToMouthCallback = useCallback(() => {
-    console.log('afterCallMoveToMouthCallback')
-    setMoveToMouthActionGoal({})
-  }, [setMoveToMouthActionGoal])
 
   /**
    * Determines what screen to render based on the meal state.
@@ -158,7 +141,7 @@ function Home(props) {
          */
         let currentMealState = MEAL_STATE.R_MovingToStagingConfiguration
         let nextMealState = MEAL_STATE.R_DetectingFace
-        let waitingText = 'Waiting to move in front of your mouth...'
+        let waitingText = 'Waiting to move in front of you...'
         return (
           <RobotMotion
             debug={props.debug}
@@ -187,7 +170,6 @@ function Home(props) {
             nextMealState={nextMealState}
             actionInput={moveToMouthActionInput}
             waitingText={waitingText}
-            afterCallActionCallback={afterCallMoveToMouthCallback}
           />
         )
       }
@@ -260,7 +242,6 @@ function Home(props) {
     moveToMouthActionInput,
     moveToRestingPositionActionInput,
     moveToStowPositionActionInput,
-    afterCallMoveToMouthCallback,
     moveToStagingConfigurationActionInput
   ])
 
