@@ -34,8 +34,15 @@ export const APP_PAGE = {
  *     position.
  *   - U_BiteAcquisitionCheck: Waiting for the user to specify whether the
  *     bite acquisition was succesful or not.
+ *   - R_MovingToStagingConfiguration: Waiting for the robot to move to the
+ *     staging configuration.
+ *   - R_DetectingFace: Waiting for the robot to detect a face.
  *   - R_MovingToMouth: Waiting for the robot to finish moving to the user's
  *     mouth.
+ *   - R_MovingFromMouthToStagingConfiguration: Waiting for the robot to move
+ *     from the user's mouth to the staging configuration. This is a separate
+ *     action from R_MovingToStagingConfiguration to allow us to customize the
+ *     departure from the mouth (e.g., a slower speed).
  *   - R_MovingFromMouthToAbovePlate: Waiting for the robot to move from the
  *     user's mouth to above the plate. This is a separate action from
  *     R_MovingAbovePlate to allow us to customize the departure from the mouth
@@ -60,6 +67,7 @@ export const MEAL_STATE = {
   R_MovingToStagingConfiguration: 'R_MovingToStagingConfiguration',
   R_DetectingFace: 'R_DetectingFace',
   R_MovingToMouth: 'R_MovingToMouth',
+  R_MovingFromMouthToStagingConfiguration: 'R_MovingFromMouthToStagingConfiguration',
   R_MovingFromMouthToAbovePlate: 'R_MovingFromMouthToAbovePlate',
   R_MovingFromMouthToRestingPosition: 'R_MovingFromMouthToRestingPosition',
   U_BiteDone: 'U_BiteDone',

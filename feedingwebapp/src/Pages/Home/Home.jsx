@@ -173,6 +173,24 @@ function Home(props) {
           />
         )
       }
+      case MEAL_STATE.R_MovingFromMouthToStagingConfiguration: {
+        /**
+         * We recreate currentMealState due to a race condition where sometimes
+         * the app is performing a re-rendering and *then* the state is updated.
+         */
+        let currentMealState = MEAL_STATE.R_MovingFromMouthToStagingConfiguration
+        let nextMealState = MEAL_STATE.R_DetectingFace
+        let waitingText = 'Waiting to move from your mouth to in front of you...'
+        return (
+          <RobotMotion
+            debug={props.debug}
+            mealState={currentMealState}
+            nextMealState={nextMealState}
+            actionInput={moveToStagingConfigurationActionInput}
+            waitingText={waitingText}
+          />
+        )
+      }
       case MEAL_STATE.R_MovingFromMouthToAbovePlate: {
         /**
          * We recreate currentMealState due to a race condition where sometimes

@@ -27,6 +27,7 @@ MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingFromMouthToAbovePlate] = '/robot_state
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToRestingPosition] = '/robot_state_imgs/move_to_resting_position.svg'
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingFromMouthToRestingPosition] = '/robot_state_imgs/move_to_resting_position.svg'
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToStagingConfiguration] = '/robot_state_imgs/move_to_staging_configuration.svg'
+MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingFromMouthToStagingConfiguration] = '/robot_state_imgs/move_to_staging_configuration.svg'
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth] = '/robot_state_imgs/move_to_mouth_position.svg'
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_StowingArm] = '/robot_state_imgs/stowing_arm_position.svg'
 export { MOVING_STATE_ICON_DICT }
@@ -89,6 +90,10 @@ ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingFromMouthToRestingPosition] = {
 }
 ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingToStagingConfiguration] = {
   actionName: 'MoveToStagingConfiguration',
+  messageType: 'ada_feeding_msgs/action/MoveTo'
+}
+ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingFromMouthToStagingConfiguration] = {
+  actionName: 'MoveFromMouthToStagingConfiguration',
   messageType: 'ada_feeding_msgs/action/MoveTo'
 }
 ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingToMouth] = {

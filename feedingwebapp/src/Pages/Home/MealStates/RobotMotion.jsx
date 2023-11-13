@@ -234,7 +234,7 @@ const RobotMotion = (props) => {
     if (mealState === MEAL_STATE.R_MovingToStagingConfiguration) {
       backMealState.current = MEAL_STATE.R_MovingToRestingPosition
     } else if (mealState === MEAL_STATE.R_MovingToMouth) {
-      backMealState.current = MEAL_STATE.R_MovingToStagingConfiguration
+      backMealState.current = MEAL_STATE.R_MovingFromMouthToStagingConfiguration
     } else {
       backMealState.current = MEAL_STATE.R_MovingAbovePlate
     }
