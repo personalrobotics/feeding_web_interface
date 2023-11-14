@@ -203,8 +203,13 @@ const BiteSelection = (props) => {
         numImageClicks === 0 ? responseCallback : null
       )
       setNumImageClicks(numImageClicks + 1)
+      // The current implementation of food segmentation does not send feedback,
+      // so we manually set the action status to executing.
+      setActionStatus({
+        actionStatus: ROS_ACTION_STATUS_EXECUTE
+      })
     },
-    [segmentFromPointAction, numImageClicks, feedbackCallback, responseCallback]
+    [segmentFromPointAction, numImageClicks, feedbackCallback, responseCallback, setNumImageClicks, setActionStatus]
   )
 
   /**
