@@ -116,6 +116,8 @@ ROS_SERVICE_NAMES[MEAL_STATE.R_DetectingFace] = {
   messageType: 'std_srvs/srv/SetBool'
 }
 export { ROS_SERVICE_NAMES }
+export const CLEAR_OCTOMAP_SERVICE_NAME = 'clear_octomap'
+export const CLEAR_OCTOMAP_SERVICE_TYPE = 'std_srvs/srv/Empty'
 
 /**
  * The meaning of the status that motion actions return in their results.

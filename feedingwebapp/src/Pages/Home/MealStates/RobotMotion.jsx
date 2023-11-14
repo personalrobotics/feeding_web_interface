@@ -6,12 +6,22 @@ import { View } from 'react-native'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
 // Local Imports
-import { useROS, createROSActionClient, callROSAction, cancelROSAction, destroyActionClient } from '../../../ros/ros_helpers'
+import {
+  useROS,
+  createROSActionClient,
+  callROSAction,
+  cancelROSAction,
+  destroyActionClient,
+  createROSService,
+  createROSServiceRequest
+} from '../../../ros/ros_helpers'
 import Footer from '../../Footer/Footer'
 import CircleProgressBar from './CircleProgressBar'
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 import {
+  CLEAR_OCTOMAP_SERVICE_NAME,
+  CLEAR_OCTOMAP_SERVICE_TYPE,
   NON_RETRYABLE_STATES,
   ROS_ACTIONS_NAMES,
   MOTION_STATUS_SUCCESS,
@@ -82,6 +92,12 @@ const RobotMotion = (props) => {
     let { actionName, messageType } = ROS_ACTIONS_NAMES[props.mealState]
     return createROSActionClient(ros.current, actionName, messageType)
   }, [props.mealState])
+
+  /**
+   * Create the ROS Service Client for clearing the octomap. This is only used
+   * in the case of an action error.
+   */
+  let clearOctomapService = useRef(createROSService(ros.current, CLEAR_OCTOMAP_SERVICE_NAME, CLEAR_OCTOMAP_SERVICE_TYPE))
 
   /**
    * Callback function for when the action sends feedback. It updates the
@@ -212,6 +228,25 @@ const RobotMotion = (props) => {
   }, [callRobotMotionAction, setPaused])
 
   /**
+   * Callback function for when the retry button is pressed. It calls the
+   * /clear_octomap service to clear the octomap, then calls the action once
+   * again.
+   *
+   * TODO: on action failure, the user can click on both "Retry" and "Resume",
+   * and they have different behaviors, which is likely confusing to the user.
+   * We should think about how to make this more intuitive.
+   */
+  const retryCallback = useCallback(() => {
+    // Create a service request
+    let request = createROSServiceRequest({})
+    // Call the service
+    let service = clearOctomapService.current
+    service.callService(request, (response) => console.log('Got clear octomap service response', response))
+    // Resume the motion
+    resumeCallback()
+  }, [clearOctomapService, resumeCallback])
+
+  /**
    * Callback function for when the back button is clicked. Regardless of the
    * state, all pressed of "back" will revert to the "Moving Above Plate" state.
    * - BiteAcquisition: In this case, pressing "back" should let the user
@@ -274,7 +309,7 @@ const RobotMotion = (props) => {
                   variant='warning'
                   className='mx-2 btn-huge'
                   size='lg'
-                  onClick={resumeCallback}
+                  onClick={retryCallback}
                   style={{
                     width: '90%',
                     height: '20%'
@@ -301,7 +336,7 @@ const RobotMotion = (props) => {
         </>
       )
     },
-    [dimension, props.waitingText, motionTextFontSize, waitingTextFontSize, resumeCallback]
+    [dimension, props.waitingText, motionTextFontSize, waitingTextFontSize, retryCallback]
   )
 
   /**
