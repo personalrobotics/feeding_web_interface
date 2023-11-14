@@ -49,7 +49,7 @@ const DetectingFace = (props) => {
   // The min and max distance from the camera to the face for the face to be
   // conidered valid. NOTE: This must match the values in the MoveToMouth tree.
   const min_face_distance = 0.4
-  const max_face_distance = 1.5
+  const max_face_distance = 1.25
   // Margin for the video feed and between the mask buttons. Note this cannot
   // be re-defined per render, otherwise it messes up re-rendering order upon
   // resize in VideoFeed.
@@ -87,7 +87,7 @@ const DetectingFace = (props) => {
             message.detected_mouth_center.point.z ** 2.0) **
           0.5
         if (distance > min_face_distance && distance < max_face_distance) {
-          setMouthDetected(message.is_face_detected)
+          setMouthDetected(true)
           setMoveToMouthActionGoal({
             face_detection: message
           })
@@ -129,7 +129,7 @@ const DetectingFace = (props) => {
     let request = createROSServiceRequest({ data: true })
     // Call the service
     let service = toggleFaceDetectionService.current
-    service.callService(request, (response) => console.log('Got service response', response))
+    service.callService(request, (response) => console.log('Got toggle face detection service response', response))
 
     /**
      * In practice, because the values passed in in the second argument of
@@ -140,7 +140,7 @@ const DetectingFace = (props) => {
       // Create a service request
       let request = createROSServiceRequest({ data: false })
       // Call the service
-      service.callService(request, (response) => console.log('Got service response', response))
+      service.callService(request, (response) => console.log('Got toggle face detection service response', response))
     }
   }, [toggleFaceDetectionService])
 
