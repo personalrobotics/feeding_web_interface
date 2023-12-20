@@ -107,14 +107,21 @@ const VideoFeed = (props) => {
     [latestImageTimestamp, setLatestRenderedImg, props.updateRateHz]
   )
   useEffect(() => {
+    console.log('subscribing to img topic')
     let topic = subscribeToROSTopic(ros.current, props.topic, 'sensor_msgs/CompressedImage', cameraCallback)
+    const cleanup = () => {
+      console.log('unsubscribing from img topic')
+      unsubscribeFromROSTopic(topic, cameraCallback)
+    }
+    window.addEventListener('beforeunload', cleanup)
     /**
      * In practice, because the values passed in in the second argument of
      * useEffect will not change on re-renders, this return statement will
      * only be called when the component unmounts.
      */
     return () => {
-      unsubscribeFromROSTopic(topic, cameraCallback)
+      window.removeEventListener('beforeunload', cleanup)
+      cleanup()
     }
   }, [cameraCallback, props.topic])
 
