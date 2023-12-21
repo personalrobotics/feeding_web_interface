@@ -1,8 +1,9 @@
 // React imports
-import React, { useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import Button from 'react-bootstrap/Button'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
+import { useWindowSize } from '../helpers'
 
 /**
  * A component that renders an image and a mask on top of it, all within a
@@ -42,7 +43,7 @@ function MaskButton(props) {
   let value = props.value
 
   // Draw a red filled circle on the middle of the canvas
-  useEffect(() => {
+  const drawCircle = useCallback(() => {
     // Get the canvas
     const canvas = canvasRef.current
     // Get the context
@@ -55,11 +56,19 @@ function MaskButton(props) {
     ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI)
     ctx.fillStyle = 'red'
     ctx.fill()
-    // Cleanup function is to clear the canvas
-    return () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-    }
   }, [])
+
+  // Draw a red filled circle on the middle of the canvas
+  useEffect(() => {
+    // Dummy log necessary to have useEffect re-run when the props change
+    console.log('props.maskBoundingBox', props.maskBoundingBox)
+
+    // Draw the circle
+    drawCircle()
+  }, [drawCircle, props.maskBoundingBox])
+
+  // Redraw the circle when the window size changes
+  useWindowSize(drawCircle)
 
   return (
     <Button
