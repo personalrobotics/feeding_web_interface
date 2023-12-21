@@ -1,5 +1,5 @@
 // React imports
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import Button from 'react-bootstrap/Button'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
@@ -28,6 +28,9 @@ import PropTypes from 'prop-types'
  *
  */
 function MaskButton(props) {
+  // Get a reference for the canvas
+  const canvasRef = useRef(null)
+
   // Get the properties
   let buttonSize = props.buttonSize
   let imgSrc = props.imgSrc
@@ -37,6 +40,26 @@ function MaskButton(props) {
   let maskBoundingBox = props.maskBoundingBox
   let onClick = props.onClick
   let value = props.value
+
+  // Draw a red filled circle on the middle of the canvas
+  useEffect(() => {
+    // Get the canvas
+    const canvas = canvasRef.current
+    // Get the context
+    const ctx = canvas.getContext('2d')
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    // Draw a red filled circle
+    let radius = 5
+    ctx.beginPath()
+    ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI)
+    ctx.fillStyle = 'red'
+    ctx.fill()
+    // Cleanup function is to clear the canvas
+    return () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+    }
+  }, [])
 
   return (
     <Button
@@ -84,6 +107,17 @@ function MaskButton(props) {
               mixBlendMode: invertMask ? 'lighten' : 'multiply',
               width: maskBoundingBox.width * maskScaleFactor,
               height: maskBoundingBox.height * maskScaleFactor,
+              display: 'block',
+              pointerEvents: 'none'
+            }}
+          />
+          <canvas
+            ref={canvasRef}
+            width={maskBoundingBox.width * maskScaleFactor}
+            height={maskBoundingBox.height * maskScaleFactor}
+            style={{
+              position: 'absolute',
+              top: '0px',
               display: 'block',
               pointerEvents: 'none'
             }}
