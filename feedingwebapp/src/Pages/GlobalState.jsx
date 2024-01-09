@@ -76,6 +76,17 @@ export const MEAL_STATE = {
 }
 
 /**
+ * SETTINGS_STATE controls which settings page to display.
+ *  - MAIN: The main page, with options to navigate to the other pages.
+ *  - BITE_TRANSFER: The bite transfer page, where the user can configure
+ *    parameters for bite transfer.
+ */
+export const SETTINGS_STATE = {
+  MAIN: 'MAIN',
+  BITE_TRANSFER: 'BITE_TRANSFER'
+}
+
+/**
  * The parameters that users can set (keys) and a list of human-readable values
  * they can take on.
  *   - stagingPosition: Discrete options for where the robot should wait until
@@ -90,11 +101,11 @@ export const MEAL_STATE = {
  * TODO (amaln): When we connect this to ROS, each of these settings types and
  * value options will have to have corresponding rosparam names and value options.
  */
-export const SETTINGS = {
-  stagingPosition: ['In Front of Me', 'On My Right Side'],
-  biteInitiation: ['Open Mouth', 'Say "I am Ready"', 'Press Button'],
-  biteSelection: ['Name of Food', 'Click on Food']
-}
+// export const SETTINGS = {
+//   stagingPosition: ['In Front of Me', 'On My Right Side'],
+//   biteInitiation: ['Open Mouth', 'Say "I am Ready"', 'Press Button'],
+//   biteSelection: ['Name of Food', 'Click on Food']
+// }
 
 /**
  * useGlobalState is a hook to store and manipulate web app state that we want
@@ -104,12 +115,14 @@ export const SETTINGS = {
 export const useGlobalState = create(
   persist(
     (set) => ({
+      // The current app page
+      appPage: APP_PAGE.Home,
       // The app's current meal state
       mealState: MEAL_STATE.U_PreMeal,
       // The timestamp when the robot transitioned to its current meal state
       mealStateTransitionTime: Date.now(),
-      // The current app page
-      appPage: APP_PAGE.Home,
+      // The currently displayed settings page
+      settingsState: SETTINGS_STATE.MAIN,
       // The goal for the bite acquisition action, including the most recent
       // food item that the user selected in "bite selection"
       biteAcquisitionActionGoal: null,
@@ -124,19 +137,24 @@ export const useGlobalState = create(
       // Flag to indicate whether to auto-continue after face detection
       faceDetectionAutoContinue: false,
       // Settings values
-      stagingPosition: SETTINGS.stagingPosition[0],
-      biteInitiation: SETTINGS.biteInitiation[0],
-      biteSelection: SETTINGS.biteSelection[0],
+      // stagingPosition: SETTINGS.stagingPosition[0],
+      // biteInitiation: SETTINGS.biteInitiation[0],
+      // biteSelection: SETTINGS.biteSelection[0],
 
       // Setters for global state
+      setAppPage: (appPage) =>
+        set(() => ({
+          appPage: appPage,
+          settingsState: SETTINGS_STATE.MAIN
+        })),
       setMealState: (mealState) =>
         set(() => ({
           mealState: mealState,
           mealStateTransitionTime: Date.now()
         })),
-      setAppPage: (appPage) =>
+      setSettingsState: (settingsState) =>
         set(() => ({
-          appPage: appPage
+          settingsState: settingsState
         })),
       setBiteAcquisitionActionGoal: (biteAcquisitionActionGoal) =>
         set(() => ({
@@ -157,19 +175,19 @@ export const useGlobalState = create(
       setFaceDetectionAutoContinue: (faceDetectionAutoContinue) =>
         set(() => ({
           faceDetectionAutoContinue: faceDetectionAutoContinue
-        })),
-      setStagingPosition: (stagingPosition) =>
-        set(() => ({
-          stagingPosition: stagingPosition
-        })),
-      setBiteInitiation: (biteInitiation) =>
-        set(() => ({
-          biteInitiation: biteInitiation
-        })),
-      setBiteSelection: (biteSelection) =>
-        set(() => ({
-          biteSelection: biteSelection
         }))
+      // setStagingPosition: (stagingPosition) =>
+      //   set(() => ({
+      //     stagingPosition: stagingPosition
+      //   })),
+      // setBiteInitiation: (biteInitiation) =>
+      //   set(() => ({
+      //     biteInitiation: biteInitiation
+      //   })),
+      // setBiteSelection: (biteSelection) =>
+      //   set(() => ({
+      //     biteSelection: biteSelection
+      //   }))
     }),
     { name: 'ada_web_app_global_state' }
   )
