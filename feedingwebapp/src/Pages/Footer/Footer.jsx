@@ -9,13 +9,13 @@ import { useMediaQuery } from 'react-responsive'
 import PropTypes from 'prop-types'
 // Local imports
 import { MOVING_STATE_ICON_DICT } from '../Constants'
-import { useGlobalState } from '../GlobalState'
 
 /**
  * The Footer shows a pause button. When users click it, the app tells the robot
  * to immediately pause and displays a back button that allows them to return to
  * previous state and a resume button that allows them to resume current state.
  *
+ * @param {string} mealState - the current meal state
  * @param {bool} paused - whether the robot is currently paused
  * @param {function} pauseCallback - callback function for when the pause button
  *     is clicked
@@ -27,14 +27,12 @@ import { useGlobalState } from '../GlobalState'
  *     button is clicked. If null, don't render the resume button.
  */
 const Footer = (props) => {
-  // Get the current meal state
-  const mealState = useGlobalState((state) => state.mealState)
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Icons for the footer buttons
   let pauseIcon = '/robot_state_imgs/pause_button_icon.svg'
   let backIcon = props.backMealState ? MOVING_STATE_ICON_DICT[props.backMealState] : ''
-  let resumeIcon = MOVING_STATE_ICON_DICT[mealState]
+  let resumeIcon = MOVING_STATE_ICON_DICT[props.mealState]
   // Sizes (width, height, fontsize) of footer buttons
   let pauseButtonWidth = '98vw'
   let backResumeButtonWidth = '47vw'
@@ -188,9 +186,10 @@ const Footer = (props) => {
   )
 }
 Footer.propTypes = {
+  mealState: PropTypes.string.isRequired,
   paused: PropTypes.bool.isRequired,
   pauseCallback: PropTypes.func.isRequired,
-  // If any of the below three are null, the Footer won't render that button
+  // If any of the below two are null, the Footer won't render that button
   resumeCallback: PropTypes.func,
   backCallback: PropTypes.func,
   backMealState: PropTypes.string

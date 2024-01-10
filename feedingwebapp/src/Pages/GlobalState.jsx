@@ -145,7 +145,10 @@ export const useGlobalState = create(
       setAppPage: (appPage) =>
         set(() => ({
           appPage: appPage,
-          settingsState: SETTINGS_STATE.MAIN
+          settingsState: SETTINGS_STATE.MAIN,
+          // Sometimes the settings menu leaves the robot in a paused state.
+          // Thus, we reset it to an unpaused state.
+          paused: false
         })),
       setMealState: (mealState) =>
         set(() => ({
