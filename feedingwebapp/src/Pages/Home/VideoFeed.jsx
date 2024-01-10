@@ -241,7 +241,7 @@ VideoFeed.propTypes = {
 }
 VideoFeed.defaultProps = {
   topic: CAMERA_FEED_TOPIC,
-  updateRateHz: 10,
+  updateRateHz: 3,
   resubscribeRateHz: 0.1
 }
 
