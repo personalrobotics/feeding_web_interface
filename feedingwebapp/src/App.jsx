@@ -14,6 +14,7 @@ import TestROS from './ros/TestROS'
 import BiteSelectionButtonOverlay from './Pages/Home/BiteSelectionUIStates/BiteSelectionButtonOverlay'
 import BiteSelectionName from './Pages/Home/BiteSelectionUIStates/BiteSelectionName'
 import BiteSelectionPointMask from './Pages/Home/BiteSelectionUIStates/BiteSelectionPointMask'
+import RobotVideoStreams from './robot/RobotVideoStreams'
 
 /**
  * Determines what screen to render based on the app page specified in global
@@ -72,6 +73,15 @@ function App() {
             element={
               <RosConnection url={rosbridgeURL} autoConnect>
                 <TestROS />
+              </RosConnection>
+            }
+          />
+          <Route
+            exact
+            path='/robot'
+            element={
+              <RosConnection url={rosbridgeURL} autoConnect>
+                <RobotVideoStreams />
               </RosConnection>
             }
           />

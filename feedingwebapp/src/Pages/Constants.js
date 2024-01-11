@@ -52,6 +52,7 @@ export const CAMERA_FEED_TOPIC = '/local/camera/color/image_raw/compressed/low_h
 export const FACE_DETECTION_TOPIC = '/face_detection'
 export const FACE_DETECTION_TOPIC_MSG = 'ada_feeding_msgs/FaceDetection'
 export const FACE_DETECTION_IMG_TOPIC = '/face_detection_img/compressed/low_hz'
+export const ROBOT_COMPRESSED_IMG_TOPICS = [CAMERA_FEED_TOPIC, FACE_DETECTION_IMG_TOPIC]
 
 // States from which, if they fail, it is NOT okay for the user to retry the
 // same action.
