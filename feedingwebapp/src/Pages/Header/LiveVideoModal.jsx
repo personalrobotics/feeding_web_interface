@@ -9,6 +9,7 @@ import Modal from 'react-bootstrap/Modal'
 import PropTypes from 'prop-types'
 
 // Local imports
+import { CAMERA_FEED_TOPIC } from '../Constants'
 import { convertRemToPixels } from '../../helpers'
 import VideoFeed from '../Home/VideoFeed'
 
@@ -49,7 +50,7 @@ function LiveVideoModal(props) {
       <Modal.Body ref={modalBodyRef} style={{ overflow: 'hidden' }}>
         <center>
           <VideoFeed
-            topic='/local/camera/color/image_raw/compressed'
+            topic={CAMERA_FEED_TOPIC}
             updateRateHz={10}
             parent={modalBodyRef}
             marginTop={margin}

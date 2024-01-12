@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 // Local Imports
 import { CAMERA_FEED_TOPIC, REALSENSE_WIDTH, REALSENSE_HEIGHT } from '../Constants'
 import { useWindowSize } from '../../helpers'
-import { useROS, subscribeToROSTopic, unsubscribeFromROSTopic } from '../../ros/ros_helpers'
+import { createPeerConnection } from '../../webrtc/webrtc_helpers'
 
 /**
  * Takes in an imageWidth and imageHeight, and returns a width and height that
@@ -77,62 +77,29 @@ const VideoFeed = (props) => {
   const [imgWidth, setImgWidth] = useState(0)
   const [imgHeight, setImgHeight] = useState(0)
   const [scaleFactor, setScaleFactor] = useState(0.0)
-  // Store the latest image to render
-  const [latestRenderedImg, setLatestRenderedImg] = useState(null)
 
-  /**
-   * Connect to ROS, if not already connected. Put this in useRef to avoid
-   * re-connecting upon re-renders.
-   */
-  const ros = useRef(useROS().ros)
-  // Store the latest image message in a ref to avoid re-generating cameraCallback
-  const latestImageMessage = useRef(null)
-
-  /**
-   * Subscribe to the image topic.
-   */
-  const cameraCallback = useCallback(
-    (message) => {
-      latestImageMessage.current = message
-    },
-    [latestImageMessage]
-  )
+  // Ref for the video element
+  const videoRef = useRef(null)
 
   /**
    * Create a timer to re-render the latest image every props.updateRateHz
    */
-  const [updateHzCurrentDate, setUpdateHzCurrentDate] = useState(new Date())
   useEffect(() => {
-    setTimeout(() => {
-      setUpdateHzCurrentDate(new Date())
-      setLatestRenderedImg(latestImageMessage.current)
-    }, 1000 / props.updateRateHz)
-  }, [updateHzCurrentDate, setUpdateHzCurrentDate, props.updateRateHz, setLatestRenderedImg, latestImageMessage])
-  /**
-   * Create a timer to re-render the latest image every props.updateRateHz
-   */
-  const [resubscribeRateCurrentDate, setResubscribeRateCurrentDate] = useState(new Date())
-  useEffect(() => {
-    console.log('subscribing to img topic')
-    let topic = subscribeToROSTopic(ros.current, props.topic, 'sensor_msgs/CompressedImage', cameraCallback)
-    setTimeout(() => {
-      setResubscribeRateCurrentDate(new Date())
-    }, 1000 / props.resubscribeRateHz)
-    const cleanup = () => {
-      console.log('unsubscribing from img topic')
-      unsubscribeFromROSTopic(topic, cameraCallback)
-    }
-    window.addEventListener('beforeunload', cleanup)
-    /**
-     * In practice, because the values passed in in the second argument of
-     * useEffect will not change on re-renders, this return statement will
-     * only be called when the component unmounts.
-     */
+    // Create the peer connection
+    console.log('Creating peer connection', createPeerConnection)
+    const peer = createPeerConnection('http://localhost:5000/subscribe', props.topic, (event) => {
+      console.log('Got track event', event)
+      if (event.streams && event.streams[0]) {
+        videoRef.current.srcObject = event.streams[0]
+        console.log('video', videoRef.current)
+      }
+    })
+    peer.addTransceiver('video', { direction: 'recvonly' })
+
     return () => {
-      window.removeEventListener('beforeunload', cleanup)
-      cleanup()
+      peer.close()
     }
-  }, [cameraCallback, props.topic, props.resubscribeRateHz, resubscribeRateCurrentDate, setResubscribeRateCurrentDate])
+  }, [props.topic, videoRef])
 
   // Callback to resize the image based on the parent width and height
   const resizeImage = useCallback(() => {
@@ -202,8 +169,11 @@ const VideoFeed = (props) => {
   // Render the component
   return (
     <>
-      <img
-        src={`data:image/jpeg;base64,${latestRenderedImg ? latestRenderedImg.data : ''}`}
+      <video
+        playsInline
+        autoPlay
+        muted
+        ref={videoRef}
         alt='Live video feed from the robot'
         style={{
           width: imgWidth,
@@ -227,10 +197,6 @@ VideoFeed.propTypes = {
   marginRight: PropTypes.number.isRequired,
   // The topic of the video feed
   topic: PropTypes.string.isRequired,
-  // The rate at which to update the video feed, in Hz
-  updateRateHz: PropTypes.number.isRequired,
-  // The rate at which to resubscribe to the image topic
-  resubscribeRateHz: PropTypes.number.isRequired,
   /**
    * An optional callback function for when the user clicks on the video feed.
    * This function should take in two parameters, `x` and `y`, which are the
@@ -240,9 +206,7 @@ VideoFeed.propTypes = {
   pointClicked: PropTypes.func
 }
 VideoFeed.defaultProps = {
-  topic: CAMERA_FEED_TOPIC,
-  updateRateHz: 3,
-  resubscribeRateHz: 0.1
+  topic: CAMERA_FEED_TOPIC
 }
 
 export default VideoFeed

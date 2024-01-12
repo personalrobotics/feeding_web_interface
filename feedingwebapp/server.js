@@ -9,14 +9,14 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-var cors = require('cors');
+var cors = require('cors')
 const webrtc = require('wrtc')
 
 let senderStream = {}
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(cors());
+app.use(cors())
 
 app.post('/subscribe', async ({ body }, res) => {
   console.log('got subscriber on topic: ' + body.topic)
@@ -35,7 +35,7 @@ app.post('/subscribe', async ({ body }, res) => {
   // Add the publisher's video stream to the subscriber's peer connection
   const topic = body.topic
   if (topic in senderStream) {
-    senderStream[topic].getTracks().forEach((track) => peer.addTrack(track, senderStream))
+    senderStream[topic].getTracks().forEach((track) => peer.addTrack(track, senderStream[topic]))
   }
 
   // Create an answer to the publisher's offer

@@ -1,37 +1,11 @@
 // React imports
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import axios from 'axios'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 
 // Local imports
 import { useROS, subscribeToROSTopic, unsubscribeFromROSTopic } from '../ros/ros_helpers'
+import { createPeerConnection } from '../webrtc/webrtc_helpers'
 import { REALSENSE_WIDTH, REALSENSE_HEIGHT } from '../Pages/Constants'
-
-function createPeer(topic) {
-  const peer = new RTCPeerConnection({
-    iceServers: [
-      {
-        urls: 'stun:stun.stunprotocol.org'
-      }
-    ]
-  })
-  peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer, topic)
-
-  return peer
-}
-
-async function handleNegotiationNeededEvent(peer, topic) {
-  const offer = await peer.createOffer()
-  await peer.setLocalDescription(offer)
-  const payload = {
-    sdp: peer.localDescription
-  }
-  payload.topic = topic
-  console.log('sending payload', payload)
-  const { data } = await axios.post('http://localhost:5000/publish', payload)
-  const desc = new RTCSessionDescription(data.sdp)
-  peer.setRemoteDescription(desc).catch((e) => console.log(e))
-}
 
 function VideoStream(props) {
   const canvas = useRef(null)
@@ -48,8 +22,8 @@ function VideoStream(props) {
    */
   const imageCallback = useCallback(
     (message) => {
-        // console.log('Got image message', message)
-        img.src = 'data:image/jpg;base64,' + message.data
+      // console.log('Got image message', message)
+      img.src = 'data:image/jpg;base64,' + message.data
     },
     [img]
   )
@@ -76,49 +50,43 @@ function VideoStream(props) {
 
   // Draw the image on the canvas.
   const drawImage = useCallback(() => {
-    console.log('drawing image')
     if (img.src) {
+      console.log('drawing image')
       // Get the context
       const ctx = canvas.current.getContext('2d')
       // Draw the image
       ctx.drawImage(img, 0, 0, props.width, props.height)
+    } else {
+      console.log('no image to draw')
     }
     requestAnimationFrame(drawImage)
   }, [canvas, img, props.width, props.height])
 
   // Create the WebRTC peer connection. Refresh it every refreshRateHz.
-  const [refreshRateDate, setRefreshRateDate] = useState(new Date())
   useEffect(() => {
     // Get the canvas stream
     const stream = canvas.current.captureStream()
 
     // Create the peer connection
-    const peer = createPeer(props.topic)
+    console.log('Creating peer connection', createPeerConnection)
+    const peer = createPeerConnection('http://localhost:5000/publish', props.topic)
 
     // Add the stream to the peer connection
     stream.getTracks().forEach((track) => peer.addTrack(track, stream))
-
-    // Re-run this effect every refreshRateHz
-    setTimeout(() => {
-      setRefreshRateDate(new Date())
-    }, 1000 / props.refreshRateHz)
 
     // Draw the image on the canvas
     drawImage()
 
     return () => {
-      // TODO: Maybe don't do this given how frequently we refresh?
       peer.close()
     }
-  }, [canvas, drawImage, props.refreshRateHz, refreshRateDate, setRefreshRateDate])
+  }, [canvas, drawImage, props.topic])
 
-  return <canvas ref={canvas} width={props.width} height={props.height} style={{position: 'absolute'}} />
+  return <canvas ref={canvas} width={props.width} height={props.height} style={{ position: 'absolute' }} />
 }
 VideoStream.propTypes = {
   // The topic to subscribe to
   topic: PropTypes.string.isRequired,
-  // How often to refresh the WebRTC connection in Hz
-  refreshRateHz: PropTypes.number,
   // The frame rate for the stream
   streamFPS: PropTypes.number.isRequired,
   // The desired width and height of the stream
@@ -126,7 +94,6 @@ VideoStream.propTypes = {
   height: PropTypes.number.isRequired
 }
 VideoStream.defaultProps = {
-  refreshRateHz: 0.2,
   streamFPS: 10,
   width: REALSENSE_WIDTH,
   height: REALSENSE_HEIGHT
