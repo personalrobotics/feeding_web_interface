@@ -12,6 +12,9 @@ import { createPeerConnection } from '../../webrtc/webrtc_helpers'
  * Takes in an imageWidth and imageHeight, and returns a width and height that
  * maintains the same aspect ratio but fits within the window.
  *
+ * NOTE: if run in iOS on low power mode, the video element requires the user to press
+ * "play" to start it, which is treated as a click.
+ *
  * @param {number} parentWidth the width of the parent DOM element in pixels
  * @param {number} parentHeight the height of the parent DOM element in pixels
  * @param {number} imageWidth the original image's width in pixels
@@ -82,12 +85,12 @@ const VideoFeed = (props) => {
   const videoRef = useRef(null)
 
   /**
-   * Create a timer to re-render the latest image every props.updateRateHz
+   * Create the peer connection
    */
   useEffect(() => {
     // Create the peer connection
-    console.log('Creating peer connection', createPeerConnection)
-    const peer = createPeerConnection('http://localhost:5000/subscribe', props.topic, (event) => {
+    console.log('Creating peer connection', createPeerConnection, props.webrtcURL)
+    const peer = createPeerConnection(props.webrtcURL + '/subscribe', props.topic, (event) => {
       console.log('Got track event', event)
       if (event.streams && event.streams[0]) {
         videoRef.current.srcObject = event.streams[0]
@@ -99,7 +102,7 @@ const VideoFeed = (props) => {
     return () => {
       peer.close()
     }
-  }, [props.topic, videoRef])
+  }, [props.topic, props.webrtcURL, videoRef])
 
   // Callback to resize the image based on the parent width and height
   const resizeImage = useCallback(() => {
@@ -203,7 +206,9 @@ VideoFeed.propTypes = {
    * coordinates of the click in the **unscaled** image (e.g., the image of
    * size REALSENSE_WIDTH x REALSENSE_HEIGHT).
    */
-  pointClicked: PropTypes.func
+  pointClicked: PropTypes.func,
+  // The URL of the webrtc signalling server
+  webrtcURL: PropTypes.string.isRequired
 }
 VideoFeed.defaultProps = {
   topic: CAMERA_FEED_TOPIC

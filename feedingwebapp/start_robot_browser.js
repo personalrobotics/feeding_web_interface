@@ -3,7 +3,7 @@
 const { chromium } = require('playwright')
 const logId = 'start_robot_browser.js'
 
-let robotHostname = 'localhost:' + process.env.PORT
+let robotHostname = 'localhost:' + process.env.REACT_APP_PORT
 if (process.argv.length > 2) {
   robotHostname = process.argv[2]
 }

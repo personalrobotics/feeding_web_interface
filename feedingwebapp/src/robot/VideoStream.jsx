@@ -69,7 +69,7 @@ function VideoStream(props) {
 
     // Create the peer connection
     console.log('Creating peer connection', createPeerConnection)
-    const peer = createPeerConnection('http://localhost:5000/publish', props.topic)
+    const peer = createPeerConnection(props.webrtcURL + '/publish', props.topic)
 
     // Add the stream to the peer connection
     stream.getTracks().forEach((track) => peer.addTrack(track, stream))
@@ -80,11 +80,13 @@ function VideoStream(props) {
     return () => {
       peer.close()
     }
-  }, [canvas, drawImage, props.topic])
+  }, [canvas, drawImage, props.topic, props.webrtcURL])
 
   return <canvas ref={canvas} width={props.width} height={props.height} style={{ position: 'absolute' }} />
 }
 VideoStream.propTypes = {
+  // The URL of the webrtc signalling server
+  webrtcURL: PropTypes.string.isRequired,
   // The topic to subscribe to
   topic: PropTypes.string.isRequired,
   // The frame rate for the stream

@@ -57,6 +57,7 @@ function LiveVideoModal(props) {
             marginBottom={margin}
             marginLeft={margin}
             marginRight={margin}
+            webrtcURL={props.webrtcURL}
           />
         </center>
       </Modal.Body>
@@ -67,7 +68,9 @@ LiveVideoModal.propTypes = {
   // Whether or not the modal is visible
   show: PropTypes.bool.isRequired,
   // Callback function for when the modal is hidden
-  onHide: PropTypes.func.isRequired
+  onHide: PropTypes.func.isRequired,
+  // The URL of the webrtc signalling server
+  webrtcURL: PropTypes.string.isRequired
 }
 
 export default LiveVideoModal

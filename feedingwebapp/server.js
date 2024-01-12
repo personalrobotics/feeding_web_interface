@@ -82,4 +82,4 @@ function handleTrackEvent(e, topic) {
   senderStream[topic] = e.streams[0]
 }
 
-app.listen(5000, () => console.log('Server started'))
+app.listen(process.env.REACT_APP_SIGNALLING_SERVER_PORT, () => console.log('Server started'))
