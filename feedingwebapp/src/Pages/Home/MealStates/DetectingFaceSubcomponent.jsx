@@ -140,12 +140,15 @@ const DetectingFaceSubcomponent = (props) => {
           marginLeft={margin}
           marginRight={margin}
           topic={FACE_DETECTION_IMG_TOPIC}
+          webrtcURL={props.webrtcURL}
         />
       </View>
     </>
   )
 }
 DetectingFaceSubcomponent.propTypes = {
+  // The URL of the webrtc signalling server
+  webrtcURL: PropTypes.string.isRequired,
   // The function to call, with the faceDetection message as an argument, when
   // a face is detected within the correct distance range.
   faceDetectedCallback: PropTypes.func.isRequired

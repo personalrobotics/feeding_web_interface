@@ -6,11 +6,14 @@ import PropTypes from 'prop-types'
 // Local Imports
 import { CAMERA_FEED_TOPIC, REALSENSE_WIDTH, REALSENSE_HEIGHT } from '../Constants'
 import { useWindowSize } from '../../helpers'
-import { useROS, subscribeToROSTopic, unsubscribeFromROSTopic } from '../../ros/ros_helpers'
+import { createPeerConnection } from '../../webrtc/webrtc_helpers'
 
 /**
  * Takes in an imageWidth and imageHeight, and returns a width and height that
  * maintains the same aspect ratio but fits within the window.
+ *
+ * NOTE: if run in iOS on low power mode, the video element requires the user to press
+ * "play" to start it, which is treated as a click.
  *
  * @param {number} parentWidth the width of the parent DOM element in pixels
  * @param {number} parentHeight the height of the parent DOM element in pixels
@@ -77,53 +80,29 @@ const VideoFeed = (props) => {
   const [imgWidth, setImgWidth] = useState(0)
   const [imgHeight, setImgHeight] = useState(0)
   const [scaleFactor, setScaleFactor] = useState(0.0)
-  // Store the latest image to render
-  const [latestRenderedImg, setLatestRenderedImg] = useState(null)
+
+  // Ref for the video element
+  const videoRef = useRef(null)
 
   /**
-   * Connect to ROS, if not already connected. Put this in useRef to avoid
-   * re-connecting upon re-renders.
+   * Create the peer connection
    */
-  const ros = useRef(useROS().ros)
-  // Store the latest image timestamp in a ref to avoid re-generating cameraCallback
-  const latestImageTimestamp = useRef(null)
-
-  /**
-   * Subscribe to the image topic.
-   */
-  const cameraCallback = useCallback(
-    (message) => {
-      // console.log('Got camera message', message)
-      if (!latestImageTimestamp.current || props.updateRateHz <= 0) {
-        setLatestRenderedImg(message)
-      } else {
-        let currTime = message.header.stamp.sec + message.header.stamp.nanosec * 1e-9
-        if (currTime - latestImageTimestamp.current >= 1.0 / props.updateRateHz) {
-          setLatestRenderedImg(message)
-          latestImageTimestamp.current = currTime
-        }
-      }
-    },
-    [latestImageTimestamp, setLatestRenderedImg, props.updateRateHz]
-  )
   useEffect(() => {
-    console.log('subscribing to img topic')
-    let topic = subscribeToROSTopic(ros.current, props.topic, 'sensor_msgs/CompressedImage', cameraCallback)
-    const cleanup = () => {
-      console.log('unsubscribing from img topic')
-      unsubscribeFromROSTopic(topic, cameraCallback)
-    }
-    window.addEventListener('beforeunload', cleanup)
-    /**
-     * In practice, because the values passed in in the second argument of
-     * useEffect will not change on re-renders, this return statement will
-     * only be called when the component unmounts.
-     */
+    // Create the peer connection
+    console.log('Creating peer connection', createPeerConnection, props.webrtcURL)
+    const peer = createPeerConnection(props.webrtcURL + '/subscribe', props.topic, (event) => {
+      console.log('Got track event', event)
+      if (event.streams && event.streams[0]) {
+        videoRef.current.srcObject = event.streams[0]
+        console.log('video', videoRef.current)
+      }
+    })
+    peer.addTransceiver('video', { direction: 'recvonly' })
+
     return () => {
-      window.removeEventListener('beforeunload', cleanup)
-      cleanup()
+      peer.close()
     }
-  }, [cameraCallback, props.topic])
+  }, [props.topic, props.webrtcURL, videoRef])
 
   // Callback to resize the image based on the parent width and height
   const resizeImage = useCallback(() => {
@@ -193,18 +172,23 @@ const VideoFeed = (props) => {
 
   // Render the component
   return (
-    <img
-      src={`data:image/jpeg;base64,${latestRenderedImg ? latestRenderedImg.data : ''}`}
-      alt='Live video feed from the robot'
-      style={{
-        width: imgWidth,
-        height: imgHeight,
-        display: 'block',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}
-      onClick={props.pointClicked ? imageClicked : null}
-    />
+    <>
+      <video
+        playsInline
+        autoPlay
+        muted
+        ref={videoRef}
+        alt='Live video feed from the robot'
+        style={{
+          width: imgWidth,
+          height: imgHeight,
+          display: 'block',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+        onClick={props.pointClicked ? imageClicked : null}
+      />
+    </>
   )
 }
 VideoFeed.propTypes = {
@@ -217,19 +201,18 @@ VideoFeed.propTypes = {
   marginRight: PropTypes.number.isRequired,
   // The topic of the video feed
   topic: PropTypes.string.isRequired,
-  // The rate at which to update the video feed, in Hz
-  updateRateHz: PropTypes.number.isRequired,
   /**
    * An optional callback function for when the user clicks on the video feed.
    * This function should take in two parameters, `x` and `y`, which are the
    * coordinates of the click in the **unscaled** image (e.g., the image of
    * size REALSENSE_WIDTH x REALSENSE_HEIGHT).
    */
-  pointClicked: PropTypes.func
+  pointClicked: PropTypes.func,
+  // The URL of the webrtc signalling server
+  webrtcURL: PropTypes.string.isRequired
 }
 VideoFeed.defaultProps = {
-  topic: CAMERA_FEED_TOPIC,
-  updateRateHz: 10
+  topic: CAMERA_FEED_TOPIC
 }
 
 export default VideoFeed

@@ -1,5 +1,8 @@
 // React Imports
 import React, { useCallback, useState } from 'react'
+// PropTypes is used to validate that the used props are in fact passed to this
+// Component
+import PropTypes from 'prop-types'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
@@ -15,7 +18,7 @@ import DetectingFaceSubcomponent from './DetectingFaceSubcomponent'
  * configuration. It displays the output of face detection, and automatically
  * moves on to `R_MovingToMouth` when a face is detected.
  */
-const DetectingFace = () => {
+const DetectingFace = (props) => {
   // Keep track of whether a mouth has been detected or not
   const [mouthDetected, setMouthDetected] = useState(false)
   // Get the relevant global variables
@@ -35,9 +38,9 @@ const DetectingFace = () => {
   // Font size for text
   let textFontSize = 3
   let buttonWidth = 30
-  let buttonHeight = 20
+  let buttonHeight = 18
   let iconWidth = 28
-  let iconHeight = 18
+  let iconHeight = 16
   let sizeSuffix = isPortrait ? 'vh' : 'vw'
 
   /**
@@ -124,7 +127,7 @@ const DetectingFace = () => {
           }}
         >
           <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
-            <DetectingFaceSubcomponent faceDetectedCallback={faceDetectedCallback} />
+            <DetectingFaceSubcomponent faceDetectedCallback={faceDetectedCallback} webrtcURL={props.webrtcURL} />
           </View>
           <View style={{ flex: 3, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
             <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize.toString() + sizeSuffix }}>
@@ -229,6 +232,7 @@ const DetectingFace = () => {
     moveToMouthImage,
     moveToRestingImage,
     moveAbovePlateImage,
+    props.webrtcURL,
     textFontSize,
     buttonHeight,
     buttonWidth,
@@ -242,4 +246,9 @@ const DetectingFace = () => {
   // Render the component
   return fullPageView()
 }
+DetectingFace.propTypes = {
+  // The URL of the webrtc signalling server
+  webrtcURL: PropTypes.string.isRequired
+}
+
 export default DetectingFace

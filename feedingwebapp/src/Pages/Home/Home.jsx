@@ -94,10 +94,10 @@ function Home(props) {
         )
       }
       case MEAL_STATE.U_BiteSelection: {
-        return <BiteSelection debug={props.debug} />
+        return <BiteSelection debug={props.debug} webrtcURL={props.webrtcURL} />
       }
       case MEAL_STATE.U_PlateLocator: {
-        return <PlateLocator debug={props.debug} />
+        return <PlateLocator debug={props.debug} webrtcURL={props.webrtcURL} />
       }
       case MEAL_STATE.R_BiteAcquisition: {
         /**
@@ -162,7 +162,7 @@ function Home(props) {
         )
       }
       case MEAL_STATE.R_DetectingFace: {
-        return <DetectingFace debug={props.debug} />
+        return <DetectingFace debug={props.debug} webrtcURL={props.webrtcURL} />
       }
       case MEAL_STATE.R_MovingToMouth: {
         /**
@@ -288,6 +288,7 @@ function Home(props) {
     mealState,
     setMealState,
     props.debug,
+    props.webrtcURL,
     biteAcquisitionActionInput,
     moveAbovePlateActionInput,
     moveToMouthActionInput,
@@ -311,7 +312,9 @@ Home.propTypes = {
    * Whether to run it in debug mode (e.g., if you aren't simulatenously running
    * the robot) or not
    */
-  debug: PropTypes.bool
+  debug: PropTypes.bool,
+  // The URL of the webrtc signalling server
+  webrtcURL: PropTypes.string.isRequired
 }
 
 export default Home
