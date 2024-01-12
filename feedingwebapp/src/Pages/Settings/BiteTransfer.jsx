@@ -39,6 +39,11 @@ const BiteTransfer = () => {
   )
   const [waitingText, setWaitingText] = useState('Waiting to move in front of you...')
   const actionInput = useMemo(() => ({}), [])
+
+  // Get min and max distance to mouth
+  const minDistanceToMouth = 1 // cm
+  const maxDistanceToMouth = 10 // cm
+
   // Store the props for the RobotMotion call. The first call has the robot move
   // to the staging configuration.
   const robotMotionProps = useMemo(() => {
@@ -159,10 +164,16 @@ const BiteTransfer = () => {
   const onDistanceToMouthChange = useCallback(
     (_ev, data) => {
       let value = data.value ? data.value : parseFloat(data.displayValue)
+      if (value < minDistanceToMouth) {
+        value = minDistanceToMouth
+      }
+      if (value > maxDistanceToMouth) {
+        value = maxDistanceToMouth
+      }
       let fullDistanceToMouth = [value / 100.0, currentDistanceToMouth[1], currentDistanceToMouth[2]]
       setDistanceToMouth(fullDistanceToMouth)
     },
-    [setDistanceToMouth, currentDistanceToMouth]
+    [setDistanceToMouth, currentDistanceToMouth, minDistanceToMouth, maxDistanceToMouth]
   )
 
   // Callback to render the main contents of the page
