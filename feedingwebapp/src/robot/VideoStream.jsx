@@ -51,13 +51,10 @@ function VideoStream(props) {
   // Draw the image on the canvas.
   const drawImage = useCallback(() => {
     if (img.src) {
-      console.log('drawing image')
       // Get the context
       const ctx = canvas.current.getContext('2d')
       // Draw the image
       ctx.drawImage(img, 0, 0, props.width, props.height)
-    } else {
-      console.log('no image to draw')
     }
     requestAnimationFrame(drawImage)
   }, [canvas, img, props.width, props.height])
