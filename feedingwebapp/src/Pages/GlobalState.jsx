@@ -136,6 +136,11 @@ export const useGlobalState = create(
       teleopIsMoving: false,
       // Flag to indicate whether to auto-continue after face detection
       faceDetectionAutoContinue: false,
+      // Whether the settings bite transfer page is currently at the user's face
+      // or not. This is in the off-chance that the mealState is not at the user's
+      // face, the settings page is, and the user refreshes -- the page should
+      // call MoveFromMouthToStaging instead of just MoveToStaging.
+      biteTransferPageAtFace: false,
       // Settings values
       // stagingPosition: SETTINGS.stagingPosition[0],
       // biteInitiation: SETTINGS.biteInitiation[0],
@@ -153,7 +158,8 @@ export const useGlobalState = create(
       setMealState: (mealState) =>
         set(() => ({
           mealState: mealState,
-          mealStateTransitionTime: Date.now()
+          mealStateTransitionTime: Date.now(),
+          biteTransferPageAtFace: false // Reset this flag when the meal state changes
         })),
       setSettingsState: (settingsState) =>
         set(() => ({
@@ -178,6 +184,10 @@ export const useGlobalState = create(
       setFaceDetectionAutoContinue: (faceDetectionAutoContinue) =>
         set(() => ({
           faceDetectionAutoContinue: faceDetectionAutoContinue
+        })),
+      setBiteTransferPageAtFace: (biteTransferPageAtFace) =>
+        set(() => ({
+          biteTransferPageAtFace: biteTransferPageAtFace
         }))
       // setStagingPosition: (stagingPosition) =>
       //   set(() => ({

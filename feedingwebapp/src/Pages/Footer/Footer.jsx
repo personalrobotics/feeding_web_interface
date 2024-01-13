@@ -93,7 +93,7 @@ const Footer = (props) => {
     (config) => {
       return (
         <>
-          <Row className='justify-content-center'>
+          <Row className='justify-content-center' style={{ width: '100%' }}>
             <Button
               variant={config.variant}
               disabled={config.disabled}
@@ -161,7 +161,7 @@ const Footer = (props) => {
 
   // Render the component
   return (
-    <View>
+    <View style={{ wdith: '100%' }}>
       <MDBFooter bgColor='dark' className='text-center text-lg-left' style={{ width: '100vw' }}>
         <div className='text-center' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)', paddingBottom: '5px', paddingTop: '5px' }}>
           {props.paused ? (

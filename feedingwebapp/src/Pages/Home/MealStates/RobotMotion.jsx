@@ -75,9 +75,9 @@ const RobotMotion = (props) => {
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
   // Waiting text font size
-  let waitingTextFontSize = isPortrait ? '4.5vh' : '9vh'
+  let waitingTextFontSize = isPortrait ? '4.5vh' : '6vh'
   // Motion text font size
-  let motionTextFontSize = isPortrait ? '3vh' : '6vh'
+  let motionTextFontSize = isPortrait ? '3vh' : '4vh'
 
   /**
    * Create the ROS Action Client. This is re-created every time props.mealState
@@ -283,7 +283,7 @@ const RobotMotion = (props) => {
                 {props.waitingText}
               </p>
               <p style={{ fontSize: motionTextFontSize }}>{text}</p>
-              {showTime ? <p style={{ fontSize: motionTextFontSize }}>&nbsp;&nbsp;Elapsed Time: {time} sec</p> : <></>}
+              {showTime ? <p style={{ fontSize: motionTextFontSize }}>&nbsp;&nbsp;Elapsed: {time} sec</p> : <></>}
               {retry ? (
                 <Button
                   variant='warning'
@@ -339,7 +339,7 @@ const RobotMotion = (props) => {
             if (!actionStatus.feedback.is_planning) {
               let moving_elapsed_time = actionStatus.feedback.motion_time.sec + actionStatus.feedback.motion_time.nanosec / 10 ** 9
               text = 'Robot is moving...'
-              time = Math.round(moving_elapsed_time * 100) / 100
+              time = Math.round(moving_elapsed_time * 10) / 10
               showTime = true
               progress = 1 - actionStatus.feedback.motion_curr_distance / actionStatus.feedback.motion_initial_distance
               // Calling CircleProgessBar component to visualize robot motion of moving
@@ -347,7 +347,7 @@ const RobotMotion = (props) => {
             } else {
               let planning_elapsed_time = actionStatus.feedback.planning_time.sec + actionStatus.feedback.planning_time.nanosec / 10 ** 9
               text = 'Robot is thinking...'
-              time = Math.round(planning_elapsed_time * 100) / 100
+              time = Math.round(planning_elapsed_time * 10) / 10
               showTime = true
               return <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, progress)}</>
             }

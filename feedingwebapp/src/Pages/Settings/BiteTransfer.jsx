@@ -1,5 +1,6 @@
 // React imports
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import PropTypes from 'prop-types'
 import { useId, Label, SpinButton } from '@fluentui/react-components'
 import Button from 'react-bootstrap/Button'
 // The Modal is a screen that appears on top of the main app, and can be toggled
@@ -23,17 +24,19 @@ import DetectingFaceSubcomponent from '../Home/MealStates/DetectingFaceSubcompon
  * The BiteTransfer component allows users to configure parameters related to the
  * bite transfer.
  */
-const BiteTransfer = () => {
+const BiteTransfer = (props) => {
   // Get relevant global state variables
   const setSettingsState = useGlobalState((state) => state.setSettingsState)
   const globalMealState = useGlobalState((state) => state.mealState)
   const setPaused = useGlobalState((state) => state.setPaused)
+  const biteTransferPageAtFace = useGlobalState((state) => state.biteTransferPageAtFace)
+  const setBiteTransferPageAtFace = useGlobalState((state) => state.setBiteTransferPageAtFace)
 
   // Create relevant local state variables
   // Store the current distance to mouth
   const [currentDistanceToMouth, setCurrentDistanceToMouth] = useState(null)
   const [localMealState, setLocalMealState] = useState(
-    globalMealState === MEAL_STATE.U_BiteDone || globalMealState === MEAL_STATE.R_DetectingFace
+    globalMealState === MEAL_STATE.U_BiteDone || globalMealState === MEAL_STATE.R_DetectingFace || biteTransferPageAtFace
       ? MEAL_STATE.R_MovingFromMouthToStagingConfiguration
       : MEAL_STATE.R_MovingToStagingConfiguration
   )
@@ -43,6 +46,16 @@ const BiteTransfer = () => {
   // Get min and max distance to mouth
   const minDistanceToMouth = 1 // cm
   const maxDistanceToMouth = 10 // cm
+
+  // When we set local meal state, also update bite transfer page at face
+  const setLocalMealStateWrapper = useCallback(
+    (newLocalMealState) => {
+      // If the old localMealState was R_MovingToMouth, then the robot is at the mouth
+      setBiteTransferPageAtFace(localMealState === MEAL_STATE.R_MovingToMouth)
+      setLocalMealState(newLocalMealState)
+    },
+    [localMealState, setLocalMealState, setBiteTransferPageAtFace]
+  )
 
   // Store the props for the RobotMotion call. The first call has the robot move
   // to the staging configuration.
@@ -54,13 +67,13 @@ const BiteTransfer = () => {
     }
     return {
       mealState: localMealState,
-      setMealState: setLocalMealState,
+      setMealState: setLocalMealStateWrapper,
       nextMealState: null,
       backMealState: null,
       actionInput: actionInput,
       waitingText: waitingText
     }
-  }, [localMealState, setLocalMealState, setPaused, actionInput, waitingText])
+  }, [localMealState, setLocalMealStateWrapper, setPaused, actionInput, waitingText])
 
   // Rendering variables
   let textFontSize = '3.5vh'
@@ -146,14 +159,14 @@ const BiteTransfer = () => {
 
   // Callback to move the robot to the mouth
   const moveToMouthButtonClicked = useCallback(() => {
-    setLocalMealState(MEAL_STATE.R_DetectingFace)
-  }, [setLocalMealState])
+    setLocalMealStateWrapper(MEAL_STATE.R_DetectingFace)
+  }, [setLocalMealStateWrapper])
 
   // Callback to move the robot away from the mouth
   const moveAwayFromMouthButtonClicked = useCallback(() => {
-    setLocalMealState(MEAL_STATE.R_MovingFromMouthToStagingConfiguration)
+    setLocalMealStateWrapper(MEAL_STATE.R_MovingFromMouthToStagingConfiguration)
     setWaitingText('Waiting to move away from you...')
-  }, [setLocalMealState, setWaitingText])
+  }, [setLocalMealStateWrapper, setWaitingText])
 
   // Callback to return to the main settings page
   const doneButtonClicked = useCallback(() => {
@@ -330,9 +343,9 @@ const BiteTransfer = () => {
 
   // When a face is detected, switch to MoveToMouth
   const faceDetectedCallback = useCallback(() => {
-    setLocalMealState(MEAL_STATE.R_MovingToMouth)
+    setLocalMealStateWrapper(MEAL_STATE.R_MovingToMouth)
     setWaitingText('Waiting to move in front of you...')
-  }, [setLocalMealState, setWaitingText])
+  }, [setLocalMealStateWrapper, setWaitingText])
 
   // Render the modal body, for calling robot code from within this settings page
   const renderModalBody = useCallback(() => {
@@ -351,11 +364,11 @@ const BiteTransfer = () => {
           />
         )
       case MEAL_STATE.R_DetectingFace:
-        return <DetectingFaceSubcomponent faceDetectedCallback={faceDetectedCallback} />
+        return <DetectingFaceSubcomponent faceDetectedCallback={faceDetectedCallback} webrtcURL={props.webrtcURL} />
       default:
         return <></>
     }
-  }, [localMealState, robotMotionProps, faceDetectedCallback])
+  }, [localMealState, props.webrtcURL, robotMotionProps, faceDetectedCallback])
 
   return (
     <>
@@ -407,7 +420,7 @@ const BiteTransfer = () => {
       </View>
       <Modal
         show={localMealState !== null}
-        onHide={() => setLocalMealState(null)}
+        onHide={() => setLocalMealStateWrapper(null)}
         size='lg'
         aria-labelledby='contained-modal-title-vcenter'
         backdrop='static'
@@ -415,16 +428,22 @@ const BiteTransfer = () => {
         centered
         id='robotMotionModal'
         fullscreen={false}
+        dialogClassName='modal-90w'
+        style={{
+          '--bs-modal-padding': '0rem'
+        }}
       >
         <Modal.Header closeButton />
         <Modal.Body style={{ overflow: 'hidden' }}>
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '90vw', height: '60vh' }}>
-            {renderModalBody()}
-          </View>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: '60vh' }}>{renderModalBody()}</View>
         </Modal.Body>
       </Modal>
     </>
   )
+}
+BiteTransfer.propTypes = {
+  // The URL of the webrtc signalling server
+  webrtcURL: PropTypes.string.isRequired
 }
 
 export default BiteTransfer

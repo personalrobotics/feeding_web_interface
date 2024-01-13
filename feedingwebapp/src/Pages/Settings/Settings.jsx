@@ -1,5 +1,6 @@
 // React imports
 import React, { useCallback } from 'react'
+import PropTypes from 'prop-types'
 import { View } from 'react-native'
 
 // Local imports
@@ -11,7 +12,7 @@ import BiteTransfer from './BiteTransfer'
  * The Settings components displays the appropriate settings page based on the
  * current settings state.
  */
-const Settings = () => {
+const Settings = (props) => {
   // Get the relevant values from global state
   const settingsState = useGlobalState((state) => state.settingsState)
 
@@ -21,12 +22,12 @@ const Settings = () => {
       case SETTINGS_STATE.MAIN:
         return <Main />
       case SETTINGS_STATE.BITE_TRANSFER:
-        return <BiteTransfer />
+        return <BiteTransfer webrtcURL={props.webrtcURL} />
       default:
         console.log('Invalid settings state', settingsState)
         return <Main />
     }
-  }, [settingsState])
+  }, [props.webrtcURL, settingsState])
 
   // Render the component
   return (
@@ -37,6 +38,10 @@ const Settings = () => {
       {getComponentBySettingsState()}
     </View>
   )
+}
+Settings.propTypes = {
+  // The URL of the webrtc signalling server
+  webrtcURL: PropTypes.string.isRequired
 }
 
 export default Settings
