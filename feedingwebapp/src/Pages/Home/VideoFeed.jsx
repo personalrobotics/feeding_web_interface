@@ -212,7 +212,11 @@ VideoFeed.propTypes = {
   webrtcURL: PropTypes.string.isRequired
 }
 VideoFeed.defaultProps = {
-  topic: CAMERA_FEED_TOPIC
+  topic: CAMERA_FEED_TOPIC,
+  marginTop: 0,
+  marginBottom: 0,
+  marginLeft: 0,
+  marginRight: 0
 }
 
 export default VideoFeed

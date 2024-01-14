@@ -89,6 +89,9 @@ const BiteTransfer = (props) => {
       case MEAL_STATE.R_MovingToRestingPosition:
         waitingText = 'Waiting to move to the resting position...'
         break
+      case MEAL_STATE.R_StowingArm:
+        waitingText = 'Waiting to stow the arm...'
+        break
       default:
         waitingText = 'Waiting to move in front of you...'
         break
@@ -208,10 +211,10 @@ const BiteTransfer = (props) => {
     let localNextMealState
     // To get to Settings, the globalMealState must be one of the NON_MOVING_STATES
     switch (globalMealState) {
-      case MEAL_STATE.U_PreMeal:
       case MEAL_STATE.U_BiteDone:
         localNextMealState = null
         break
+      case MEAL_STATE.U_PreMeal:
       case MEAL_STATE.U_BiteSelection:
         localNextMealState = MEAL_STATE.R_MovingAbovePlate
         break
@@ -219,6 +222,8 @@ const BiteTransfer = (props) => {
         localNextMealState = MEAL_STATE.R_MovingToRestingPosition
         break
       case MEAL_STATE.U_PostMeal:
+        localNextMealState = MEAL_STATE.R_StowingArm
+        break
       default:
         localNextMealState = MEAL_STATE.R_MovingAbovePlate
         break
@@ -408,6 +413,7 @@ const BiteTransfer = (props) => {
       case MEAL_STATE.R_MovingToMouth:
       case MEAL_STATE.R_MovingAbovePlate:
       case MEAL_STATE.R_MovingToRestingPosition:
+      case MEAL_STATE.R_StowingArm:
         return (
           <RobotMotion
             mealState={robotMotionProps.mealState}

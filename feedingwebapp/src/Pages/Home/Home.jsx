@@ -212,7 +212,7 @@ function Home(props) {
         // is necessary so the user doesn't get stuck in a situation where they can't
         // move above the plate.
         let backMealState = MEAL_STATE.R_MovingAbovePlate
-        let waitingText = 'Waiting to move from your mouth to in front of you...'
+        let waitingText = 'Waiting to away from your mouth...'
         return (
           <RobotMotion
             debug={props.debug}

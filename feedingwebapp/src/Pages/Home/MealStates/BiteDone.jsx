@@ -28,7 +28,7 @@ const BiteDone = () => {
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
   // Font size for text
-  let textFontSize = isPortrait ? '3vh' : '3vw'
+  let textFontSize = isPortrait ? '3vh' : '2.5vw'
   let buttonWidth = isPortrait ? '30vh' : '30vw'
   let buttonHeight = isPortrait ? '20vh' : '20vw'
   let iconWidth = isPortrait ? '28vh' : '28vw'
@@ -65,7 +65,7 @@ const BiteDone = () => {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           {/* Ask the user whether they want to move to above plate position */}
           <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-            Move above plate.
+            Move above plate
           </p>
           {/* Icon to move above plate */}
           <Button
@@ -86,7 +86,7 @@ const BiteDone = () => {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           {/* Ask the user whether they want to move to resting position */}
           <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-            Rest to the side.
+            Rest to the side
           </p>
           {/* Icon to move to resting position */}
           <Button
@@ -107,7 +107,7 @@ const BiteDone = () => {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           {/* Ask the user whether they want to move to resting position */}
           <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-            Move back.
+            Move away from mouth
           </p>
           {/* Icon to move to resting position */}
           <Button
