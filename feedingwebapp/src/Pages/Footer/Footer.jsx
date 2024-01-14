@@ -164,22 +164,24 @@ const Footer = (props) => {
     <View style={{ wdith: '100%' }}>
       <MDBFooter bgColor='dark' className='text-center text-lg-left' style={{ width: '100vw' }}>
         <div className='text-center' style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)', paddingBottom: '5px', paddingTop: '5px' }}>
-          {props.paused ? (
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-              <View
-                style={{ flex: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}
-              >
-                {props.backCallback ? renderFooterButton(buttonConfig.back) : <></>}
-              </View>
-              <View
-                style={{ flex: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}
-              >
-                {props.resumeCallback ? renderFooterButton(buttonConfig.resume) : <></>}
-              </View>
-            </View>
-          ) : (
-            renderFooterButton(buttonConfig.pause)
-          )}
+          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+            {props.paused ? (
+              <>
+                <View
+                  style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}
+                >
+                  {props.backCallback ? renderFooterButton(buttonConfig.back) : <></>}
+                </View>
+                <View
+                  style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}
+                >
+                  {props.resumeCallback ? renderFooterButton(buttonConfig.resume) : <></>}
+                </View>
+              </>
+            ) : (
+              renderFooterButton(buttonConfig.pause)
+            )}
+          </View>
         </div>
       </MDBFooter>
     </View>

@@ -35,45 +35,74 @@ const BiteTransfer = (props) => {
   // Create relevant local state variables
   // Store the current distance to mouth
   const [currentDistanceToMouth, setCurrentDistanceToMouth] = useState(null)
-  const [localMealState, setLocalMealState] = useState(
+  const [localCurrAndNextMealState, setLocalCurrAndNextMealState] = useState(
     globalMealState === MEAL_STATE.U_BiteDone || globalMealState === MEAL_STATE.R_DetectingFace || biteTransferPageAtFace
-      ? MEAL_STATE.R_MovingFromMouthToStagingConfiguration
-      : MEAL_STATE.R_MovingToStagingConfiguration
+      ? [MEAL_STATE.R_MovingFromMouth, null]
+      : [MEAL_STATE.R_MovingToStagingConfiguration, null]
   )
-  const [waitingText, setWaitingText] = useState('Waiting to move in front of you...')
   const actionInput = useMemo(() => ({}), [])
+  const [doneButtonIsClicked, setDoneButtonIsClicked] = useState(false)
 
   // Get min and max distance to mouth
   const minDistanceToMouth = 1 // cm
   const maxDistanceToMouth = 10 // cm
 
   // When we set local meal state, also update bite transfer page at face
-  const setLocalMealStateWrapper = useCallback(
-    (newLocalMealState) => {
-      // If the old localMealState was R_MovingToMouth, then the robot is at the mouth
-      setBiteTransferPageAtFace(localMealState === MEAL_STATE.R_MovingToMouth)
-      setLocalMealState(newLocalMealState)
+  const setLocalCurrMealStateWrapper = useCallback(
+    (newLocalCurrMealState, newLocalNextMealState = null) => {
+      let oldLocalCurrMealState = localCurrAndNextMealState[0]
+      // If the oldlocalCurrMealState was R_MovingToMouth, then the robot is at the mouth
+      setBiteTransferPageAtFace(oldLocalCurrMealState === MEAL_STATE.R_MovingToMouth)
+      // Start in a moving state, not a paused state
+      setPaused(false)
+      if (newLocalCurrMealState === null && doneButtonIsClicked) {
+        // After the done button is clicked, the robot may have to do up to two
+        // motions to restore itself to its old state. After that, this goes
+        // back to the main settings page.
+        setSettingsState(SETTINGS_STATE.MAIN)
+      } else {
+        setLocalCurrAndNextMealState([newLocalCurrMealState, newLocalNextMealState])
+      }
     },
-    [localMealState, setLocalMealState, setBiteTransferPageAtFace]
+    [localCurrAndNextMealState, setLocalCurrAndNextMealState, setBiteTransferPageAtFace, doneButtonIsClicked, setPaused, setSettingsState]
   )
 
   // Store the props for the RobotMotion call. The first call has the robot move
   // to the staging configuration.
   const robotMotionProps = useMemo(() => {
-    console.log('useMemo called with', localMealState)
-    if (localMealState !== null) {
-      // Start in a moving state, not a paused state
-      setPaused(false)
+    let localCurrMealState = localCurrAndNextMealState[0]
+    let localNextMealState = localCurrAndNextMealState[1]
+    let waitingText
+    switch (localCurrMealState) {
+      case MEAL_STATE.R_MovingToStagingConfiguration:
+        waitingText = 'Waiting to move in front of you...'
+        break
+      case MEAL_STATE.R_MovingFromMouth:
+        waitingText = 'Waiting to move away from you...'
+        break
+      case MEAL_STATE.R_MovingToMouth:
+        waitingText = 'Waiting to move to your mouth...'
+        break
+      case MEAL_STATE.R_MovingAbovePlate:
+        waitingText = 'Waiting to move above the plate...'
+        break
+      case MEAL_STATE.R_MovingToRestingPosition:
+        waitingText = 'Waiting to move to the resting position...'
+        break
+      default:
+        waitingText = 'Waiting to move in front of you...'
+        break
     }
+    console.log('useMemo called with', localCurrMealState, waitingText)
     return {
-      mealState: localMealState,
-      setMealState: setLocalMealStateWrapper,
-      nextMealState: null,
+      mealState: localCurrMealState,
+      setMealState: setLocalCurrMealStateWrapper,
+      nextMealState: localNextMealState,
       backMealState: null,
       actionInput: actionInput,
       waitingText: waitingText
     }
-  }, [localMealState, setLocalMealStateWrapper, setPaused, actionInput, waitingText])
+  }, [localCurrAndNextMealState, setLocalCurrMealStateWrapper, actionInput])
 
   // Rendering variables
   let textFontSize = '3.5vh'
@@ -92,6 +121,9 @@ const BiteTransfer = (props) => {
 
   // The first time the page is rendered, get the current distance to mouth
   useEffect(() => {
+    setDoneButtonIsClicked(false)
+    // Start in a moving state, not a paused state
+    setPaused(false)
     let service = getParametersService.current
     // First, attempt to get the current distance to mouth
     let currentRequest = createROSServiceRequest({
@@ -115,7 +147,7 @@ const BiteTransfer = (props) => {
         setCurrentDistanceToMouth(getParameterValue(response.values[0]))
       }
     })
-  }, [getParametersService, setCurrentDistanceToMouth])
+  }, [getParametersService, setCurrentDistanceToMouth, setDoneButtonIsClicked, setPaused])
 
   // Callback to set the distance to mouth parameter
   const setDistanceToMouth = useCallback(
@@ -159,19 +191,40 @@ const BiteTransfer = (props) => {
 
   // Callback to move the robot to the mouth
   const moveToMouthButtonClicked = useCallback(() => {
-    setLocalMealStateWrapper(MEAL_STATE.R_DetectingFace)
-  }, [setLocalMealStateWrapper])
+    setLocalCurrMealStateWrapper(MEAL_STATE.R_DetectingFace)
+    setDoneButtonIsClicked(false)
+  }, [setLocalCurrMealStateWrapper, setDoneButtonIsClicked])
 
   // Callback to move the robot away from the mouth
   const moveAwayFromMouthButtonClicked = useCallback(() => {
-    setLocalMealStateWrapper(MEAL_STATE.R_MovingFromMouthToStagingConfiguration)
-    setWaitingText('Waiting to move away from you...')
-  }, [setLocalMealStateWrapper, setWaitingText])
+    setLocalCurrMealStateWrapper(MEAL_STATE.R_MovingFromMouth)
+    setDoneButtonIsClicked(false)
+  }, [setLocalCurrMealStateWrapper, setDoneButtonIsClicked])
 
   // Callback to return to the main settings page
   const doneButtonClicked = useCallback(() => {
-    setSettingsState(SETTINGS_STATE.MAIN)
-  }, [setSettingsState])
+    setDoneButtonIsClicked(true)
+    // Determine the state to move to based on the state before entering settings
+    let localNextMealState
+    // To get to Settings, the globalMealState must be one of the NON_MOVING_STATES
+    switch (globalMealState) {
+      case MEAL_STATE.U_PreMeal:
+      case MEAL_STATE.U_BiteDone:
+        localNextMealState = null
+        break
+      case MEAL_STATE.U_BiteSelection:
+        localNextMealState = MEAL_STATE.R_MovingAbovePlate
+        break
+      case MEAL_STATE.U_BiteAcquisitionCheck:
+        localNextMealState = MEAL_STATE.R_MovingToRestingPosition
+        break
+      case MEAL_STATE.U_PostMeal:
+      default:
+        localNextMealState = MEAL_STATE.R_MovingAbovePlate
+        break
+    }
+    setLocalCurrMealStateWrapper(MEAL_STATE.R_MovingFromMouth, localNextMealState)
+  }, [globalMealState, setLocalCurrMealStateWrapper, setDoneButtonIsClicked])
 
   // Callback for when the user changes the distance to mouth
   const onDistanceToMouthChange = useCallback(
@@ -343,16 +396,18 @@ const BiteTransfer = (props) => {
 
   // When a face is detected, switch to MoveToMouth
   const faceDetectedCallback = useCallback(() => {
-    setLocalMealStateWrapper(MEAL_STATE.R_MovingToMouth)
-    setWaitingText('Waiting to move in front of you...')
-  }, [setLocalMealStateWrapper, setWaitingText])
+    setLocalCurrMealStateWrapper(MEAL_STATE.R_MovingToMouth)
+  }, [setLocalCurrMealStateWrapper])
 
   // Render the modal body, for calling robot code from within this settings page
   const renderModalBody = useCallback(() => {
-    switch (localMealState) {
+    let localCurrMealState = localCurrAndNextMealState[0]
+    switch (localCurrMealState) {
       case MEAL_STATE.R_MovingToStagingConfiguration:
-      case MEAL_STATE.R_MovingFromMouthToStagingConfiguration:
+      case MEAL_STATE.R_MovingFromMouth:
       case MEAL_STATE.R_MovingToMouth:
+      case MEAL_STATE.R_MovingAbovePlate:
+      case MEAL_STATE.R_MovingToRestingPosition:
         return (
           <RobotMotion
             mealState={robotMotionProps.mealState}
@@ -368,7 +423,7 @@ const BiteTransfer = (props) => {
       default:
         return <></>
     }
-  }, [localMealState, props.webrtcURL, robotMotionProps, faceDetectedCallback])
+  }, [localCurrAndNextMealState, props.webrtcURL, robotMotionProps, faceDetectedCallback])
 
   return (
     <>
@@ -419,8 +474,8 @@ const BiteTransfer = (props) => {
         </Button>
       </View>
       <Modal
-        show={localMealState !== null}
-        onHide={() => setLocalMealStateWrapper(null)}
+        show={localCurrAndNextMealState[0] !== null}
+        onHide={() => setLocalCurrMealStateWrapper(null)}
         size='lg'
         aria-labelledby='contained-modal-title-vcenter'
         backdrop='static'
@@ -435,7 +490,7 @@ const BiteTransfer = (props) => {
       >
         <Modal.Header closeButton />
         <Modal.Body style={{ overflow: 'hidden' }}>
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: '60vh' }}>{renderModalBody()}</View>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: '65vh' }}>{renderModalBody()}</View>
         </Modal.Body>
       </Modal>
     </>

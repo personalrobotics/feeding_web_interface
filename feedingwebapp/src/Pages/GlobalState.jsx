@@ -39,18 +39,9 @@ export const APP_PAGE = {
  *   - R_DetectingFace: Waiting for the robot to detect a face.
  *   - R_MovingToMouth: Waiting for the robot to finish moving to the user's
  *     mouth.
- *   - R_MovingFromMouthToStagingConfiguration: Waiting for the robot to move
+ *   - R_MovingFromMouth: Waiting for the robot to move
  *     from the user's mouth to the staging configuration. This is a separate
- *     action from R_MovingToStagingConfiguration to allow us to customize the
- *     departure from the mouth (e.g., a slower speed).
- *   - R_MovingFromMouthToAbovePlate: Waiting for the robot to move from the
- *     user's mouth to above the plate. This is a separate action from
- *     R_MovingAbovePlate to allow us to customize the departure from the mouth
- *     (e.g., a slower speed).
- *   - R_MovingFromMouthToRestingPosition: Waiting for the robot to move from
- *     the user's mouth to resting position. This is a separate action from
- *     R_MovingToRestingPosition to allow us to customize the departure from
- *     the mouth (e.g., a slower speed).
+ *     action from R_MovingToStagingConfiguration since it is cartesian.
  *   - U_BiteDone: Waiting for the user to indicate that they are done eating
  *     the bite.
  *   - R_StowingArm: Waiting for the robot to stow the arm.
@@ -67,9 +58,7 @@ export const MEAL_STATE = {
   R_MovingToStagingConfiguration: 'R_MovingToStagingConfiguration',
   R_DetectingFace: 'R_DetectingFace',
   R_MovingToMouth: 'R_MovingToMouth',
-  R_MovingFromMouthToStagingConfiguration: 'R_MovingFromMouthToStagingConfiguration',
-  R_MovingFromMouthToAbovePlate: 'R_MovingFromMouthToAbovePlate',
-  R_MovingFromMouthToRestingPosition: 'R_MovingFromMouthToRestingPosition',
+  R_MovingFromMouth: 'R_MovingFromMouth',
   U_BiteDone: 'U_BiteDone',
   R_StowingArm: 'R_StowingArm',
   U_PostMeal: 'U_PostMeal'
@@ -141,6 +130,10 @@ export const useGlobalState = create(
       // face, the settings page is, and the user refreshes -- the page should
       // call MoveFromMouthToStaging instead of just MoveToStaging.
       biteTransferPageAtFace: false,
+      // The button the user most recently clicked on the BiteDone page. In practice,
+      // this is the state we transition to after R_MovingFromMouth. In practice,
+      // it is either R_MovingAbovePlate, R_MovingToRestingPosition, or R_DetectingFace.
+      mostRecentBiteDoneResponse: MEAL_STATE.R_DetectingFace,
       // Settings values
       // stagingPosition: SETTINGS.stagingPosition[0],
       // biteInitiation: SETTINGS.biteInitiation[0],
@@ -155,12 +148,18 @@ export const useGlobalState = create(
           // Thus, we reset it to an unpaused state.
           paused: false
         })),
-      setMealState: (mealState) =>
-        set(() => ({
-          mealState: mealState,
-          mealStateTransitionTime: Date.now(),
-          biteTransferPageAtFace: false // Reset this flag when the meal state changes
-        })),
+      setMealState: (mealState, mostRecentBiteDoneResponse = null) =>
+        set(() => {
+          let retval = {
+            mealState: mealState,
+            mealStateTransitionTime: Date.now(),
+            biteTransferPageAtFace: false // Reset this flag when the meal state changes
+          }
+          if (mostRecentBiteDoneResponse) {
+            retval.mostRecentBiteDoneResponse = mostRecentBiteDoneResponse
+          }
+          return retval
+        }),
       setSettingsState: (settingsState) =>
         set(() => ({
           settingsState: settingsState
