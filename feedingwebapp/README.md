@@ -12,6 +12,7 @@ The overall user flow for this robot can be seen below.
 
 ## Dependencies
 - [Node.js](https://nodejs.org/en/download/package-manager)
+- [`serve` must be globally installed](https://create-react-app.dev/docs/deployment/) (ideally with `sudo`): `sudo npm install -g serve`
 
 ## Getting Started in Computer
 
