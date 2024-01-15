@@ -12,7 +12,16 @@ const bodyParser = require('body-parser')
 var cors = require('cors')
 const webrtc = require('wrtc')
 
-let senderStream = {}
+let senderStream = {} // key: topic, value: MediaStream
+let publishPeers = {} // key: IP4, value: RTCPeerConnection
+let subscribePeers = {} // key: IP4, value: RTCPeerConnection
+
+function sdpToIP4(sdp) {
+  const sdpLines = sdp.split('\r\n')
+  const oLine = sdpLines.find((line) => line.startsWith('o='))
+  const ip4 = oLine.split(' ')[5]
+  return ip4
+}
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -29,6 +38,16 @@ app.post('/subscribe', async ({ body }, res) => {
       }
     ]
   })
+
+  // Close any old peers on the same IP address
+  const ip4 = sdpToIP4(body.sdp.sdp)
+  if (ip4 in subscribePeers) {
+    const senders = subscribePeers[ip4].getSenders()
+    senders.forEach((sender) => subscribePeers[ip4].removeTrack(sender))
+    subscribePeers[ip4].close()
+  }
+  subscribePeers[ip4] = peer
+
   const desc = new webrtc.RTCSessionDescription(body.sdp)
   await peer.setRemoteDescription(desc)
 
@@ -60,6 +79,15 @@ app.post('/publish', async ({ body }, res) => {
       }
     ]
   })
+
+  // Close any old peers on the same IP address
+  console.log(body.sdp)
+  const ip4 = sdpToIP4(body.sdp.sdp)
+  if (ip4 in publishPeers) {
+    const senders = publishPeers[ip4].getSenders()
+    senders.forEach((sender) => publishPeers[ip4].removeTrack(sender))
+    publishPeers[ip4].close()
+  }
 
   // Send the publisher's video stream to all subscribers on that topic
   const topic = body.topic

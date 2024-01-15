@@ -53,7 +53,7 @@ export function createPeerConnection(url, topic, onTrackAdded, onConnectionEnd) 
       if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
         console.error(peerConnection.connectionState, 'Resetting the PeerConnection')
         if (onConnectionEnd) onConnectionEnd()
-        createPeerConnection()
+        // peerConnection = createPeerConnection(url, topic, onTrackAdded, onConnectionEnd)
       }
       console.log('peerConnection.onconnectionstatechange', peerConnection.connectionState)
     }
@@ -67,5 +67,20 @@ export function createPeerConnection(url, topic, onTrackAdded, onConnectionEnd) 
   } catch (err) {
     console.error('Failed to create PeerConnection, exception: ' + err.message)
     return
+  }
+}
+
+/**
+ * Closes the given peer connection.
+ * @param {object} peerConnection The RTCPeerConnection to close.
+ */
+export function closePeerConnection(peerConnection) {
+  if (!peerConnection) return
+  console.log('Closing RTCPeerConnection', peerConnection)
+  if (peerConnection.connectionState !== 'closed') {
+    const senders = peerConnection.getSenders()
+    senders.forEach((sender) => peerConnection.removeTrack(sender))
+    peerConnection.close()
+    console.log('Closed RTCPeerConnection')
   }
 }
