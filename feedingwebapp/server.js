@@ -16,19 +16,12 @@ let senderStream = {} // key: topic, value: MediaStream
 let publishPeers = {} // key: IP4:topic, value: RTCPeerConnection
 let subscribePeers = {} // key: IP4:topic, value: RTCPeerConnection
 
-function sdpToIP4(sdp) {
-  const sdpLines = sdp.split('\r\n')
-  const oLine = sdpLines.find((line) => line.startsWith('o='))
-  const ip4 = oLine.split(' ')[5]
-  return ip4
-}
-
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 
 app.post('/subscribe', async ({ body }, res) => {
-  console.log('got subscriber on topic: ' + body.topic)
+  console.log('got subscriber on IP', body.ip, 'for topic', body.topic)
 
   // Configure the peer connection
   const peer = new webrtc.RTCPeerConnection({
@@ -40,10 +33,8 @@ app.post('/subscribe', async ({ body }, res) => {
   })
 
   // Close any old peers on the same IP address
-  const ip4 = sdpToIP4(body.sdp.sdp)
   const topic = body.topic
-  const key = ip4 + ':' + topic
-  console.log('subscriber key', key, 'sdp', body.sdp.sdp)
+  const key = body.ip + ':' + topic
   if (key in subscribePeers) {
     const senders = subscribePeers[key].getSenders()
     senders.forEach((sender) => subscribePeers[key].removeTrack(sender))
@@ -71,7 +62,7 @@ app.post('/subscribe', async ({ body }, res) => {
 })
 
 app.post('/publish', async ({ body }, res) => {
-  console.log('got publisher on topic: ' + body.topic)
+  console.log('got publisher on IP', body.ip, 'for topic', body.topic)
 
   // Configure the peer connection
   const peer = new webrtc.RTCPeerConnection({
@@ -83,16 +74,11 @@ app.post('/publish', async ({ body }, res) => {
   })
 
   // Close any old peers on the same IP address
-  const ip4 = sdpToIP4(body.sdp.sdp)
   const topic = body.topic
-  const key = ip4 + ':' + topic
-  console.log('ip4', ip4, 'publishPeers', publishPeers, ip4 in publishPeers)
+  const key = body.ip + ':' + topic
   if (key in publishPeers) {
-    console.log('get senders')
     const senders = publishPeers[key].getSenders()
-    console.log('close senders')
     senders.forEach((sender) => publishPeers[key].removeTrack(sender))
-    console.log('close peer connection')
     publishPeers[key].close()
   }
   publishPeers[key] = peer

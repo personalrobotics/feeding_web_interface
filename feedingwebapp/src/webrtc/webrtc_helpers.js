@@ -28,9 +28,11 @@ export function createPeerConnection(url, topic, onTrackAdded, onConnectionEnd) 
       try {
         const offer = await peerConnection.createOffer()
         await peerConnection.setLocalDescription(offer)
+        const ip = await getIPAddress()
         const payload = {
           sdp: peerConnection.localDescription,
-          topic: topic
+          topic: topic,
+          ip: ip
         }
         console.log('sending payload', payload)
         const { data } = await axios.post(url, payload)
@@ -83,4 +85,10 @@ export function closePeerConnection(peerConnection) {
     peerConnection.close()
     console.log('Closed RTCPeerConnection')
   }
+}
+
+export async function getIPAddress() {
+  const res = await axios.get('https://api.ipify.org/?format=json')
+  console.log(res.data)
+  return res.data.ip
 }
