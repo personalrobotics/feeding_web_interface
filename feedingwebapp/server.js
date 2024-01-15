@@ -13,8 +13,8 @@ var cors = require('cors')
 const webrtc = require('wrtc')
 
 let senderStream = {} // key: topic, value: MediaStream
-let publishPeers = {} // key: IP4, value: RTCPeerConnection
-let subscribePeers = {} // key: IP4, value: RTCPeerConnection
+let publishPeers = {} // key: IP4:topic, value: RTCPeerConnection
+let subscribePeers = {} // key: IP4:topic, value: RTCPeerConnection
 
 function sdpToIP4(sdp) {
   const sdpLines = sdp.split('\r\n')
@@ -34,25 +34,27 @@ app.post('/subscribe', async ({ body }, res) => {
   const peer = new webrtc.RTCPeerConnection({
     iceServers: [
       {
-        urls: 'stun:stun.stunprotocol.org'
+        urls: 'stun:stun1.l.google.com:19302'
       }
     ]
   })
 
   // Close any old peers on the same IP address
   const ip4 = sdpToIP4(body.sdp.sdp)
-  if (ip4 in subscribePeers) {
-    const senders = subscribePeers[ip4].getSenders()
-    senders.forEach((sender) => subscribePeers[ip4].removeTrack(sender))
-    subscribePeers[ip4].close()
+  const topic = body.topic
+  const key = ip4 + ':' + topic
+  console.log('subscriber key', key, 'sdp', body.sdp.sdp)
+  if (key in subscribePeers) {
+    const senders = subscribePeers[key].getSenders()
+    senders.forEach((sender) => subscribePeers[key].removeTrack(sender))
+    subscribePeers[key].close()
   }
-  subscribePeers[ip4] = peer
+  subscribePeers[key] = peer
 
   const desc = new webrtc.RTCSessionDescription(body.sdp)
   await peer.setRemoteDescription(desc)
 
   // Add the publisher's video stream to the subscriber's peer connection
-  const topic = body.topic
   if (topic in senderStream) {
     senderStream[topic].getTracks().forEach((track) => peer.addTrack(track, senderStream[topic]))
   }
@@ -75,22 +77,27 @@ app.post('/publish', async ({ body }, res) => {
   const peer = new webrtc.RTCPeerConnection({
     iceServers: [
       {
-        urls: 'stun:stun.stunprotocol.org'
+        urls: 'stun:stun1.l.google.com:19302'
       }
     ]
   })
 
   // Close any old peers on the same IP address
-  console.log(body.sdp)
   const ip4 = sdpToIP4(body.sdp.sdp)
-  if (ip4 in publishPeers) {
-    const senders = publishPeers[ip4].getSenders()
-    senders.forEach((sender) => publishPeers[ip4].removeTrack(sender))
-    publishPeers[ip4].close()
+  const topic = body.topic
+  const key = ip4 + ':' + topic
+  console.log('ip4', ip4, 'publishPeers', publishPeers, ip4 in publishPeers)
+  if (key in publishPeers) {
+    console.log('get senders')
+    const senders = publishPeers[key].getSenders()
+    console.log('close senders')
+    senders.forEach((sender) => publishPeers[key].removeTrack(sender))
+    console.log('close peer connection')
+    publishPeers[key].close()
   }
+  publishPeers[key] = peer
 
   // Send the publisher's video stream to all subscribers on that topic
-  const topic = body.topic
   peer.ontrack = (e) => handleTrackEvent(e, topic)
 
   // Create an answer to the publisher's offer

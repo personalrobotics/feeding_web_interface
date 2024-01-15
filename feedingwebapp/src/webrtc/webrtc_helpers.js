@@ -17,7 +17,7 @@ export function createPeerConnection(url, topic, onTrackAdded, onConnectionEnd) 
     const peerConnection = new RTCPeerConnection({
       iceServers: [
         {
-          urls: 'stun:stun.stunprotocol.org'
+          urls: 'stun:stun1.l.google.com:19302'
         }
       ]
     })
