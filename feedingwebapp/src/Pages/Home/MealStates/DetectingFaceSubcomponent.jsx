@@ -33,8 +33,6 @@ const DetectingFaceSubcomponent = (props) => {
   // be re-defined per render, otherwise it messes up re-rendering order upon
   // resize in VideoFeed.
   const margin = useMemo(() => convertRemToPixels(1), [])
-  // Reference to the DOM element of the parent of the video feed
-  const videoParentRef = useRef(null)
 
   /**
    * Connect to ROS, if not already connected. Put this in useRef to avoid
@@ -125,7 +123,6 @@ const DetectingFaceSubcomponent = (props) => {
         </p>
       </View>
       <View
-        ref={videoParentRef}
         style={{
           flex: 9,
           alignItems: 'center',
@@ -134,7 +131,6 @@ const DetectingFaceSubcomponent = (props) => {
         }}
       >
         <VideoFeed
-          parent={videoParentRef}
           marginTop={margin}
           marginBottom={margin}
           marginLeft={margin}
