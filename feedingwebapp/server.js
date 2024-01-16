@@ -13,6 +13,9 @@ var cors = require('cors')
 const webrtc = require('wrtc')
 
 let senderStream = {} // key: topic, value: MediaStream
+// NOTE: There is something wrong with the IPs being passed in being
+// all or mostly the same. As a result, in essense this only allows
+// one publisher or subscriber at a time.
 let publishPeers = {} // key: IP4:topic, value: RTCPeerConnection
 let subscribePeers = {} // key: IP4:topic, value: RTCPeerConnection
 
