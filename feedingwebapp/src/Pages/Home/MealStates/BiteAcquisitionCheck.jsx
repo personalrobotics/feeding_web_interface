@@ -2,6 +2,7 @@
 import React, { useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
 import { useMediaQuery } from 'react-responsive'
+import { toast } from 'react-toastify'
 import { View } from 'react-native'
 
 // Local Imports
@@ -37,6 +38,7 @@ const BiteAcquisitionCheck = () => {
    */
   const acquisitionSuccess = useCallback(() => {
     console.log('acquisitionSuccess')
+    toast.info('Reporting Food Acquisition Success!')
     setMealState(MEAL_STATE.R_MovingToStagingConfiguration)
   }, [setMealState])
 
@@ -46,6 +48,7 @@ const BiteAcquisitionCheck = () => {
    */
   const acquisitionFailure = useCallback(() => {
     console.log('acquisitionFailure')
+    toast.info('Reporting Food Acquisition Failure.')
     setMealState(MEAL_STATE.R_MovingAbovePlate)
   }, [setMealState])
 
