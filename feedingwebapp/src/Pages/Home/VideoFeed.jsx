@@ -145,7 +145,7 @@ const VideoFeed = (props) => {
     // Set the width and height of the video feed
     setImgWidth(childWidth * props.zoom)
     setImgHeight(childHeight * props.zoom)
-    setScaleFactor(childScaleFactor / props.zoom)
+    setScaleFactor(childScaleFactor * props.zoom)
   }, [parentRef, props.marginTop, props.marginBottom, props.marginLeft, props.marginRight, props.zoom])
 
   /** When the resize event is triggered, the elements have not yet been laid out,
