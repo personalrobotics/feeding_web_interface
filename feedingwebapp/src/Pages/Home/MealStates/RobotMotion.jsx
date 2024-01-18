@@ -146,7 +146,7 @@ const RobotMotion = (props) => {
         setActionStatus({
           actionStatus: ROS_ACTION_STATUS_SUCCEED
         })
-        setLastMotionActionResponse(response)
+        setLastMotionActionResponse(response.values)
         robotMotionDone()
       } else {
         if (
