@@ -6,6 +6,8 @@
  * Each subscriber sees the video stream from the publisher.
  */
 
+const SegfaultHandler = require('segfault-handler')
+SegfaultHandler.registerHandler('crash.log')
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
@@ -113,6 +115,7 @@ app.post('/publish', async ({ body }, res) => {
 })
 
 function handleTrackEvent(e, topic) {
+  console.log('Handle track for publisher')
   senderStream[topic] = e.streams[0]
 }
 
