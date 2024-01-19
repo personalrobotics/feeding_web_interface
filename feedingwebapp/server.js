@@ -65,6 +65,7 @@ app.post('/subscribe', async ({ body }, res) => {
     res.json(payload)
   } catch (err) {
     console.error('Failed to process subscriber, exception: ' + err.message)
+    res.sendStatus(500)
   }
 })
 
@@ -107,6 +108,7 @@ app.post('/publish', async ({ body }, res) => {
     res.json(payload)
   } catch (err) {
     console.error('Failed to process publisher, exception: ' + err.message)
+    res.sendStatus(500)
   }
 })
 
