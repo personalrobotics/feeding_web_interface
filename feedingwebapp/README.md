@@ -4,7 +4,7 @@ This directory contains the web app that users use to interact with the robot-as
 
 ## Setup
 
-See the [`ada_feeding` top-level README for setup instructions](https://github.com/personalrobotics/ada_feeding/blob/amaln/rosdeps/README.md).
+See the [`ada_feeding` top-level README for setup instructions](https://github.com/personalrobotics/ada_feeding/blob/ros2-devel/README.md).
 
 ## Overview
 The _nominal_ user flow for this web app can be seen below.

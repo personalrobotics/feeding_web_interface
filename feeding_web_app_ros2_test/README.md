@@ -4,7 +4,7 @@ This directory contains all the ROS2 nodes that are used to test the web app. Th
 
 ## Setup
 
-See the [`ada_feeding` top-level README for setup instructions](https://github.com/personalrobotics/ada_feeding/blob/amaln/rosdeps/README.md).
+See the [`ada_feeding` top-level README for setup instructions](https://github.com/personalrobotics/ada_feeding/blob/ros2-devel/README.md).
 
 ## Usage
 

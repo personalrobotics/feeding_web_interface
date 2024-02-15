@@ -4,4 +4,4 @@ This repository contains code for the feeding web app. The app itself is in `fee
 
 ## Setup
 
-See the [`ada_feeding` top-level README for setup instructions](https://github.com/personalrobotics/ada_feeding/blob/amaln/rosdeps/README.md).
+See the [`ada_feeding` top-level README for setup instructions](https://github.com/personalrobotics/ada_feeding/blob/ros2-devel/README.md).
