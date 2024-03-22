@@ -111,7 +111,7 @@ export const useGlobalState = create(
       // Flag to indicate whether to auto-continue after food-on-fork detection
       biteDoneAutoContinue: false,
       biteDoneAutoContinueSeconds: 5.0,
-      biteDoneAutoContinueProbabilityThreshold: 0.75,
+      biteDoneAutoContinueProbabilityThreshold: 0.25,
       // Whether the settings bite transfer page is currently at the user's face
       // or not. This is in the off-chance that the mealState is not at the user's
       // face, the settings page is, and the user refreshes -- the page should

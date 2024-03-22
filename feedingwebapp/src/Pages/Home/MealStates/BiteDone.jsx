@@ -97,7 +97,7 @@ const BiteDone = () => {
     (message) => {
       console.log('Got food-on-fork detection message', message)
       if (biteDoneAutoContinue) {
-        if (message.probability >= biteDoneAutoContinueProbabilityThreshold) {
+        if (message.probability < biteDoneAutoContinueProbabilityThreshold) {
           console.log('Auto-continuing in ', remainingSeconds, ' seconds')
           // Don't override an existing timer
           if (!timerRef.current) {
