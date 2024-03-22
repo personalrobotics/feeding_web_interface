@@ -69,7 +69,9 @@ class FoodOnForkDetectionNode(Node):
         self.get_logger().info("Incoming service request. turn_on: %s" % (request.data))
         if request.data:
             # Reset counters
-            self.num_consecutive_images_without_food = 0
+            self.num_consecutive_images_without_food = (
+                self.food_on_fork_detection_interval
+            )  # Start predicting FoF
             self.num_consecutive_images_with_food = 0
             # Turn on food-on-fork detection
             self.is_on_lock.acquire()
