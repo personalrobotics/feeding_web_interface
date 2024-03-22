@@ -32,7 +32,9 @@ class FoodOnForkDetectionNode(Node):
         # Internal variables to track when food should be detected
         self.food_on_fork_detection_interval = food_on_fork_detection_interval
         self.num_images_with_food = num_images_with_food
-        self.num_consecutive_images_without_food = 0
+        self.num_consecutive_images_without_food = (
+            self.food_on_fork_detection_interval
+        )  # Start predicting FoF
         self.num_consecutive_images_with_food = 0
 
         # Keeps track of whether food on fork detection is on or not
