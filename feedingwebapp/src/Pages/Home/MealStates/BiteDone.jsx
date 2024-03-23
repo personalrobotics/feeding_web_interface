@@ -35,11 +35,12 @@ const BiteDone = () => {
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
   // Font size for text
-  let textFontSize = isPortrait ? '3vh' : '2.5vw'
+  let textFontSize = isPortrait ? 3 : 2.5
+  let sizeSuffix = isPortrait ? 'vh' : 'vw'
   let buttonWidth = isPortrait ? '30vh' : '30vw'
-  let buttonHeight = isPortrait ? '20vh' : '20vw'
+  let buttonHeight = isPortrait ? '16vh' : '16vw'
   let iconWidth = isPortrait ? '28vh' : '28vw'
-  let iconHeight = isPortrait ? '18vh' : '18vw'
+  let iconHeight = isPortrait ? '14vh' : '14vw'
 
   /**
    * Callback function for when the user wants to move above plate.
@@ -201,7 +202,7 @@ const BiteDone = () => {
             width: '100%'
           }}
         >
-          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
+          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize.toString() + sizeSuffix }}>
             <input
               name='biteDoneAutoContinue'
               type='checkbox'
@@ -212,13 +213,30 @@ const BiteDone = () => {
               }}
               style={{ transform: 'scale(2.0)', verticalAlign: 'middle', marginRight: '15px' }}
             />
-            Auto-continu{remainingSeconds === null ? 'e' : 'ing in ' + remainingSeconds + ' seconds'}
+            Auto-continue
+          </p>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize.toString() + sizeSuffix }}>
+            {biteDoneAutoContinue
+              ? remainingSeconds === null
+                ? 'Waiting for the fork to be empty'
+                : 'Moving away in ' + remainingSeconds + ' seconds'
+              : ''}
           </p>
         </View>
         <View style={{ flex: 9, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             {/* Ask the user whether they want to move to above plate position */}
-            <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
+            <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize.toString() + sizeSuffix }}>
               Move above plate
             </p>
             {/* Icon to move above plate */}
@@ -239,7 +257,7 @@ const BiteDone = () => {
           </View>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             {/* Ask the user whether they want to move to resting position */}
-            <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
+            <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize.toString() + sizeSuffix }}>
               Rest to the side
             </p>
             {/* Icon to move to resting position */}
@@ -260,7 +278,7 @@ const BiteDone = () => {
           </View>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             {/* Ask the user whether they want to move to resting position */}
-            <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
+            <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize.toString() + sizeSuffix }}>
               Move away from mouth
             </p>
             {/* Icon to move to resting position */}
@@ -298,7 +316,8 @@ const BiteDone = () => {
     remainingSeconds,
     clearTimer,
     setBiteDoneAutoContinue,
-    textFontSize
+    textFontSize,
+    sizeSuffix
   ])
 
   // Render the component
