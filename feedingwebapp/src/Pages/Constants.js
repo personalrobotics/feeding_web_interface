@@ -112,6 +112,10 @@ ROS_SERVICE_NAMES[MEAL_STATE.U_BiteDone] = {
   serviceName: 'toggle_food_on_fork_detection',
   messageType: 'std_srvs/srv/SetBool'
 }
+ROS_SERVICE_NAMES[MEAL_STATE.U_BiteAcquisitionCheck] = {
+  serviceName: 'toggle_food_on_fork_detection',
+  messageType: 'std_srvs/srv/SetBool'
+}
 export { ROS_SERVICE_NAMES }
 export const CLEAR_OCTOMAP_SERVICE_NAME = 'clear_octomap'
 export const CLEAR_OCTOMAP_SERVICE_TYPE = 'std_srvs/srv/Empty'

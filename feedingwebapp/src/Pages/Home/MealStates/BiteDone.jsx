@@ -22,8 +22,8 @@ const BiteDone = () => {
   const setMealState = useGlobalState((state) => state.setMealState)
   const biteDoneAutoContinue = useGlobalState((state) => state.biteDoneAutoContinue)
   const setBiteDoneAutoContinue = useGlobalState((state) => state.setBiteDoneAutoContinue)
-  const biteDoneAutoContinueSeconds = useGlobalState((state) => state.biteDoneAutoContinueSeconds)
-  const biteDoneAutoContinueProbabilityThreshold = useGlobalState((state) => state.biteDoneAutoContinueProbabilityThreshold)
+  const biteDoneAutoContinueSecs = useGlobalState((state) => state.biteDoneAutoContinueSecs)
+  const biteDoneAutoContinueProbThresh = useGlobalState((state) => state.biteDoneAutoContinueProbThresh)
   // Get icon image for move above plate
   let moveAbovePlateImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate]
   // Get icon image for move to resting position
@@ -98,11 +98,11 @@ const BiteDone = () => {
     (message) => {
       console.log('Got food-on-fork detection message', message)
       if (biteDoneAutoContinue && message.status === 1) {
-        if (message.probability < biteDoneAutoContinueProbabilityThreshold) {
+        if (message.probability < biteDoneAutoContinueProbThresh) {
           console.log('Auto-continuing in ', remainingSeconds, ' seconds')
           // Don't override an existing timer
           if (!timerRef.current) {
-            setRemainingSeconds(biteDoneAutoContinueSeconds)
+            setRemainingSeconds(biteDoneAutoContinueSecs)
             timerRef.current = setInterval(() => {
               setRemainingSeconds((prev) => {
                 if (prev <= 1) {
@@ -127,8 +127,8 @@ const BiteDone = () => {
     },
     [
       biteDoneAutoContinue,
-      biteDoneAutoContinueProbabilityThreshold,
-      biteDoneAutoContinueSeconds,
+      biteDoneAutoContinueProbThresh,
+      biteDoneAutoContinueSecs,
       finalTimerRef,
       remainingSeconds,
       clearTimer,

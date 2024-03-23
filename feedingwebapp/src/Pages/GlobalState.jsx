@@ -108,10 +108,16 @@ export const useGlobalState = create(
       teleopIsMoving: false,
       // Flag to indicate whether to auto-continue after face detection
       faceDetectionAutoContinue: true,
-      // Flag to indicate whether to auto-continue after food-on-fork detection
+      // Flag to indicate whether to auto-continue in bite done after food-on-fork detection
       biteDoneAutoContinue: false,
-      biteDoneAutoContinueSeconds: 3.0,
-      biteDoneAutoContinueProbabilityThreshold: 0.25,
+      biteDoneAutoContinueSecs: 3.0,
+      biteDoneAutoContinueProbThresh: 0.25,
+      // Flags to indicate whether to auto-continue in bite acquisition check based on food-on-fork
+      // detection
+      biteAcquisitionCheckAutoContinue: false,
+      biteAcquisitionCheckAutoContinueSecs: 3.0,
+      biteAcquisitionCheckAutoContinueProbThreshLower: 0.25,
+      biteAcquisitionCheckAutoContinueProbThreshUpper: 0.75,
       // Whether the settings bite transfer page is currently at the user's face
       // or not. This is in the off-chance that the mealState is not at the user's
       // face, the settings page is, and the user refreshes -- the page should
@@ -178,13 +184,29 @@ export const useGlobalState = create(
         set(() => ({
           biteDoneAutoContinue: biteDoneAutoContinue
         })),
-      setBiteDoneAutoContinueSeconds: (biteDoneAutoContinueSeconds) =>
+      setBiteDoneAutoContinueSecs: (biteDoneAutoContinueSecs) =>
         set(() => ({
-          biteDoneAutoContinueSeconds: biteDoneAutoContinueSeconds
+          biteDoneAutoContinueSecs: biteDoneAutoContinueSecs
         })),
-      setBiteDoneAutoContinueProbabilityThreshold: (biteDoneAutoContinueProbabilityThreshold) =>
+      setBiteDoneAutoContinueProbThresh: (biteDoneAutoContinueProbThresh) =>
         set(() => ({
-          biteDoneAutoContinueProbabilityThreshold: biteDoneAutoContinueProbabilityThreshold
+          biteDoneAutoContinueProbThresh: biteDoneAutoContinueProbThresh
+        })),
+      setBiteAcquisitionCheckAutoContinue: (biteAcquisitionCheckAutoContinue) =>
+        set(() => ({
+          biteAcquisitionCheckAutoContinue: biteAcquisitionCheckAutoContinue
+        })),
+      setBiteAcquisitionCheckAutoContinueSecs: (biteAcquisitionCheckAutoContinueSecs) =>
+        set(() => ({
+          biteAcquisitionCheckAutoContinueSecs: biteAcquisitionCheckAutoContinueSecs
+        })),
+      setBiteAcquisitionCheckAutoContinueProbThreshLower: (biteAcquisitionCheckAutoContinueProbThreshLower) =>
+        set(() => ({
+          biteAcquisitionCheckAutoContinueProbThreshLower: biteAcquisitionCheckAutoContinueProbThreshLower
+        })),
+      setBiteAcquisitionCheckAutoContinueProbThreshUpper: (biteAcquisitionCheckAutoContinueProbThreshUpper) =>
+        set(() => ({
+          biteAcquisitionCheckAutoContinueProbThreshUpper: biteAcquisitionCheckAutoContinueProbThreshUpper
         })),
       setBiteTransferPageAtFace: (biteTransferPageAtFace) =>
         set(() => ({
