@@ -229,7 +229,7 @@ const BiteDone = () => {
             {biteDoneAutoContinue
               ? remainingSeconds === null
                 ? 'Waiting for the fork to be empty'
-                : 'Moving away in ' + remainingSeconds + ' seconds'
+                : 'Moving away in ' + remainingSeconds + ' secs'
               : ''}
           </p>
         </View>

@@ -360,7 +360,9 @@ const BiteAcquisitionCheck = () => {
             {biteAcquisitionCheckAutoContinue && prevMealState === MEAL_STATE.R_BiteAcquisition
               ? remainingSeconds === null
                 ? 'Checking for food on fork...'
-                : 'Moving away in ' + remainingSeconds + ' seconds'
+                : timerWasForFof.current
+                ? 'Moving to your face in ' + remainingSeconds + ' secs'
+                : 'Moving above plate in ' + remainingSeconds + ' secs'
               : ''}
           </p>
         </View>
@@ -380,6 +382,7 @@ const BiteAcquisitionCheck = () => {
     biteAcquisitionCheckAutoContinue,
     clearTimer,
     dimension,
+    prevMealState,
     readyForBiteButton,
     readyForBiteText,
     reacquireBiteButton,
