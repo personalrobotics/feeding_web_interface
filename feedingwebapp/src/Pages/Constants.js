@@ -147,10 +147,12 @@ export const SEGMENTATION_STATUS_UNKNOWN = 99
 
 /**
  * The meaning of ROS Action statuses.
- * https://docs.ros2.org/latest/api/rclpy/api/actions.html#rclpy.action.server.GoalEvent
+ * https://github.com/ros2/rcl_interfaces/blob/humble/action_msgs/msg/GoalStatus.msg
  */
-export const ROS_ACTION_STATUS_EXECUTE = '1'
-export const ROS_ACTION_STATUS_CANCEL_GOAL = '2'
-export const ROS_ACTION_STATUS_SUCCEED = '3'
-export const ROS_ACTION_STATUS_ABORT = '4'
-export const ROS_ACTION_STATUS_CANCELED = '5'
+export const ROS_ACTION_STATUS_UNKNOWN = 0
+export const ROS_ACTION_STATUS_ACCEPTED = 1
+export const ROS_ACTION_STATUS_EXECUTING = 2
+export const ROS_ACTION_STATUS_CANCELING = 3
+export const ROS_ACTION_STATUS_SUCCEED = 4
+export const ROS_ACTION_STATUS_CANCELED = 5
+export const ROS_ACTION_STATUS_ABORT = 6

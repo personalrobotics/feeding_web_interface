@@ -9,13 +9,13 @@ import PropTypes from 'prop-types'
 
 // Local Imports
 import '../Home.css'
-import { useROS, createROSActionClient, callROSAction, destroyActionClient } from '../../../ros/ros_helpers'
+import { useROS, createROSActionClient, callROSAction, cancelROSAction } from '../../../ros/ros_helpers'
 import { useWindowSize, convertRemToPixels } from '../../../helpers'
 import MaskButton from '../../../buttons/MaskButton'
 import {
   ROS_ACTIONS_NAMES,
-  ROS_ACTION_STATUS_CANCEL_GOAL,
-  ROS_ACTION_STATUS_EXECUTE,
+  ROS_ACTION_STATUS_CANCELING,
+  ROS_ACTION_STATUS_EXECUTING,
   ROS_ACTION_STATUS_SUCCEED,
   ROS_ACTION_STATUS_ABORT,
   ROS_ACTION_STATUS_CANCELED,
@@ -33,6 +33,9 @@ import VideoFeed from '../VideoFeed'
  *        simulatenously running the robot) or not
  */
 const BiteSelection = (props) => {
+  // Create a local state variable to store goalID
+  const goalID = useRef(null)
+
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
   const setBiteAcquisitionActionGoal = useGlobalState((state) => state.setBiteAcquisitionActionGoal)
@@ -61,7 +64,6 @@ const BiteSelection = (props) => {
    * image.
    */
   const [actionResult, setActionResult] = useState(null)
-  const [numImageClicks, setNumImageClicks] = useState(0)
   /**
    * NOTE: We slightly abuse the ROS_ACTION_STATUS values in this local state
    * variable, by using it as a proxy for whether the robot is executing, has
@@ -129,8 +131,22 @@ const BiteSelection = (props) => {
   const feedbackCallback = useCallback(
     (feedbackMsg) => {
       setActionStatus({
-        actionStatus: ROS_ACTION_STATUS_EXECUTE,
-        feedback: feedbackMsg.values.feedback
+        actionStatus: ROS_ACTION_STATUS_EXECUTING,
+        feedback: feedbackMsg
+      })
+    },
+    [setActionStatus]
+  )
+
+  /**
+   * Callback function for when the action fails. It updates the actionStatus
+   * local state variable.
+   */
+  const failureCallback = useCallback(
+    (result) => {
+      console.log('Action failed', result)
+      setActionStatus({
+        actionStatus: ROS_ACTION_STATUS_ABORT
       })
     },
     [setActionStatus]
@@ -148,30 +164,22 @@ const BiteSelection = (props) => {
    * action call (maybe they would refresh the page anyway, which might be ok).
    */
   const responseCallback = useCallback(
-    (response) => {
-      if (response.response_type === 'result' && response.values.status === SEGMENTATION_STATUS_SUCCESS) {
+    (result) => {
+      if (result.status === ROS_ACTION_STATUS_SUCCEED && result.result.status === SEGMENTATION_STATUS_SUCCESS) {
         setActionStatus({
           actionStatus: ROS_ACTION_STATUS_SUCCEED
         })
-        console.log('Got result', response.values)
-        setActionResult(response.values)
+        console.log('Got result', result)
+        setActionResult(result.result)
+      } else if (result.status === ROS_ACTION_STATUS_CANCELING || result.status === ROS_ACTION_STATUS_CANCELED) {
+        setActionStatus({
+          actionStatus: ROS_ACTION_STATUS_CANCELED
+        })
       } else {
-        if (
-          response.response_type === 'cancel' ||
-          response.values === ROS_ACTION_STATUS_CANCEL_GOAL ||
-          response.values === ROS_ACTION_STATUS_CANCELED
-        ) {
-          setActionStatus({
-            actionStatus: ROS_ACTION_STATUS_CANCELED
-          })
-        } else {
-          setActionStatus({
-            actionStatus: ROS_ACTION_STATUS_ABORT
-          })
-        }
+        failureCallback(result)
       }
     },
-    [setActionStatus, setActionResult]
+    [setActionStatus, setActionResult, failureCallback]
   )
 
   /**
@@ -191,24 +199,20 @@ const BiteSelection = (props) => {
   const imageClicked = useCallback(
     (x_raw, y_raw) => {
       // Call the food segmentation ROS action
-      callROSAction(
+      goalID.current = callROSAction(
         segmentFromPointAction.current,
         { seed_point: { header: { stamp: { sec: 0, nanosec: 0 }, frame_id: 'image_frame' }, point: { x: x_raw, y: y_raw, z: 0.0 } } },
-        /**
-         * Only register callbacks the first time to avoid multiple callbacks for
-         * the same action call.
-         */
-        numImageClicks === 0 ? feedbackCallback : null,
-        numImageClicks === 0 ? responseCallback : null
+        feedbackCallback,
+        responseCallback,
+        failureCallback
       )
-      setNumImageClicks(numImageClicks + 1)
       // The current implementation of food segmentation does not send feedback,
       // so we manually set the action status to executing.
       setActionStatus({
-        actionStatus: ROS_ACTION_STATUS_EXECUTE
+        actionStatus: ROS_ACTION_STATUS_EXECUTING
       })
     },
-    [segmentFromPointAction, numImageClicks, feedbackCallback, responseCallback, setNumImageClicks, setActionStatus]
+    [segmentFromPointAction, feedbackCallback, responseCallback, failureCallback, setActionStatus, goalID]
   )
 
   /**
@@ -217,9 +221,10 @@ const BiteSelection = (props) => {
   useEffect(() => {
     let action = segmentFromPointAction.current
     return () => {
-      destroyActionClient(action)
+      console.log('Canceling goals due to useEffect cleanup')
+      cancelROSAction(action, goalID.current)
     }
-  }, [segmentFromPointAction])
+  }, [segmentFromPointAction, goalID])
 
   /** Get the continue button when debug mode is enabled
    *
@@ -247,7 +252,7 @@ const BiteSelection = (props) => {
    */
   const actionStatusText = useCallback(() => {
     switch (actionStatus.actionStatus) {
-      case ROS_ACTION_STATUS_EXECUTE:
+      case ROS_ACTION_STATUS_EXECUTING:
         if (actionStatus.feedback) {
           let elapsed_time = actionStatus.feedback.elapsed_time.sec + actionStatus.feedback.elapsed_time.nanosec / 10 ** 9
           return 'Detecting food... ' + (Math.round(elapsed_time * 100) / 100).toString() + ' sec'

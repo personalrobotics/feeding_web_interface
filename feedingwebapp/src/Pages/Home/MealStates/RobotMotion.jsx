@@ -11,7 +11,6 @@ import {
   createROSActionClient,
   callROSAction,
   cancelROSAction,
-  destroyActionClient,
   createROSService,
   createROSServiceRequest
 } from '../../../ros/ros_helpers'
@@ -25,8 +24,8 @@ import {
   NON_RETRYABLE_STATES,
   ROS_ACTIONS_NAMES,
   MOTION_STATUS_SUCCESS,
-  ROS_ACTION_STATUS_CANCEL_GOAL,
-  ROS_ACTION_STATUS_EXECUTE,
+  ROS_ACTION_STATUS_CANCELING,
+  ROS_ACTION_STATUS_EXECUTING,
   ROS_ACTION_STATUS_SUCCEED,
   ROS_ACTION_STATUS_ABORT,
   ROS_ACTION_STATUS_CANCELED
@@ -58,6 +57,7 @@ const RobotMotion = (props) => {
   const [actionStatus, setActionStatus] = useState({
     actionStatus: null
   })
+  const goalID = useRef(null)
 
   // Get the relevant global variables
   const paused = useGlobalState((state) => state.paused)
@@ -111,8 +111,8 @@ const RobotMotion = (props) => {
     (feedbackMsg) => {
       console.log('Got feedback message', feedbackMsg)
       setActionStatus({
-        actionStatus: ROS_ACTION_STATUS_EXECUTE,
-        feedback: feedbackMsg.values.feedback
+        actionStatus: ROS_ACTION_STATUS_EXECUTING,
+        feedback: feedbackMsg
       })
     },
     [setActionStatus]
@@ -129,6 +129,23 @@ const RobotMotion = (props) => {
   }, [props.nextMealState, props.setMealState])
 
   /**
+   * Callback function for when the action failed. It updates the actionStatus
+   * local state variable.
+   */
+  const actionFailedCallback = useCallback(
+    (result) => {
+      console.log('Action failed', result)
+      setActionStatus({
+        actionStatus: ROS_ACTION_STATUS_ABORT
+      })
+      // In addition to displaying this error, we should also toggle the pause
+      // button to give the user options on what to do next.
+      setPaused(true)
+    },
+    [setActionStatus, setPaused]
+  )
+
+  /**
    * Callback function for when the action sends a response. It updates the
    * actionStatus local state variable and moves on to the next state if the
    * action succeeded.
@@ -140,34 +157,23 @@ const RobotMotion = (props) => {
    * action call (maybe they would refresh the page anyway, which might be ok).
    */
   const responseCallback = useCallback(
-    (response) => {
-      console.log('Got response message', response)
-      if (response.response_type === 'result' && response.values.status === MOTION_STATUS_SUCCESS) {
+    (result) => {
+      console.log('Got result message', result)
+      if (result.status === ROS_ACTION_STATUS_SUCCEED && result.result.status === MOTION_STATUS_SUCCESS) {
         setActionStatus({
           actionStatus: ROS_ACTION_STATUS_SUCCEED
         })
-        setLastMotionActionResponse(response.values)
+        setLastMotionActionResponse(result.result)
         robotMotionDone()
+      } else if (result.status === ROS_ACTION_STATUS_CANCELING || result.status === ROS_ACTION_STATUS_CANCELED) {
+        setActionStatus({
+          actionStatus: ROS_ACTION_STATUS_CANCELED
+        })
       } else {
-        if (
-          response.response_type === 'cancel' ||
-          response.values === ROS_ACTION_STATUS_CANCEL_GOAL ||
-          response.values === ROS_ACTION_STATUS_CANCELED
-        ) {
-          setActionStatus({
-            actionStatus: ROS_ACTION_STATUS_CANCELED
-          })
-        } else {
-          setActionStatus({
-            actionStatus: ROS_ACTION_STATUS_ABORT
-          })
-          // In addition to displaying this error, we should also toggle the
-          // pause button to give the user options on what to do next.
-          setPaused(true)
-        }
+        actionFailedCallback(result)
       }
     },
-    [setLastMotionActionResponse, setActionStatus, setPaused, robotMotionDone]
+    [setLastMotionActionResponse, setActionStatus, robotMotionDone, actionFailedCallback]
   )
 
   /**
@@ -176,8 +182,8 @@ const RobotMotion = (props) => {
    */
   const pauseCallback = useCallback(() => {
     setPaused(true)
-    cancelROSAction(robotMotionAction)
-  }, [robotMotionAction, setPaused])
+    cancelROSAction(robotMotionAction, goalID.current)
+  }, [robotMotionAction, setPaused, goalID])
 
   /**
    * Function to call the ROS action. Note that every time this function
@@ -198,13 +204,13 @@ const RobotMotion = (props) => {
     (feedbackCb, responseCb) => {
       if (!paused) {
         setActionStatus({
-          actionStatus: ROS_ACTION_STATUS_EXECUTE
+          actionStatus: ROS_ACTION_STATUS_EXECUTING
         })
         console.log('Calling action with input', props.actionInput)
-        callROSAction(robotMotionAction, props.actionInput, feedbackCb, responseCb)
+        goalID.current = callROSAction(robotMotionAction, props.actionInput, feedbackCb, responseCb)
       }
     },
-    [paused, robotMotionAction, props.actionInput]
+    [paused, robotMotionAction, props.actionInput, goalID]
   )
 
   /**
@@ -213,17 +219,17 @@ const RobotMotion = (props) => {
    * achieves this goal: https://stackoverflow.com/a/69264685
    */
   useEffect(() => {
-    callRobotMotionAction(feedbackCallback, responseCallback)
+    callRobotMotionAction(feedbackCallback, responseCallback, actionFailedCallback)
     /**
      * In practice, because the values passed in in the second argument of
      * useEffect will not change on re-renders, this return statement will
      * only be called when the component unmounts.
      */
     return () => {
-      console.log('Destroying action client')
-      destroyActionClient(robotMotionAction)
+      console.log('Canceling goals due to useEffect cleanup')
+      cancelROSAction(robotMotionAction, goalID.current)
     }
-  }, [callRobotMotionAction, robotMotionAction, feedbackCallback, responseCallback])
+  }, [callRobotMotionAction, robotMotionAction, feedbackCallback, responseCallback, actionFailedCallback, goalID])
 
   /**
    * Callback function for when the resume button is pressed. It calls the
@@ -338,7 +344,7 @@ const RobotMotion = (props) => {
       let progress = null
       let retry = false
       switch (actionStatus.actionStatus) {
-        case ROS_ACTION_STATUS_EXECUTE:
+        case ROS_ACTION_STATUS_EXECUTING:
           if (actionStatus.feedback) {
             if (!actionStatus.feedback.is_planning) {
               let moving_elapsed_time = actionStatus.feedback.motion_time.sec + actionStatus.feedback.motion_time.nanosec / 10 ** 9

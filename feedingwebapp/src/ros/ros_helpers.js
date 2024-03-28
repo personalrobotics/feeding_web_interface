@@ -115,6 +115,9 @@ export function createROSServiceRequest(data) {
   return new ROSLIB.ServiceRequest(data)
 }
 
+// Cache for ROS Action Clients
+let ACTION_CLIENT_CACHE = {}
+
 /**
  * Create a ROS Action Client.
  *
@@ -122,53 +125,52 @@ export function createROSServiceRequest(data) {
  * @param {string} serverName The name of the action server to call.
  * @param {string} actionType The type of the action the server takes.
  *
- * @returns {object} The ROSLIB.ActionHandle, or null if ROS is not connected.
+ * @returns {object} The ROSLIB.ActionClient, or null if ROS is not connected.
  */
 export function createROSActionClient(ros, serverName, actionType) {
   if (ros === null) {
     console.log('ROS is not connected')
     return null
   }
-  let actionClient = new ROSLIB.ActionHandle({
-    ros: ros,
-    name: serverName,
-    actionType: actionType
-  })
-  return actionClient
+  if (!(serverName in ACTION_CLIENT_CACHE)) {
+    let actionClient = new ROSLIB.Action({
+      ros: ros,
+      name: serverName,
+      actionType: actionType
+    })
+    ACTION_CLIENT_CACHE[serverName] = actionClient
+  }
+  return ACTION_CLIENT_CACHE[serverName]
 }
 
 /**
  * Calls a ROS Action.
  *
- * @param {object} actionClient The ROSLIB.ActionHandle object.
+ * @param {object} actionClient The ROSLIB.ActionClient object.
  * @param {object} goal An object containing the exact attributes and types
  *                      expected by the ROS Action.
  * @param {function} feedbackCallback The callback function to call when
  *                   feedback is received.
  * @param {function} resultCallback The callback function to call when a
  *                                  result is received.
+ * @param {function} failureCallback The callback function to call when the
+ *                                  action fails.
+ *
+ * @returns {string} The goal_id of the action.
  */
-export function callROSAction(actionClient, goal, feedbackCallback, resultCallback) {
-  actionClient.createClient(goal, resultCallback, feedbackCallback)
+export function callROSAction(actionClient, goal, feedbackCallback, resultCallback, failureCallback) {
+  let goal_id = actionClient.sendGoal(goal, resultCallback, feedbackCallback, failureCallback)
+  return goal_id
 }
 
 /**
  * Cancels all the goals a ROS Action is currently executing.
  *
- * @param {object} actionClient The ROSLIB.ActionHandle object.
+ * @param {object} actionClient The ROSLIB.ActionClient object.
  */
-export function cancelROSAction(actionClient) {
-  actionClient.cancelGoal()
-}
-
-/**
- * Destroys an action client on the rosbridge end (e.g., so when the user returns
- * to the same state, it doesn't create a second client for the same action.)
- *
- * @param {object} actionClient The ROSLIB.ActionHandle object.
- */
-export function destroyActionClient(actionClient) {
-  actionClient.destroyClient()
+export function cancelROSAction(actionClient, goal_id) {
+  console.log('Cancelling goal', goal_id)
+  actionClient.cancelGoal(goal_id)
 }
 
 /**
