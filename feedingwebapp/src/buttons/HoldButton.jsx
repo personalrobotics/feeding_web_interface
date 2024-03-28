@@ -52,7 +52,13 @@ function HoldButton(props) {
   }, [stopInterval])
 
   return (
-    <Button style={props.buttonStyle} onMouseDown={startInterval} onMouseUp={stopInterval} onMouseLeave={stopInterval}>
+    <Button
+      variant={props.variant}
+      style={props.buttonStyle}
+      onMouseDown={startInterval}
+      onMouseUp={stopInterval}
+      onMouseLeave={stopInterval}
+    >
       {props.children}
     </Button>
   )
@@ -62,10 +68,12 @@ HoldButton.propTypes = {
   holdCallback: PropTypes.func.isRequired,
   cleanupCallback: PropTypes.func.isRequired,
   buttonStyle: PropTypes.object,
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
+  variant: PropTypes.string
 }
 HoldButton.defaultProps = {
-  buttonStyle: {}
+  buttonStyle: {},
+  variant: 'light'
 }
 
 export default HoldButton

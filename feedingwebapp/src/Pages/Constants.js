@@ -53,9 +53,9 @@ export const FACE_DETECTION_IMG_TOPIC = '/face_detection_img/compressed'
 export const FOOD_ON_FORK_DETECTION_TOPIC = '/food_on_fork_detection'
 export const FOOD_ON_FORK_DETECTION_TOPIC_MSG = 'ada_feeding_msgs/FoodOnForkDetection'
 export const ROBOT_COMPRESSED_IMG_TOPICS = [CAMERA_FEED_TOPIC, FACE_DETECTION_IMG_TOPIC]
-export const SERVO_CARTESIAN_TOPIC = '/servo_node/delta_twist_cmds'
+export const SERVO_CARTESIAN_TOPIC = '/web_app/servo_node/delta_twist_cmds'
 export const SERVO_CARTESIAN_TOPIC_MSG = 'geometry_msgs/msg/TwistStamped'
-export const SERVO_JOINT_TOPIC = '/servo_node/delta_joint_cmds'
+export const SERVO_JOINT_TOPIC = '/web_app/servo_node/delta_joint_cmds'
 export const SERVO_JOINT_TOPIC_MSG = 'control_msgs/msg/JointJog'
 
 // States from which, if they fail, it is NOT okay for the user to retry the

@@ -10,6 +10,7 @@ import PropTypes from 'prop-types'
 
 // Local imports
 import { CAMERA_FEED_TOPIC } from '../Constants'
+import TeleopSubcomponent from '../Home/MealStates/TeleopSubcomponent'
 import VideoFeed from '../Home/VideoFeed'
 
 /**
@@ -52,7 +53,8 @@ function LiveVideoModal(props) {
           overflow: 'hidden'
         }}
       >
-        <VideoFeed topic={CAMERA_FEED_TOPIC} updateRateHz={10} webrtcURL={props.webrtcURL} />
+        {/* <VideoFeed topic={CAMERA_FEED_TOPIC} updateRateHz={10} webrtcURL={props.webrtcURL} /> */}
+        <TeleopSubcomponent />
       </Modal.Body>
     </Modal>
   )
