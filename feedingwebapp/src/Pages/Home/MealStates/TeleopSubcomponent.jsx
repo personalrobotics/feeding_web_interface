@@ -1,6 +1,5 @@
 // React Imports
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import PropTypes from 'prop-types'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
 
@@ -30,11 +29,12 @@ import HoldButton from '../../../buttons/HoldButton'
  * The TeleopSubcomponent renders controls for the user to teleoperate the robot,
  * either in cartesian or joint space.
  */
-const TeleopSubcomponent = (props) => {
+const TeleopSubcomponent = () => {
   // Get local state
-  const CARTESIAN_MODE = 'cartesian'
+  const CARTESIAN_LINEAR_MODE = 'cartesian_linear'
+  const CARTESIAN_ANGULAR_MODE = 'cartesian_angular'
   const JOINT_MODE = 'joint'
-  const [teleopMode, setTeleopMode] = useState(CARTESIAN_MODE)
+  const [teleopMode, setTeleopMode] = useState(CARTESIAN_LINEAR_MODE)
 
   // Cartesian teleop speeds
   const LINEAR_SPEED = 0.1 // m/s
@@ -43,7 +43,6 @@ const TeleopSubcomponent = (props) => {
 
   // Style configuration
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  let dimension = isPortrait ? 'column' : 'row'
   let textFontSize = isPortrait ? '3vh' : '2.5vw'
   const buttonStyle = useMemo(() => {
     return {
@@ -321,6 +320,7 @@ const TeleopSubcomponent = (props) => {
         <HoldButton
           rate_hz={10.0}
           holdCallback={() => {
+            console.log('Cartesian hold callback called')
             publishCartesianVelocity(
               LINEAR_SPEED * x,
               LINEAR_SPEED * y,
@@ -368,80 +368,32 @@ const TeleopSubcomponent = (props) => {
   /**
    * Callback to render the cartesian teleop controls.
    */
-  const cartesianTeleop = useCallback(() => {
-    return (
-      <View
-        style={{
-          flex: 1,
-          flexDirection: dimension,
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%',
-          height: '100%'
-        }}
-      >
-        {/* Translation trackpad */}
-        <View
-          style={{
-            flex: 2,
-            flexDirection: 'col',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '90%',
-            height: '90%'
-          }}
-        >
-          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-            Position
-          </p>
-          {trackpadArrangement(
-            getCartesianHoldButton(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 'Left'),
-            getCartesianHoldButton(-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 'Right'),
-            getCartesianHoldButton(0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 'Up'),
-            getCartesianHoldButton(0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 'Down'),
-            getCartesianHoldButton(0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 'Forward'),
-            getCartesianHoldButton(0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 'Backward'),
-            true
-          )}
-        </View>
-        {/* Whitespace between trackpads */}
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'col',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            height: '100%'
-          }}
-        ></View>
-        {/* Orientation trackpad */}
-        <View
-          style={{
-            flex: 2,
-            flexDirection: 'col',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '90%',
-            height: '90%'
-          }}
-        >
-          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-            Orientation
-          </p>
-          {trackpadArrangement(
-            getCartesianHoldButton(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 'Yaw +'),
-            getCartesianHoldButton(0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 'Yaw -'),
-            getCartesianHoldButton(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 'Pitch +'),
-            getCartesianHoldButton(0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 'Pitch -'),
-            getCartesianHoldButton(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 'Roll +'),
-            getCartesianHoldButton(0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 'Roll -'),
-            true
-          )}
-        </View>
-      </View>
+  const cartesianLinearTeleop = useCallback(() => {
+    return trackpadArrangement(
+      getCartesianHoldButton(0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 'Up'),
+      getCartesianHoldButton(0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 'Down'),
+      getCartesianHoldButton(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 'Left'),
+      getCartesianHoldButton(-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 'Right'),
+      getCartesianHoldButton(0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 'Forward'),
+      getCartesianHoldButton(0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 'Backward'),
+      false
     )
-  }, [trackpadArrangement, getCartesianHoldButton, textFontSize, dimension])
+  }, [trackpadArrangement, getCartesianHoldButton])
+
+  /**
+   * Callback to render the cartesian teleop controls.
+   */
+  const cartesianAngularTeleop = useCallback(() => {
+    return trackpadArrangement(
+      getCartesianHoldButton(0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 'Pitch +'),
+      getCartesianHoldButton(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 'Pitch -'),
+      getCartesianHoldButton(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 'Yaw +'),
+      getCartesianHoldButton(0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 'Yaw -'),
+      getCartesianHoldButton(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 'Roll +'),
+      getCartesianHoldButton(0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 'Roll -'),
+      false
+    )
+  }, [trackpadArrangement, getCartesianHoldButton])
 
   /**
    * Callback to render the joint teleop controls.
@@ -494,15 +446,39 @@ const TeleopSubcomponent = (props) => {
             <input
               name='teleopMode'
               type='radio'
-              checked={teleopMode === CARTESIAN_MODE}
+              checked={teleopMode === CARTESIAN_LINEAR_MODE}
               onChange={(e) => {
                 if (e.target.checked) {
-                  setTeleopMode(CARTESIAN_MODE)
+                  setTeleopMode(CARTESIAN_LINEAR_MODE)
                 }
               }}
               style={{ transform: 'scale(2.0)', verticalAlign: 'middle', marginRight: '15px' }}
             />
-            Move Fork
+            Fork Position
+          </p>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
+            <input
+              name='teleopMode'
+              type='radio'
+              checked={teleopMode === CARTESIAN_ANGULAR_MODE}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setTeleopMode(CARTESIAN_ANGULAR_MODE)
+                }
+              }}
+              style={{ transform: 'scale(2.0)', verticalAlign: 'middle', marginRight: '15px' }}
+            />
+            Fork Orientation
           </p>
         </View>
         <View
@@ -526,7 +502,7 @@ const TeleopSubcomponent = (props) => {
               }}
               style={{ transform: 'scale(2.0)', verticalAlign: 'middle', marginRight: '15px' }}
             />
-            Move Joints
+            Joints
           </p>
         </View>
       </View>
@@ -539,7 +515,11 @@ const TeleopSubcomponent = (props) => {
           height: '100%'
         }}
       >
-        {teleopMode === CARTESIAN_MODE ? cartesianTeleop() : jointTeleop()}
+        {teleopMode === CARTESIAN_LINEAR_MODE
+          ? cartesianLinearTeleop()
+          : teleopMode === CARTESIAN_ANGULAR_MODE
+          ? cartesianAngularTeleop()
+          : jointTeleop()}
       </View>
     </>
   )

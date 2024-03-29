@@ -9,9 +9,9 @@ import Modal from 'react-bootstrap/Modal'
 import PropTypes from 'prop-types'
 
 // Local imports
-import { CAMERA_FEED_TOPIC } from '../Constants'
+// import { CAMERA_FEED_TOPIC } from '../Constants'
 import TeleopSubcomponent from '../Home/MealStates/TeleopSubcomponent'
-import VideoFeed from '../Home/VideoFeed'
+// import VideoFeed from '../Home/VideoFeed'
 
 /**
  * The LiveVideoModal displays to the user the live video feed from the robot.

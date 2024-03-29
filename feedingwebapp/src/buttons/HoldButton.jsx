@@ -22,6 +22,9 @@ import PropTypes from 'prop-types'
  *
  */
 function HoldButton(props) {
+  // Create a reference to the button
+  const buttonRef = useRef(null)
+
   // Reference to the interval
   const intervalRef = useRef(null)
 
@@ -44,7 +47,32 @@ function HoldButton(props) {
       let holdCallback = props.holdCallback
       holdCallback()
     }, 1000.0 / props.rate_hz)
-  }, [props.rate_hz, props.holdCallback, stopInterval])
+  }, [
+    props.rate_hz,
+    props.holdCallback,
+    stopInterval
+    // setCounter
+  ])
+
+  // Callback for when the touch moves
+  const onTouchMove = useCallback(
+    (event) => {
+      let { top, left, bottom, right } = buttonRef.current.getBoundingClientRect()
+      if (
+        event.touches === null ||
+        event.touches.length < 1 ||
+        event.touches[0].clientY < top ||
+        event.touches[0].clientY > bottom ||
+        event.touches[0].clientX < left ||
+        event.touches[0].clientX > right
+      ) {
+        stopInterval()
+      } else {
+        startInterval()
+      }
+    },
+    [buttonRef, startInterval, stopInterval]
+  )
 
   // Stop the interval when the component is unmounted
   useEffect(() => {
@@ -53,11 +81,16 @@ function HoldButton(props) {
 
   return (
     <Button
+      ref={buttonRef}
       variant={props.variant}
-      style={props.buttonStyle}
+      style={{ ...props.buttonStyle, cursor: 'pointer' }}
       onMouseDown={startInterval}
       onMouseUp={stopInterval}
       onMouseLeave={stopInterval}
+      onTouchStart={startInterval}
+      onTouchEnd={stopInterval}
+      onTouchCancel={stopInterval}
+      onTouchMove={onTouchMove}
     >
       {props.children}
     </Button>
