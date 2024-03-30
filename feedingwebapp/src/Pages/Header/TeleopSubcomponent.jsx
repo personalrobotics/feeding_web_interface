@@ -38,11 +38,11 @@ const TeleopSubcomponent = () => {
   const teleopLinearSpeed = useGlobalState((state) => state.teleopLinearSpeed)
   const setTeleopLinearSpeed = useGlobalState((state) => state.setTeleopLinearSpeed)
   const ANGULAR_MAX_SPEED = useMemo(() => 0.6, []) // rad/s
-  const ANGULAR_MIN_SPEED = useMemo(() => 0.1, []) // rad/s
+  const ANGULAR_MIN_SPEED = useMemo(() => 0.3, []) // rad/s
   const teleopAngularSpeed = useGlobalState((state) => state.teleopAngularSpeed)
   const setTeleopAngularSpeed = useGlobalState((state) => state.setTeleopAngularSpeed)
   const JOINT_MAX_SPEED = useMemo(() => 0.6, []) // rad/s
-  const JOINT_MIN_SPEED = useMemo(() => 0.1, []) // rad/s
+  const JOINT_MIN_SPEED = useMemo(() => 0.2, []) // rad/s
   const teleopJointSpeed = useGlobalState((state) => state.teleopJointSpeed)
   const setTeleopJointSpeed = useGlobalState((state) => state.setTeleopJointSpeed)
 

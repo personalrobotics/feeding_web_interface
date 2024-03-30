@@ -262,7 +262,15 @@ const VideoFeed = (props) => {
 
   // Render the component
   return (
-    <>
+    <View
+      style={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'start',
+        width: '100%',
+        height: '100%'
+      }}
+    >
       <View
         ref={parentRef}
         style={{
@@ -324,7 +332,7 @@ const VideoFeed = (props) => {
           </Button>
         </View>
       </View>
-    </>
+    </View>
   )
 }
 VideoFeed.propTypes = {
