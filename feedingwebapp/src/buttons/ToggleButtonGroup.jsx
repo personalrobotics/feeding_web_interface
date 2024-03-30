@@ -44,13 +44,19 @@ const ButtonGroup = styled.div`
  *        `valueOptions`
  * @param {function} valueSetter - a function that takes in the value to set
  *        and sets it in the global state.
+ * @param {boolean} horizontal - whether to display the buttons horizontally
+ *       or vertically. Defaults to true.
  */
 function ToggleButtonGroup(props) {
   let valueOptions = props.valueOptions
   let currentValue = props.currentValue
   let valueSetter = props.valueSetter
   return (
-    <ButtonGroup>
+    <ButtonGroup
+      style={{
+        flexDirection: props.horizontal ? 'row' : 'column'
+      }}
+    >
       {valueOptions.map((value) => (
         <ButtonToggle key={value} active={currentValue === value} onClick={() => valueSetter(value)}>
           {value}
@@ -62,7 +68,11 @@ function ToggleButtonGroup(props) {
 ToggleButtonGroup.propTypes = {
   valueOptions: PropTypes.array.isRequired,
   currentValue: PropTypes.string.isRequired,
-  valueSetter: PropTypes.func.isRequired
+  valueSetter: PropTypes.func.isRequired,
+  horizontal: PropTypes.bool
+}
+ToggleButtonGroup.defaultProps = {
+  horizontal: true
 }
 
 export default ToggleButtonGroup

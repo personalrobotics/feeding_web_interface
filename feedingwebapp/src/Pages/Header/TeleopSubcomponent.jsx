@@ -4,15 +4,8 @@ import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
 
 // Local Imports
-import {
-  useROS,
-  createROSTopic,
-  createROSMessage,
-  createROSActionClient,
-  callROSAction,
-  destroyActionClient
-} from '../../../ros/ros_helpers'
-import '../Home.css'
+import { useROS, createROSTopic, createROSMessage, createROSActionClient, callROSAction, destroyActionClient } from '../../ros/ros_helpers'
+import '../Home/Home.css'
 import {
   SERVO_CARTESIAN_TOPIC,
   SERVO_CARTESIAN_TOPIC_MSG,
@@ -22,8 +15,8 @@ import {
   START_SERVO_ACTION_TYPE,
   STOP_SERVO_ACTION_NAME,
   STOP_SERVO_ACTION_TYPE
-} from '../../Constants'
-import HoldButton from '../../../buttons/HoldButton'
+} from '../Constants'
+import HoldButton from '../../buttons/HoldButton'
 
 /**
  * The TeleopSubcomponent renders controls for the user to teleoperate the robot,
@@ -43,7 +36,7 @@ const TeleopSubcomponent = () => {
 
   // Style configuration
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  let textFontSize = isPortrait ? '3vh' : '2.5vw'
+  let textFontSize = isPortrait ? '2.2vh' : '2.5vw'
   const buttonStyle = useMemo(() => {
     return {
       width: '100%',
@@ -146,8 +139,8 @@ const TeleopSubcomponent = () => {
    * e31 and e32 are the "third-level," opposite from one another.
    */
   const trackpadArrangement = useCallback((e11, e12, e21, e22, e31, e32, horizontal = true) => {
-    let mainFlexDirection = horizontal ? 'row' : 'col'
-    let subFlexDirection = horizontal ? 'col' : 'row'
+    let mainFlexDirection = horizontal ? 'row' : 'column'
+    let subFlexDirection = horizontal ? 'column' : 'row'
 
     return (
       <>
@@ -259,8 +252,8 @@ const TeleopSubcomponent = () => {
    * fill it with specified elements row-wise.
    */
   const arrayArrangement = useCallback((major_axis, minor_axis, elements, horizontal = true) => {
-    let majorFlexDirection = horizontal ? 'row' : 'col'
-    let minorFlexDirection = horizontal ? 'col' : 'row'
+    let majorFlexDirection = horizontal ? 'row' : 'column'
+    let minorFlexDirection = horizontal ? 'column' : 'row'
 
     let layout = []
     for (let i = 0; i < major_axis; i++) {
@@ -422,7 +415,16 @@ const TeleopSubcomponent = () => {
 
   // Render the component
   return (
-    <>
+    <View
+      style={{
+        flex: 9,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%'
+      }}
+    >
       <View
         style={{
           flex: 1,
@@ -454,7 +456,7 @@ const TeleopSubcomponent = () => {
               }}
               style={{ transform: 'scale(2.0)', verticalAlign: 'middle', marginRight: '15px' }}
             />
-            Fork Position
+            Move
           </p>
         </View>
         <View
@@ -478,7 +480,7 @@ const TeleopSubcomponent = () => {
               }}
               style={{ transform: 'scale(2.0)', verticalAlign: 'middle', marginRight: '15px' }}
             />
-            Fork Orientation
+            Rotate
           </p>
         </View>
         <View
@@ -521,7 +523,7 @@ const TeleopSubcomponent = () => {
           ? cartesianAngularTeleop()
           : jointTeleop()}
       </View>
-    </>
+    </View>
   )
 }
 TeleopSubcomponent.propTypes = {}

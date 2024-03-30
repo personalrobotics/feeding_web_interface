@@ -1,0 +1,112 @@
+// React imports
+import React, { useState } from 'react'
+import { useMediaQuery } from 'react-responsive'
+import Modal from 'react-bootstrap/Modal'
+import PropTypes from 'prop-types'
+import { View } from 'react-native'
+
+// Local imports
+import { CAMERA_FEED_TOPIC } from '../Constants'
+import TeleopSubcomponent from './TeleopSubcomponent'
+import VideoFeed from '../Home/VideoFeed'
+import ToggleButtonGroup from '../../buttons/ToggleButtonGroup'
+
+/**
+ * The InfoModal displays to the user the live video feed from the robot.
+ */
+function InfoModal(props) {
+  // The three different modes of the info modal
+  const VIDEO_MODE = 'Video'
+  const TELEOP_MODE = 'Teleop'
+  const SYSTEM_STATUS_MODE = 'Status'
+  const [mode, setMode] = useState(VIDEO_MODE)
+
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  const flexDirection = isPortrait ? 'column' : 'row'
+  const otherDirection = isPortrait ? 'row' : 'column'
+  // Text font size for portrait and landscape orientations
+  let textFontSize = isPortrait ? '3vh' : '6vh'
+
+  return (
+    <Modal
+      show={props.show}
+      onHide={props.onHide}
+      size='lg'
+      aria-labelledby='contained-modal-title-vcenter'
+      backdrop='static'
+      keyboard={false}
+      centered
+      id='InfoModal'
+      fullscreen={true}
+    >
+      <Modal.Header closeButton>
+        <Modal.Title id='contained-modal-title-vcenter' style={{ fontSize: textFontSize }}>
+          Robot Information
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: flexDirection,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+          overflow: 'hidden'
+        }}
+      >
+        <View
+          style={{
+            flex: 2,
+            flexDirection: otherDirection,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          {/* Switch between the different modes. */}
+          <ToggleButtonGroup
+            valueOptions={[VIDEO_MODE, TELEOP_MODE, SYSTEM_STATUS_MODE]}
+            currentValue={mode}
+            valueSetter={setMode}
+            horizontal={isPortrait}
+          />
+        </View>
+        <View
+          style={{
+            flex: 9,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          {/* Display the main contents of the page */}
+          {mode === VIDEO_MODE ? (
+            <VideoFeed topic={CAMERA_FEED_TOPIC} updateRateHz={10} webrtcURL={props.webrtcURL} />
+          ) : mode === TELEOP_MODE ? (
+            <TeleopSubcomponent />
+          ) : mode === SYSTEM_STATUS_MODE ? (
+            <div>System Status</div>
+          ) : (
+            <></>
+          )}
+        </View>
+      </Modal.Body>
+    </Modal>
+  )
+}
+InfoModal.propTypes = {
+  // Whether or not the modal is visible
+  show: PropTypes.bool.isRequired,
+  // Callback function for when the modal is hidden
+  onHide: PropTypes.func.isRequired,
+  // The URL of the webrtc signalling server
+  webrtcURL: PropTypes.string.isRequired
+}
+
+export default InfoModal

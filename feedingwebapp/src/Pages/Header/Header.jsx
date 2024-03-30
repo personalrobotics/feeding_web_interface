@@ -13,7 +13,7 @@ import { useROS } from '../../ros/ros_helpers'
 // Local imports
 import { ROS_CHECK_INTERVAL_MS, NON_MOVING_STATES } from '../Constants'
 import { useGlobalState, APP_PAGE, MEAL_STATE } from '../GlobalState'
-import LiveVideoModal from './LiveVideoModal'
+import InfoModal from './InfoModal'
 
 /**
  * The Header component consists of the navigation bar (which has buttons Home,
@@ -23,7 +23,7 @@ import LiveVideoModal from './LiveVideoModal'
  */
 const Header = (props) => {
   // Create a local state variable to toggle on/off the video
-  // TODO: Since this local state variable is in the header, the LiveVideoModal
+  // TODO: Since this local state variable is in the header, the InfoModal
   // continues showing even if the state changes. Is this desirable? Perhaps
   // it should close if the state changes?
   const [videoShow, setVideoShow] = useState(false)
@@ -154,16 +154,16 @@ const Header = (props) => {
               className='text-dark bg-info rounded mx-1 btn-lg btn-huge p-2'
               style={{ fontSize: textFontSize }}
             >
-              Video
+              Info
             </Nav.Link>
           </Nav>
         </Navbar>
       </Navbar>
       {/**
-       * The LiveVideoModal toggles on and off with the Video button and shows the
+       * The InfoModal toggles on and off with the Video button and shows the
        * robot's live camera feed.
        */}
-      <LiveVideoModal show={videoShow} onHide={() => setVideoShow(false)} webrtcURL={props.webrtcURL} />
+      <InfoModal show={videoShow} onHide={() => setVideoShow(false)} webrtcURL={props.webrtcURL} />
     </>
   )
 }
