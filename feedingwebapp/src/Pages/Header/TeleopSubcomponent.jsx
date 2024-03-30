@@ -1,5 +1,6 @@
 // React Imports
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useId, Label, SpinButton } from '@fluentui/react-components'
 import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
 
@@ -16,6 +17,7 @@ import {
   STOP_SERVO_ACTION_NAME,
   STOP_SERVO_ACTION_TYPE
 } from '../Constants'
+import { useGlobalState } from '../GlobalState'
 import HoldButton from '../../buttons/HoldButton'
 
 /**
@@ -28,11 +30,21 @@ const TeleopSubcomponent = () => {
   const CARTESIAN_ANGULAR_MODE = 'cartesian_angular'
   const JOINT_MODE = 'joint'
   const [teleopMode, setTeleopMode] = useState(CARTESIAN_LINEAR_MODE)
+  const speedSpinButtonID = useId()
 
   // Cartesian teleop speeds
-  const LINEAR_SPEED = 0.1 // m/s
-  const ANGULAR_SPEED = 0.3 // rad/s
-  const JOINT_SPEED = 0.5 // rad/s
+  const LINEAR_MAX_SPEED = useMemo(() => 0.3, []) // m/s
+  const LINEAR_MIN_SPEED = useMemo(() => 0.05, []) // m/s
+  const teleopLinearSpeed = useGlobalState((state) => state.teleopLinearSpeed)
+  const setTeleopLinearSpeed = useGlobalState((state) => state.setTeleopLinearSpeed)
+  const ANGULAR_MAX_SPEED = useMemo(() => 0.6, []) // rad/s
+  const ANGULAR_MIN_SPEED = useMemo(() => 0.1, []) // rad/s
+  const teleopAngularSpeed = useGlobalState((state) => state.teleopAngularSpeed)
+  const setTeleopAngularSpeed = useGlobalState((state) => state.setTeleopAngularSpeed)
+  const JOINT_MAX_SPEED = useMemo(() => 0.6, []) // rad/s
+  const JOINT_MIN_SPEED = useMemo(() => 0.1, []) // rad/s
+  const teleopJointSpeed = useGlobalState((state) => state.teleopJointSpeed)
+  const setTeleopJointSpeed = useGlobalState((state) => state.setTeleopJointSpeed)
 
   // Style configuration
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
@@ -46,6 +58,50 @@ const TeleopSubcomponent = () => {
       borderRadius: '0rem'
     }
   }, [])
+
+  // Callback for when the user changes the speed
+  const onSpeedChange = useCallback(
+    (_ev, data) => {
+      let value = data.value ? data.value : parseFloat(data.displayValue)
+      let min_val =
+        teleopMode === CARTESIAN_LINEAR_MODE
+          ? LINEAR_MIN_SPEED
+          : teleopMode === CARTESIAN_ANGULAR_MODE
+          ? ANGULAR_MIN_SPEED
+          : JOINT_MIN_SPEED
+      let max_val =
+        teleopMode === CARTESIAN_LINEAR_MODE
+          ? LINEAR_MAX_SPEED
+          : teleopMode === CARTESIAN_ANGULAR_MODE
+          ? ANGULAR_MAX_SPEED
+          : JOINT_MAX_SPEED
+      if (value < min_val) {
+        value = min_val
+      }
+      if (value > max_val) {
+        value = max_val
+      }
+      let setter =
+        teleopMode === CARTESIAN_LINEAR_MODE
+          ? setTeleopLinearSpeed
+          : teleopMode === CARTESIAN_ANGULAR_MODE
+          ? setTeleopAngularSpeed
+          : setTeleopJointSpeed
+      setter(value)
+    },
+    [
+      teleopMode,
+      setTeleopLinearSpeed,
+      setTeleopAngularSpeed,
+      setTeleopJointSpeed,
+      LINEAR_MIN_SPEED,
+      LINEAR_MAX_SPEED,
+      ANGULAR_MIN_SPEED,
+      ANGULAR_MAX_SPEED,
+      JOINT_MIN_SPEED,
+      JOINT_MAX_SPEED
+    ]
+  )
 
   /**
    * Connect to ROS, if not already connected. Put this in useRef to avoid
@@ -124,11 +180,11 @@ const TeleopSubcomponent = () => {
           frame_id: 'j2n6s200_link_base'
         },
         joint_names: [joint],
-        velocities: [JOINT_SPEED * velocity]
+        velocities: [teleopJointSpeed * velocity]
       })
       jointTopic.publish(msg)
     },
-    [jointTopic, JOINT_SPEED]
+    [jointTopic, teleopJointSpeed]
   )
 
   /**
@@ -261,6 +317,7 @@ const TeleopSubcomponent = () => {
       for (let j = 0; j < minor_axis; j++) {
         row.push(
           <View
+            key={i.toString() + '-' + j.toString()}
             style={{
               flex: 1,
               justifyContent: 'center',
@@ -275,6 +332,7 @@ const TeleopSubcomponent = () => {
       }
       layout.push(
         <View
+          key={i.toString()}
           style={{
             flex: 1,
             flexDirection: minorFlexDirection,
@@ -315,12 +373,12 @@ const TeleopSubcomponent = () => {
           holdCallback={() => {
             console.log('Cartesian hold callback called')
             publishCartesianVelocity(
-              LINEAR_SPEED * x,
-              LINEAR_SPEED * y,
-              LINEAR_SPEED * z,
-              ANGULAR_SPEED * rx,
-              ANGULAR_SPEED * ry,
-              ANGULAR_SPEED * rz
+              teleopLinearSpeed * x,
+              teleopLinearSpeed * y,
+              teleopLinearSpeed * z,
+              teleopAngularSpeed * rx,
+              teleopAngularSpeed * ry,
+              teleopAngularSpeed * rz
             )
           }}
           cleanupCallback={() => {
@@ -332,7 +390,7 @@ const TeleopSubcomponent = () => {
         </HoldButton>
       )
     },
-    [publishCartesianVelocity, buttonStyle, LINEAR_SPEED, ANGULAR_SPEED]
+    [publishCartesianVelocity, buttonStyle, teleopLinearSpeed, teleopAngularSpeed]
   )
 
   /**
@@ -517,11 +575,67 @@ const TeleopSubcomponent = () => {
           height: '100%'
         }}
       >
-        {teleopMode === CARTESIAN_LINEAR_MODE
-          ? cartesianLinearTeleop()
-          : teleopMode === CARTESIAN_ANGULAR_MODE
-          ? cartesianAngularTeleop()
-          : jointTeleop()}
+        {/* Allow users to tune to speed of the current teleop mode */}
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%'
+          }}
+        >
+          <Label
+            htmlFor={speedSpinButtonID}
+            style={{
+              fontSize: textFontSize,
+              width: '90%',
+              color: 'black',
+              textAlign: 'center'
+            }}
+          >
+            Speed ({teleopMode === CARTESIAN_LINEAR_MODE ? 'm/s' : 'rad/s'})
+          </Label>
+          <SpinButton
+            value={
+              teleopMode === CARTESIAN_LINEAR_MODE
+                ? teleopLinearSpeed
+                : teleopMode === CARTESIAN_ANGULAR_MODE
+                ? teleopAngularSpeed
+                : teleopJointSpeed
+            }
+            id={speedSpinButtonID}
+            step={0.05}
+            onChange={onSpeedChange}
+            appearance='filled-lighter'
+            style={{
+              fontSize: textFontSize,
+              width: '90%',
+              color: 'black'
+            }}
+            incrementButton={{
+              'aria-label': 'Increase value by 0.5',
+              'aria-roledescription': 'spinner',
+              size: 'large'
+            }}
+          />
+        </View>
+        {/* Render the controls for the mode */}
+        <View
+          style={{
+            flex: 5,
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%'
+          }}
+        >
+          {teleopMode === CARTESIAN_LINEAR_MODE
+            ? cartesianLinearTeleop()
+            : teleopMode === CARTESIAN_ANGULAR_MODE
+            ? cartesianAngularTeleop()
+            : jointTeleop()}
+        </View>
       </View>
     </View>
   )

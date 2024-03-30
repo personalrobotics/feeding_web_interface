@@ -104,8 +104,10 @@ export const useGlobalState = create(
       lastMotionActionResponse: null,
       // Whether or not the currently-executing robot motion was paused by the user
       paused: false,
-      // Flag to indicate robot motion trough teleoperation interface
-      teleopIsMoving: false,
+      // Store the user;s current settings for teleop speeds
+      teleopLinearSpeed: 0.1, // m/s
+      teleopAngularSpeed: 0.3, // rad/s
+      teleopJointSpeed: 0.5, // rad/s
       // Flag to indicate whether to auto-continue after face detection
       faceDetectionAutoContinue: true,
       // Flag to indicate whether to auto-continue in bite done after food-on-fork detection
@@ -172,9 +174,17 @@ export const useGlobalState = create(
         set(() => ({
           paused: paused
         })),
-      setTeleopIsMoving: (teleopIsMoving) =>
+      setTeleopLinearSpeed: (teleopLinearSpeed) =>
         set(() => ({
-          teleopIsMoving: teleopIsMoving
+          teleopLinearSpeed: teleopLinearSpeed
+        })),
+      setTeleopAngularSpeed: (teleopAngularSpeed) =>
+        set(() => ({
+          teleopAngularSpeed: teleopAngularSpeed
+        })),
+      setTeleopJointSpeed: (teleopJointSpeed) =>
+        set(() => ({
+          teleopJointSpeed: teleopJointSpeed
         })),
       setFaceDetectionAutoContinue: (faceDetectionAutoContinue) =>
         set(() => ({
