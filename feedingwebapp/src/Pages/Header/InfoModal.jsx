@@ -1,12 +1,14 @@
 // React imports
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useMediaQuery } from 'react-responsive'
 import Modal from 'react-bootstrap/Modal'
 import PropTypes from 'prop-types'
+import { ToastContainer, toast } from 'react-toastify'
 import { View } from 'react-native'
 
 // Local imports
-import { CAMERA_FEED_TOPIC } from '../Constants'
+import { CAMERA_FEED_TOPIC, NON_MOVING_STATES } from '../Constants'
+import { useGlobalState } from '../GlobalState'
 import TeleopSubcomponent from './TeleopSubcomponent'
 import VideoFeed from '../Home/VideoFeed'
 import ToggleButtonGroup from '../../buttons/ToggleButtonGroup'
@@ -20,6 +22,21 @@ function InfoModal(props) {
   const TELEOP_MODE = 'Teleop'
   const SYSTEM_STATUS_MODE = 'Status'
   const [mode, setMode] = useState(VIDEO_MODE)
+
+  // Teleop don't allow changing to teleop mode if app is in a moving state
+  const mealState = useGlobalState((state) => state.mealState)
+  const teleopCallback = useCallback(() => {
+    /**
+     * TODO: We need a more dynamic way to determing if the app is in a non-moving
+     * state, i.e., if robot motion is in error or if auto-continue is not going
+     * to get triggered or such.
+     */
+    if (NON_MOVING_STATES.has(mealState)) {
+      setMode(TELEOP_MODE)
+    } else {
+      toast('Cannot switch to teleop until the app is on a non-moving page.')
+    }
+  }, [mealState])
 
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
@@ -57,6 +74,11 @@ function InfoModal(props) {
           overflow: 'hidden'
         }}
       >
+        {/**
+         * The ToastContainer is an alert that pops up on the top of the screen
+         * and has a timeout.
+         */}
+        <ToastContainer style={{ fontSize: textFontSize }} />
         <View
           style={{
             flex: 2,
@@ -71,7 +93,7 @@ function InfoModal(props) {
           <ToggleButtonGroup
             valueOptions={[VIDEO_MODE, TELEOP_MODE, SYSTEM_STATUS_MODE]}
             currentValue={mode}
-            valueSetter={setMode}
+            callbackFunctions={[setMode, teleopCallback, setMode]}
             horizontal={isPortrait}
           />
         </View>

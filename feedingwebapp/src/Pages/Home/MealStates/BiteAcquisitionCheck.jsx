@@ -72,6 +72,7 @@ const BiteAcquisitionCheck = () => {
    */
   const acquisitionSuccess = useCallback(() => {
     console.log('acquisitionSuccess')
+    // NOTE: This uses the ToastContainer in Header
     toast.info('Reporting Food Acquisition Success!')
     // Create a service request
     let request = createROSServiceRequest({
@@ -92,6 +93,7 @@ const BiteAcquisitionCheck = () => {
    */
   const acquisitionFailure = useCallback(() => {
     console.log('acquisitionFailure')
+    // NOTE: This uses the ToastContainer in Header
     toast.info('Reporting Food Acquisition Failure.')
     // Create a service request
     let request = createROSServiceRequest({
