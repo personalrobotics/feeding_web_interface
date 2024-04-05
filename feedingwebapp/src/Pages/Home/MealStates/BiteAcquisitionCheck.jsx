@@ -27,6 +27,7 @@ const BiteAcquisitionCheck = () => {
   const [remainingSeconds, setRemainingSeconds] = useState(null)
   // Get the relevant global variables
   const prevMealState = useGlobalState((state) => state.prevMealState)
+  const setInNonMovingState = useGlobalState((state) => state.setInNonMovingState)
   const setMealState = useGlobalState((state) => state.setMealState)
   const biteAcquisitionCheckAutoContinue = useGlobalState((state) => state.biteAcquisitionCheckAutoContinue)
   const setBiteAcquisitionCheckAutoContinue = useGlobalState((state) => state.setBiteAcquisitionCheckAutoContinue)
@@ -132,6 +133,30 @@ const BiteAcquisitionCheck = () => {
   }, [setRemainingSeconds, timerRef, timerWasForFof, finalTimerRef])
 
   /**
+   * Auto-continue is enabled if the bite acquisition check auto-continue is checked
+   * and the previous meal state was R_BiteAcquisition (i.e., this
+   * state is arrived to nominally).
+   */
+  const autoContinueIsEnabled = useCallback(() => {
+    console.log('Checking auto-continue', biteAcquisitionCheckAutoContinue, prevMealState)
+    return biteAcquisitionCheckAutoContinue && prevMealState === MEAL_STATE.R_BiteAcquisition
+  }, [biteAcquisitionCheckAutoContinue, prevMealState])
+
+  /**
+   * When the component is first mounted, and any time auto-continue changes,
+   * if auto-continue is not enabled, set it to a non-moving state. We don't need
+   * to reset it when the component is un-mounted since it will get set when
+   * the mealState is updated.
+   */
+  useEffect(() => {
+    if (autoContinueIsEnabled()) {
+      setInNonMovingState(false)
+    } else {
+      setInNonMovingState(true)
+    }
+  }, [autoContinueIsEnabled, setInNonMovingState])
+
+  /**
    * Subscribe to the ROS Topic with the food-on-fork detection result. This is
    * created in local state to avoid re-creating it upon every re-render.
    */
@@ -139,7 +164,7 @@ const BiteAcquisitionCheck = () => {
     (message) => {
       console.log('Got food-on-fork detection message', message)
       // Only auto-continue if the previous state was Bite Acquisition
-      if (biteAcquisitionCheckAutoContinue && prevMealState === MEAL_STATE.R_BiteAcquisition && message.status === 1) {
+      if (autoContinueIsEnabled() && message.status === 1) {
         let callbackFn = null
         if (message.probability < biteAcquisitionCheckAutoContinueProbThreshLower) {
           console.log('No FoF. Auto-continuing in ', remainingSeconds, ' seconds')
@@ -183,14 +208,13 @@ const BiteAcquisitionCheck = () => {
     [
       acquisitionSuccess,
       acquisitionFailure,
-      biteAcquisitionCheckAutoContinue,
+      autoContinueIsEnabled,
       biteAcquisitionCheckAutoContinueProbThreshLower,
       biteAcquisitionCheckAutoContinueProbThreshUpper,
       biteAcquisitionCheckAutoContinueSecs,
       finalTimerRef,
       remainingSeconds,
       clearTimer,
-      prevMealState,
       setRemainingSeconds,
       timerRef,
       timerWasForFof
@@ -359,7 +383,7 @@ const BiteAcquisitionCheck = () => {
           }}
         >
           <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-            {biteAcquisitionCheckAutoContinue && prevMealState === MEAL_STATE.R_BiteAcquisition
+            {autoContinueIsEnabled()
               ? remainingSeconds === null
                 ? 'Checking for food on fork...'
                 : timerWasForFof.current
@@ -381,10 +405,10 @@ const BiteAcquisitionCheck = () => {
       </>
     )
   }, [
+    autoContinueIsEnabled,
     biteAcquisitionCheckAutoContinue,
     clearTimer,
     dimension,
-    prevMealState,
     readyForBiteButton,
     readyForBiteText,
     reacquireBiteButton,

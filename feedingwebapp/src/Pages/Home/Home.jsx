@@ -10,7 +10,6 @@ import BiteAcquisitionCheck from './MealStates/BiteAcquisitionCheck'
 import BiteDone from './MealStates/BiteDone'
 import BiteSelection from './MealStates/BiteSelection'
 import DetectingFace from './MealStates/DetectingFace'
-import PlateLocator from './MealStates/PlateLocator'
 import PostMeal from './MealStates/PostMeal'
 import PreMeal from './MealStates/PreMeal'
 import RobotMotion from './MealStates/RobotMotion'
@@ -111,9 +110,6 @@ function Home(props) {
       }
       case MEAL_STATE.U_BiteSelection: {
         return <BiteSelection debug={props.debug} webrtcURL={props.webrtcURL} />
-      }
-      case MEAL_STATE.U_PlateLocator: {
-        return <PlateLocator debug={props.debug} webrtcURL={props.webrtcURL} />
       }
       case MEAL_STATE.R_BiteAcquisition: {
         /**

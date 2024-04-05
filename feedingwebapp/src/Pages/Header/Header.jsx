@@ -11,8 +11,8 @@ import 'react-toastify/dist/ReactToastify.css'
 // ROS imports
 import { useROS } from '../../ros/ros_helpers'
 // Local imports
-import { ROS_CHECK_INTERVAL_MS, NON_MOVING_STATES } from '../Constants'
-import { useGlobalState, APP_PAGE, MEAL_STATE } from '../GlobalState'
+import { ROS_CHECK_INTERVAL_MS } from '../Constants'
+import { useGlobalState, APP_PAGE, NON_MOVING_STATES } from '../GlobalState'
 import InfoModal from './InfoModal'
 
 /**
@@ -47,8 +47,8 @@ const Header = (props) => {
 
   // Get the relevant global state variables
   const mealState = useGlobalState((state) => state.mealState)
+  const inNonMovingState = useGlobalState((state) => state.inNonMovingState)
   const setAppPage = useGlobalState((state) => state.setAppPage)
-  const paused = useGlobalState((state) => state.paused)
 
   /**
    * When the Home button in the header is clicked, return to the Home page.
@@ -63,12 +63,15 @@ const Header = (props) => {
    * or terminate the meal because modifying settings.
    */
   const settingsClicked = useCallback(() => {
-    if (NON_MOVING_STATES.has(mealState)) {
+    // Both checks are necessary because some states that are nominally non-moving
+    // could be in an auto-continue state, and some states that are nominally moving
+    // could be paused.
+    if (inNonMovingState && NON_MOVING_STATES.has(mealState)) {
       setAppPage(APP_PAGE.Settings)
     } else {
       toast('Wait for robot motion to complete before accessing Settings.')
     }
-  }, [mealState, setAppPage])
+  }, [inNonMovingState, mealState, setAppPage])
 
   // Render the component. The NavBar will stay fixed even as we vertically scroll.
   return (
@@ -114,7 +117,7 @@ const Header = (props) => {
               Settings
             </Nav.Link>
           </Nav>
-          {NON_MOVING_STATES.has(mealState) || paused || mealState === MEAL_STATE.U_PlateLocator ? (
+          {inNonMovingState ? (
             <Nav>
               <Nav.Link
                 className='text-dark rounded mx-1 btn-lg btn-huge p-2'

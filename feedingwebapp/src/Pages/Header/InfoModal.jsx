@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import { View } from 'react-native'
 
 // Local imports
-import { CAMERA_FEED_TOPIC, NON_MOVING_STATES } from '../Constants'
+import { CAMERA_FEED_TOPIC } from '../Constants'
 import { useGlobalState } from '../GlobalState'
 import TeleopSubcomponent from './TeleopSubcomponent'
 import VideoFeed from '../Home/VideoFeed'
@@ -24,19 +24,19 @@ function InfoModal(props) {
   const [mode, setMode] = useState(VIDEO_MODE)
 
   // Teleop don't allow changing to teleop mode if app is in a moving state
-  const mealState = useGlobalState((state) => state.mealState)
+  const inNonMovingState = useGlobalState((state) => state.inNonMovingState)
   const teleopCallback = useCallback(() => {
     /**
      * TODO: We need a more dynamic way to determing if the app is in a non-moving
      * state, i.e., if robot motion is in error or if auto-continue is not going
      * to get triggered or such.
      */
-    if (NON_MOVING_STATES.has(mealState)) {
+    if (inNonMovingState) {
       setMode(TELEOP_MODE)
     } else {
       toast('Cannot switch to teleop until the app is on a non-moving page.')
     }
-  }, [mealState])
+  }, [inNonMovingState])
 
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })

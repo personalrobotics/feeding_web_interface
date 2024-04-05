@@ -30,21 +30,6 @@ MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth] = '/robot_state_imgs/move_to_
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_StowingArm] = '/robot_state_imgs/stowing_arm_position.svg'
 export { MOVING_STATE_ICON_DICT }
 
-/**
- * A set containing the states where the robot does not move.
- *
- * NOTE: Although in R_DetectingFace the robot does not technically move,
- * the app might transition out of that state into a robot motion state without
- * user intervention, so it is not included in this set.
- */
-let NON_MOVING_STATES = new Set()
-NON_MOVING_STATES.add(MEAL_STATE.U_PreMeal)
-NON_MOVING_STATES.add(MEAL_STATE.U_BiteSelection)
-NON_MOVING_STATES.add(MEAL_STATE.U_BiteAcquisitionCheck)
-NON_MOVING_STATES.add(MEAL_STATE.U_BiteDone)
-NON_MOVING_STATES.add(MEAL_STATE.U_PostMeal)
-export { NON_MOVING_STATES }
-
 // The names of the ROS topic(s)
 export const CAMERA_FEED_TOPIC = '/local/camera/color/image_raw/compressed'
 export const FACE_DETECTION_TOPIC = '/face_detection'

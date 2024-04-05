@@ -221,6 +221,9 @@ const BiteTransfer = (props) => {
       case MEAL_STATE.U_BiteAcquisitionCheck:
         localNextMealState = MEAL_STATE.R_MovingToRestingPosition
         break
+      case MEAL_STATE.R_DetectingFace:
+        localNextMealState = MEAL_STATE.R_MovingToStagingConfiguration
+        break
       case MEAL_STATE.U_PostMeal:
         localNextMealState = MEAL_STATE.R_StowingArm
         break
