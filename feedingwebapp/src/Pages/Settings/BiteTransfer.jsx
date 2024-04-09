@@ -285,7 +285,8 @@ const BiteTransfer = (props) => {
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              width: '100%'
+              width: '100%',
+              zIndex: 1
             }}
           >
             <Label

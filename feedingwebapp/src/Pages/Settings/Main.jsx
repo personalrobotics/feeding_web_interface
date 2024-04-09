@@ -120,6 +120,20 @@ const Main = () => {
     [setParametersService, settingsPresets, setSettingsPresets]
   )
 
+  // Callback for when users enter the new preset name
+  const enterNewPresetName = useCallback(() => {
+    // Get the new preset name
+    let newPresetName = newPresetInput.current.value.trim()
+
+    if (newPresetName.length === 0) {
+      toast('Please enter a name for the new preset.', { type: 'error' })
+      return
+    } else {
+      setPreset(newPresetName)
+      setShowNewPresetModal(false)
+    }
+  }, [newPresetInput, setPreset])
+
   // Callback for when the user navigates to a settings page
   const onClickSettingsPage = useCallback(
     (settingsState) => {
@@ -230,6 +244,11 @@ const Main = () => {
       <Modal
         show={showNewPresetModal}
         onHide={() => setShowNewPresetModal(false)}
+        onShow={() => {
+          if (newPresetInput.current !== null) {
+            newPresetInput.current.focus()
+          }
+        }}
         size='lg'
         aria-labelledby='contained-modal-title-vcenter'
         backdrop='static'
@@ -250,24 +269,14 @@ const Main = () => {
             name='newPresetName'
             placeholder='Enter new preset name'
             style={{ fontSize: '25px', verticalAlign: 'middle' }}
-          />
-          <br />
-          <Button
-            variant='secondary'
-            style={{ fontSize: '25px', marginTop: '1rem' }}
-            onClick={() => {
-              // Get the new preset name
-              let newPresetName = newPresetInput.current.value.trim()
-
-              if (newPresetName.length === 0) {
-                toast('Please enter a name for the new preset.', { type: 'error' })
-                return
-              } else {
-                setPreset(newPresetName)
-                setShowNewPresetModal(false)
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                enterNewPresetName()
               }
             }}
-          >
+          />
+          <br />
+          <Button variant='secondary' style={{ fontSize: '25px', marginTop: '1rem' }} onClick={enterNewPresetName}>
             Create
           </Button>
         </Modal.Body>
