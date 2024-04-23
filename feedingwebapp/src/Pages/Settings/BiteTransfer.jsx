@@ -453,6 +453,8 @@ const BiteTransfer = (props) => {
     }
   }, [localCurrAndNextMealState, props.webrtcURL, robotMotionProps, faceDetectedCallback])
 
+  // TODO: Move the Views here to the AbovePlate format -- these views might mess up when
+  // horizontal.
   return (
     <>
       <View

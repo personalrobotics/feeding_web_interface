@@ -91,6 +91,7 @@ function HoldButton(props) {
       onTouchEnd={stopInterval}
       onTouchCancel={stopInterval}
       onTouchMove={onTouchMove}
+      onContextMenu={(e) => e.preventDefault()}
     >
       {props.children}
     </Button>

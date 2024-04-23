@@ -148,6 +148,21 @@ const Main = () => {
 
   // Get icon image for move to mouth
   let moveToMouthConfigurationImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth]
+  let moveAbovePlateConfigurationImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingAbovePlate]
+
+  // Configure the different options in the settings menu
+  let settingsConfig = [
+    {
+      title: 'Bite Transfer',
+      icon: moveToMouthConfigurationImage,
+      onClick: () => onClickSettingsPage(SETTINGS_STATE.BITE_TRANSFER)
+    },
+    {
+      title: 'Above Plate',
+      icon: moveAbovePlateConfigurationImage,
+      onClick: () => onClickSettingsPage(SETTINGS_STATE.ABOVE_PLATE)
+    }
+  ]
 
   return (
     <>
@@ -200,42 +215,44 @@ const Main = () => {
         {/**
          * The button to navigate to the bite transfer settings page.
          */}
-        <Row className='justify-content-center mx-1 my-2'>
-          <Button
-            variant='outline-dark'
-            style={{
-              fontSize: '30px',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '8vh',
-              borderWidth: '3px'
-            }}
-            onClick={() => onClickSettingsPage(SETTINGS_STATE.BITE_TRANSFER)}
-          >
-            <Image
-              fluid
-              src={moveToMouthConfigurationImage}
+        {settingsConfig.map((config, i) => (
+          <Row className='justify-content-center mx-1 my-2' key={i}>
+            <Button
+              variant='outline-dark'
               style={{
-                height: '100%',
-                '--bs-btn-padding-x': '0rem',
-                '--bs-btn-padding-y': '0rem',
-                display: 'flex'
-              }}
-              alt='move_to_mouth_image'
-              className='center'
-            />
-            <p
-              style={{
+                fontSize: '30px',
                 display: 'flex',
-                marginTop: '1rem'
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '8vh',
+                borderWidth: '3px'
               }}
+              onClick={config.onClick}
             >
-              Bite Transfer
-            </p>
-          </Button>
-        </Row>
+              <Image
+                fluid
+                src={config.icon}
+                style={{
+                  height: '100%',
+                  '--bs-btn-padding-x': '0rem',
+                  '--bs-btn-padding-y': '0rem',
+                  display: 'flex'
+                }}
+                alt={config.title}
+                className='center'
+              />
+              <p
+                style={{
+                  display: 'flex',
+                  marginTop: '1rem'
+                }}
+              >
+                {config.title}
+              </p>
+            </Button>
+          </Row>
+        ))}
       </Container>
 
       {/**

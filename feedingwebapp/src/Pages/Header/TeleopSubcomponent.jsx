@@ -148,6 +148,12 @@ const TeleopSubcomponent = () => {
    */
   const publishCartesianVelocity = useCallback(
     (x, y, z, rx, ry, rz) => {
+      if (x === 0.0 && y === 0.0 && z === 0.0 && rx === 0.0 && ry === 0.0 && rz === 0.0) {
+        console.log('Publishing zero cartesian velocity.')
+      } else {
+        console.log('Publishing non-zero cartesian velocity.')
+      }
+
       let msg = createROSMessage({
         header: {
           frame_id: 'j2n6s200_link_base'
@@ -371,7 +377,6 @@ const TeleopSubcomponent = () => {
         <HoldButton
           rate_hz={10.0}
           holdCallback={() => {
-            console.log('Cartesian hold callback called')
             publishCartesianVelocity(
               teleopLinearSpeed * x,
               teleopLinearSpeed * y,
