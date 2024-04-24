@@ -26,9 +26,9 @@ import HoldButton from '../../buttons/HoldButton'
  */
 const TeleopSubcomponent = () => {
   // Get local state
-  const CARTESIAN_LINEAR_MODE = 'cartesian_linear'
-  const CARTESIAN_ANGULAR_MODE = 'cartesian_angular'
-  const JOINT_MODE = 'joint'
+  const CARTESIAN_LINEAR_MODE = 'Move'
+  const CARTESIAN_ANGULAR_MODE = 'Rotate'
+  const JOINT_MODE = 'Joints'
   const [teleopMode, setTeleopMode] = useState(CARTESIAN_LINEAR_MODE)
   const speedSpinButtonID = useId()
 
@@ -476,6 +476,40 @@ const TeleopSubcomponent = () => {
     )
   }, [arrayArrangement, getJointHoldButton, isPortrait])
 
+  /**
+   * Callback to get a radio button corresponding to a teleop mode
+   */
+  const getTeleopRadioButton = useCallback(
+    (mode) => {
+      return (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
+            <input
+              name='teleopMode'
+              type='radio'
+              checked={teleopMode === mode}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setTeleopMode(mode)
+                }
+              }}
+              style={{ transform: 'scale(1.5)', verticalAlign: 'middle', marginRight: '15px' }}
+            />
+            {mode}
+          </p>
+        </View>
+      )
+    },
+    [teleopMode, setTeleopMode, textFontSize]
+  )
   // Render the component
   return (
     <View
@@ -498,78 +532,9 @@ const TeleopSubcomponent = () => {
           height: '100%'
         }}
       >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            height: '100%'
-          }}
-        >
-          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-            <input
-              name='teleopMode'
-              type='radio'
-              checked={teleopMode === CARTESIAN_LINEAR_MODE}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setTeleopMode(CARTESIAN_LINEAR_MODE)
-                }
-              }}
-              style={{ transform: 'scale(2.0)', verticalAlign: 'middle', marginRight: '15px' }}
-            />
-            Move
-          </p>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            height: '100%'
-          }}
-        >
-          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-            <input
-              name='teleopMode'
-              type='radio'
-              checked={teleopMode === CARTESIAN_ANGULAR_MODE}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setTeleopMode(CARTESIAN_ANGULAR_MODE)
-                }
-              }}
-              style={{ transform: 'scale(2.0)', verticalAlign: 'middle', marginRight: '15px' }}
-            />
-            Rotate
-          </p>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            height: '100%'
-          }}
-        >
-          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
-            <input
-              name='teleopMode'
-              type='radio'
-              checked={teleopMode === JOINT_MODE}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setTeleopMode(JOINT_MODE)
-                }
-              }}
-              style={{ transform: 'scale(2.0)', verticalAlign: 'middle', marginRight: '15px' }}
-            />
-            Joints
-          </p>
-        </View>
+        {getTeleopRadioButton(CARTESIAN_LINEAR_MODE)}
+        {getTeleopRadioButton(CARTESIAN_ANGULAR_MODE)}
+        {getTeleopRadioButton(JOINT_MODE)}
       </View>
       <View
         style={{

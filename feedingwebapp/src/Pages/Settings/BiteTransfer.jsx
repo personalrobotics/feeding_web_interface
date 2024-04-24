@@ -1,18 +1,17 @@
 // React imports
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMediaQuery } from 'react-responsive'
 import PropTypes from 'prop-types'
 import { useId, Label, SpinButton } from '@fluentui/react-components'
 import Button from 'react-bootstrap/Button'
 import Dropdown from 'react-bootstrap/Dropdown'
 import SplitButton from 'react-bootstrap/SplitButton'
-// The Modal is a screen that appears on top of the main app, and can be toggled
-// on and off.
-import Modal from 'react-bootstrap/Modal'
 import { View } from 'react-native'
 
 // Local imports
 import { useROS, createROSService, createROSServiceRequest, getParameterValue } from '../../ros/ros_helpers'
 import {
+  getRobotMotionText,
   GET_PARAMETERS_SERVICE_NAME,
   GET_PARAMETERS_SERVICE_TYPE,
   SET_PARAMETERS_SERVICE_NAME,
@@ -22,6 +21,7 @@ import {
 import { useGlobalState, MEAL_STATE, SETTINGS_STATE, DEFAULT_NAMESPACE } from '../GlobalState'
 import RobotMotion from '../Home/MealStates/RobotMotion'
 import DetectingFaceSubcomponent from '../Home/MealStates/DetectingFaceSubcomponent'
+import SettingsPageParent from './SettingsPageParent'
 
 /**
  * The BiteTransfer component allows users to configure parameters related to the
@@ -46,6 +46,13 @@ const BiteTransfer = (props) => {
   )
   const actionInput = useMemo(() => ({}), [])
   const [doneButtonIsClicked, setDoneButtonIsClicked] = useState(false)
+
+  // Flag to check if the current orientation is portrait
+  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
+  // Indicator of how to arrange screen elements based on orientation
+  let dimension = isPortrait ? 'column' : 'row'
+  // Rendering variables
+  let textFontSize = '3.5vh'
 
   // Get min and max distance to mouth
   const minDistanceToMouth = 1 // cm
@@ -76,43 +83,15 @@ const BiteTransfer = (props) => {
   const robotMotionProps = useMemo(() => {
     let localCurrMealState = localCurrAndNextMealState[0]
     let localNextMealState = localCurrAndNextMealState[1]
-    let waitingText
-    switch (localCurrMealState) {
-      case MEAL_STATE.R_MovingToStagingConfiguration:
-        waitingText = 'Waiting to move in front of you...'
-        break
-      case MEAL_STATE.R_MovingFromMouth:
-        waitingText = 'Waiting to move away from you...'
-        break
-      case MEAL_STATE.R_MovingToMouth:
-        waitingText = 'Waiting to move to your mouth...'
-        break
-      case MEAL_STATE.R_MovingAbovePlate:
-        waitingText = 'Waiting to move above the plate...'
-        break
-      case MEAL_STATE.R_MovingToRestingPosition:
-        waitingText = 'Waiting to move to the resting position...'
-        break
-      case MEAL_STATE.R_StowingArm:
-        waitingText = 'Waiting to stow the arm...'
-        break
-      default:
-        waitingText = 'Waiting to move in front of you...'
-        break
-    }
-    console.log('useMemo called with', localCurrMealState, waitingText)
     return {
       mealState: localCurrMealState,
       setMealState: setLocalCurrMealStateWrapper,
       nextMealState: localNextMealState,
       backMealState: null,
       actionInput: actionInput,
-      waitingText: waitingText
+      waitingText: localCurrMealState ? getRobotMotionText(localCurrMealState) : ''
     }
   }, [localCurrAndNextMealState, setLocalCurrMealStateWrapper, actionInput])
-
-  // Rendering variables
-  let textFontSize = '3.5vh'
 
   /**
    * Connect to ROS, if not already connected. Put this in useRef to avoid
@@ -281,7 +260,16 @@ const BiteTransfer = (props) => {
       )
     } else {
       return (
-        <>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: dimension,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%'
+          }}
+        >
           <View
             style={{
               flex: 8,
@@ -343,74 +331,82 @@ const BiteTransfer = (props) => {
           </View>
           <View
             style={{
-              flex: 2,
+              flex: 8,
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              width: '100%'
+              width: '100%',
+              zIndex: 1
             }}
           >
-            <Button
-              variant='warning'
-              className='mx-2 mb-2 btn-huge'
-              size='lg'
+            <View
               style={{
-                fontSize: textFontSize,
-                width: '90%',
-                height: '90%',
-                color: 'black'
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%'
               }}
-              onClick={moveToMouthButtonClicked}
             >
-              Move To Mouth
-            </Button>
-          </View>
-          <View
-            style={{
-              flex: 2,
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '100%'
-            }}
-          />
-          <View
-            style={{
-              flex: 2,
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '100%'
-            }}
-          >
-            <Button
-              variant='warning'
-              className='mx-2 mb-2 btn-huge'
-              size='lg'
+              <Button
+                variant='warning'
+                className='mx-2 mb-2 btn-huge'
+                size='lg'
+                style={{
+                  fontSize: textFontSize,
+                  width: '90%',
+                  height: '90%',
+                  color: 'black'
+                }}
+                onClick={moveToMouthButtonClicked}
+              >
+                Move To Mouth
+              </Button>
+            </View>
+            <View
               style={{
-                fontSize: textFontSize,
-                width: '90%',
-                height: '90%',
-                color: 'black'
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%'
               }}
-              onClick={moveAwayFromMouthButtonClicked}
+            />
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%'
+              }}
             >
-              Move From Mouth
-            </Button>
+              <Button
+                variant='warning'
+                className='mx-2 mb-2 btn-huge'
+                size='lg'
+                style={{
+                  fontSize: textFontSize,
+                  width: '90%',
+                  height: '90%',
+                  color: 'black'
+                }}
+                onClick={moveAwayFromMouthButtonClicked}
+              >
+                Move From Mouth
+              </Button>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%'
+              }}
+            />
           </View>
-          <View
-            style={{
-              flex: 2,
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '100%'
-            }}
-          />
-        </>
+        </View>
       )
     }
   }, [
+    dimension,
     textFontSize,
     currentDistanceToMouth,
     onDistanceToMouthChange,
@@ -453,111 +449,16 @@ const BiteTransfer = (props) => {
     }
   }, [localCurrAndNextMealState, props.webrtcURL, robotMotionProps, faceDetectedCallback])
 
-  // TODO: Move the Views here to the AbovePlate format -- these views might mess up when
-  // horizontal.
   return (
-    <>
-      <View
-        style={{
-          flex: 4,
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%'
-        }}
-      >
-        <p style={{ textAlign: 'center', fontSize: textFontSize, margin: 0 }} className='txt-huge'>
-          Bite Transfer Settings
-        </p>
-      </View>
-      <View
-        style={{
-          flex: 3,
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%'
-        }}
-      >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'end',
-            width: '100%'
-          }}
-        >
-          <p style={{ fontSize: textFontSize, textAlign: 'right', margin: '0rem' }}>Preset:</p>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'start',
-            width: '100%'
-          }}
-        >
-          <Button variant='secondary' disabled size='lg' style={{ marginLeft: '1rem' }}>
-            {settingsPresets.current}
-          </Button>
-        </View>
-      </View>
-      <View
-        style={{
-          flex: 32,
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%'
-        }}
-      >
-        {renderBiteTransferSettings()}
-      </View>
-      <View
-        style={{
-          flex: 4,
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%'
-        }}
-      >
-        <Button
-          variant='success'
-          className='mx-2 mb-2 btn-huge'
-          size='lg'
-          style={{
-            fontSize: textFontSize,
-            width: '90%',
-            height: '90%',
-            color: 'black'
-          }}
-          onClick={doneButtonClicked}
-        >
-          Done
-        </Button>
-      </View>
-      <Modal
-        show={localCurrAndNextMealState[0] !== null}
-        onHide={() => setLocalCurrMealStateWrapper(null)}
-        size='lg'
-        aria-labelledby='contained-modal-title-vcenter'
-        backdrop='static'
-        keyboard={false}
-        centered
-        id='robotMotionModal'
-        fullscreen={false}
-        dialogClassName='modal-90w'
-        style={{
-          '--bs-modal-padding': '0rem'
-        }}
-      >
-        <Modal.Header closeButton />
-        <Modal.Body style={{ overflow: 'hidden' }}>
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: '65vh' }}>{renderModalBody()}</View>
-        </Modal.Body>
-      </Modal>
-    </>
+    <SettingsPageParent
+      title='Bite Transfer Settings'
+      doneCallback={doneButtonClicked}
+      modalShow={localCurrAndNextMealState[0] !== null}
+      modalOnHide={() => setLocalCurrMealStateWrapper(null)}
+      modalChildren={renderModalBody()}
+    >
+      {renderBiteTransferSettings()}
+    </SettingsPageParent>
   )
 }
 BiteTransfer.propTypes = {

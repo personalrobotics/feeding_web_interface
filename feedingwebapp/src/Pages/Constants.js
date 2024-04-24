@@ -150,3 +150,27 @@ export const ROS_ACTION_STATUS_CANCEL_GOAL = '2'
 export const ROS_ACTION_STATUS_SUCCEED = '3'
 export const ROS_ACTION_STATUS_ABORT = '4'
 export const ROS_ACTION_STATUS_CANCELED = '5'
+
+/**
+ * A function that provides the text associated with robot motion for each meal state.
+ */
+export function getRobotMotionText(mealState) {
+  switch (mealState) {
+    case MEAL_STATE.R_MovingAbovePlate:
+      return 'Waiting to move above the plate...'
+    case MEAL_STATE.R_BiteAcquisition:
+      return 'Waiting to acquire the food...'
+    case MEAL_STATE.R_MovingToRestingPosition:
+      return 'Waiting to move to the resting position...'
+    case MEAL_STATE.R_MovingToStagingConfiguration:
+      return 'Waiting to move in front of you...'
+    case MEAL_STATE.R_MovingToMouth:
+      return 'Waiting to move to your mouth...'
+    case MEAL_STATE.R_MovingFromMouth:
+      return 'Waiting to move from your mouth...'
+    case MEAL_STATE.R_StowingArm:
+      return 'Waiting to stow the arm...'
+    default:
+      return 'Unknown meal state' + mealState.toString()
+  }
+}
