@@ -8,6 +8,8 @@ import { View } from 'react-native'
 import { useROS, createROSTopic, createROSMessage, createROSActionClient, callROSAction, destroyActionClient } from '../../ros/ros_helpers'
 import '../Home/Home.css'
 import {
+  ROBOT_BASE_LINK,
+  ROBOT_JOINTS,
   SERVO_CARTESIAN_TOPIC,
   SERVO_CARTESIAN_TOPIC_MSG,
   SERVO_JOINT_TOPIC,
@@ -156,7 +158,7 @@ const TeleopSubcomponent = () => {
 
       let msg = createROSMessage({
         header: {
-          frame_id: 'j2n6s200_link_base'
+          frame_id: ROBOT_BASE_LINK
         },
         twist: {
           linear: {
@@ -183,7 +185,7 @@ const TeleopSubcomponent = () => {
     (joint, velocity) => {
       let msg = createROSMessage({
         header: {
-          frame_id: 'j2n6s200_link_base'
+          frame_id: ROBOT_BASE_LINK
         },
         joint_names: [joint],
         velocities: [teleopJointSpeed * velocity]
@@ -455,25 +457,14 @@ const TeleopSubcomponent = () => {
    * Callback to render the joint teleop controls.
    */
   const jointTeleop = useCallback(() => {
-    return arrayArrangement(
-      6,
-      2,
-      [
-        getJointHoldButton('j2n6s200_joint_1', 1.0, 'J1+'),
-        getJointHoldButton('j2n6s200_joint_1', -1.0, 'J1-'),
-        getJointHoldButton('j2n6s200_joint_2', 1.0, 'J2+'),
-        getJointHoldButton('j2n6s200_joint_2', -1.0, 'J2-'),
-        getJointHoldButton('j2n6s200_joint_3', 1.0, 'J3+'),
-        getJointHoldButton('j2n6s200_joint_3', -1.0, 'J3-'),
-        getJointHoldButton('j2n6s200_joint_4', 1.0, 'J4+'),
-        getJointHoldButton('j2n6s200_joint_4', -1.0, 'J4-'),
-        getJointHoldButton('j2n6s200_joint_5', 1.0, 'J5+'),
-        getJointHoldButton('j2n6s200_joint_5', -1.0, 'J5-'),
-        getJointHoldButton('j2n6s200_joint_6', 1.0, 'J6+'),
-        getJointHoldButton('j2n6s200_joint_6', -1.0, 'J6-')
-      ],
-      !isPortrait
-    )
+    let jointButtons = []
+    for (let i = 0; i < ROBOT_JOINTS.length; i++) {
+      jointButtons.push(
+        getJointHoldButton(ROBOT_JOINTS[i], 1.0, 'J' + (i + 1).toString() + '+'),
+        getJointHoldButton(ROBOT_JOINTS[i], -1.0, 'J' + (i + 1).toString() + '-')
+      )
+    }
+    return arrayArrangement(ROBOT_JOINTS.length, 2, jointButtons, !isPortrait)
   }, [arrayArrangement, getJointHoldButton, isPortrait])
 
   /**

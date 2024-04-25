@@ -28,6 +28,7 @@ MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToStagingConfiguration] = '/robot_stat
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingFromMouth] = '/robot_state_imgs/move_to_staging_configuration.svg'
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth] = '/robot_state_imgs/move_to_mouth_position.svg'
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_StowingArm] = '/robot_state_imgs/stowing_arm_position.svg'
+MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToConfigurationAbovePlate] = '/robot_state_imgs/move_above_plate_position.svg'
 export { MOVING_STATE_ICON_DICT }
 
 // The names of the ROS topic(s)
@@ -86,6 +87,10 @@ ROS_ACTIONS_NAMES[MEAL_STATE.R_StowingArm] = {
   actionName: 'MoveToStowLocation',
   messageType: 'ada_feeding_msgs/action/MoveTo'
 }
+ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingToConfigurationAbovePlate] = {
+  actionName: 'MoveToConfiguration',
+  messageType: 'ada_feeding_msgs/action/MoveToConfiguration'
+}
 export { ROS_ACTIONS_NAMES }
 export const START_SERVO_ACTION_NAME = 'StartServo'
 export const START_SERVO_ACTION_TYPE = 'ada_feeding_msgs/action/Trigger'
@@ -114,6 +119,8 @@ export const CLEAR_OCTOMAP_SERVICE_NAME = 'clear_octomap'
 export const CLEAR_OCTOMAP_SERVICE_TYPE = 'std_srvs/srv/Empty'
 export const ACQUISITION_REPORT_SERVICE_NAME = 'ada_feeding_action_select/action_report'
 export const ACQUISITION_REPORT_SERVICE_TYPE = 'ada_feeding_msgs/srv/AcquisitionReport'
+export const GET_JOINT_STATE_SERVICE_NAME = 'get_joint_state'
+export const GET_JOINT_STATE_SERVICE_TYPE = 'ada_feeding_msgs/srv/GetJointState'
 export const GET_PARAMETERS_SERVICE_NAME = 'ada_feeding_action_servers/get_parameters'
 export const GET_PARAMETERS_SERVICE_TYPE = 'rcl_interfaces/srv/GetParameters'
 export const SET_PARAMETERS_SERVICE_NAME = 'ada_feeding_action_servers/set_parameters'
@@ -121,6 +128,18 @@ export const SET_PARAMETERS_SERVICE_TYPE = 'rcl_interfaces/srv/SetParameters'
 
 // The names of parameters users can change in the settings menu
 export const DISTANCE_TO_MOUTH_PARAM = 'MoveToMouth.tree_kwargs.plan_distance_from_mouth'
+export const ABOVE_PLATE_PARAM = 'MoveAbovePlate.tree_kwargs.joint_positions'
+
+// Robot link names
+export const ROBOT_BASE_LINK = 'j2n6s200_link_base'
+export const ROBOT_JOINTS = [
+  'j2n6s200_joint_1',
+  'j2n6s200_joint_2',
+  'j2n6s200_joint_3',
+  'j2n6s200_joint_4',
+  'j2n6s200_joint_5',
+  'j2n6s200_joint_6'
+]
 
 /**
  * The meaning of the status that motion actions return in their results.
@@ -157,6 +176,7 @@ export const ROS_ACTION_STATUS_CANCELED = '5'
 export function getRobotMotionText(mealState) {
   switch (mealState) {
     case MEAL_STATE.R_MovingAbovePlate:
+    case MEAL_STATE.R_MovingToConfigurationAbovePlate:
       return 'Waiting to move above the plate...'
     case MEAL_STATE.R_BiteAcquisition:
       return 'Waiting to acquire the food...'

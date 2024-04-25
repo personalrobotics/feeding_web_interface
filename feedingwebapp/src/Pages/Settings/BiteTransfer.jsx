@@ -78,8 +78,7 @@ const BiteTransfer = (props) => {
     [localCurrAndNextMealState, setLocalCurrAndNextMealState, setBiteTransferPageAtFace, doneButtonIsClicked, setPaused, setSettingsState]
   )
 
-  // Store the props for the RobotMotion call. The first call has the robot move
-  // to the staging configuration.
+  // Store the props for the RobotMotion call.
   const robotMotionProps = useMemo(() => {
     let localCurrMealState = localCurrAndNextMealState[0]
     let localNextMealState = localCurrAndNextMealState[1]
@@ -160,16 +159,16 @@ const BiteTransfer = (props) => {
     [setParametersService, setCurrentDistanceToMouth, settingsPresets]
   )
 
-  // Callback to restore the distance to mouth to the default
+  // Callback to restore the distance to mouth to a specified preset
   const restoreToPreset = useCallback(
     (preset) => {
       console.log('restoreToPreset called with', preset)
       let service = getParametersService.current
-      // Attempt to get the default distance to mouth
-      let defaultRequest = createROSServiceRequest({
+      // Attempt to get the preset distance to mouth
+      let request = createROSServiceRequest({
         names: [preset.concat('.', DISTANCE_TO_MOUTH_PARAM)]
       })
-      service.callService(defaultRequest, (response) => {
+      service.callService(request, (response) => {
         console.log('Got plan_distance_from_mouth response', response)
         if (response.values.length > 0 && response.values[0].type === 8) {
           setDistanceToMouth(getParameterValue(response.values[0]))
@@ -197,11 +196,17 @@ const BiteTransfer = (props) => {
   const doneButtonClicked = useCallback(() => {
     setDoneButtonIsClicked(true)
     // Determine the state to move to based on the state before entering settings
+    let localCurrMealState = MEAL_STATE.R_MovingFromMouth
     let localNextMealState
     // To get to Settings, the globalMealState must be one of the NON_MOVING_STATES
     switch (globalMealState) {
       case MEAL_STATE.U_BiteDone:
-        localNextMealState = null
+        if (biteTransferPageAtFace) {
+          localCurrMealState = null
+          localNextMealState = null
+        } else {
+          localNextMealState = MEAL_STATE.R_DetectingFace
+        }
         break
       case MEAL_STATE.U_PreMeal:
       case MEAL_STATE.U_BiteSelection:
@@ -220,8 +225,8 @@ const BiteTransfer = (props) => {
         localNextMealState = MEAL_STATE.R_MovingAbovePlate
         break
     }
-    setLocalCurrMealStateWrapper(MEAL_STATE.R_MovingFromMouth, localNextMealState)
-  }, [globalMealState, setLocalCurrMealStateWrapper, setDoneButtonIsClicked])
+    setLocalCurrMealStateWrapper(localCurrMealState, localNextMealState)
+  }, [biteTransferPageAtFace, globalMealState, setLocalCurrMealStateWrapper, setDoneButtonIsClicked])
 
   // Callback for when the user changes the distance to mouth
   const onDistanceToMouthChange = useCallback(
@@ -320,6 +325,9 @@ const BiteTransfer = (props) => {
               title={'Set to '.concat(DEFAULT_NAMESPACE)}
               onClick={() => restoreToPreset(DEFAULT_NAMESPACE)}
             >
+              <Dropdown.Item key={DEFAULT_NAMESPACE} onClick={() => restoreToPreset(DEFAULT_NAMESPACE)}>
+                Set to {DEFAULT_NAMESPACE}
+              </Dropdown.Item>
               {settingsPresets.customNames
                 .filter((x) => x !== settingsPresets.current)
                 .map((preset) => (

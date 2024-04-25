@@ -44,6 +44,8 @@ export const APP_PAGE = {
  *     the bite.
  *   - R_StowingArm: Waiting for the robot to stow the arm.
  *   - U_PostMeal: Waiting on the user to start another meal.
+ *   - R_MovingToConfigurationAbovePlate: Waiting for the robot to move to an
+ *     app-specified configuration. This variant is used to customize above plate.
  */
 export const MEAL_STATE = {
   U_PreMeal: 'U_PreMeal',
@@ -58,7 +60,8 @@ export const MEAL_STATE = {
   R_MovingFromMouth: 'R_MovingFromMouth',
   U_BiteDone: 'U_BiteDone',
   R_StowingArm: 'R_StowingArm',
-  U_PostMeal: 'U_PostMeal'
+  U_PostMeal: 'U_PostMeal',
+  R_MovingToConfigurationAbovePlate: 'R_MovingToConfigurationAbovePlate'
 }
 
 /**
