@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useId, Label, SpinButton } from '@fluentui/react-components'
 import { useMediaQuery } from 'react-responsive'
+import PropTypes from 'prop-types'
 import { View } from 'react-native'
 
 // Local Imports
@@ -26,7 +27,7 @@ import HoldButton from '../../buttons/HoldButton'
  * The TeleopSubcomponent renders controls for the user to teleoperate the robot,
  * either in cartesian or joint space.
  */
-const TeleopSubcomponent = () => {
+const TeleopSubcomponent = (props) => {
   // Get local state
   const CARTESIAN_LINEAR_MODE = 'Move'
   const CARTESIAN_ANGULAR_MODE = 'Rotate'
@@ -136,14 +137,19 @@ const TeleopSubcomponent = () => {
    * unmounted.
    */
   useEffect(() => {
+    console.log()
     callROSAction(startServoAction, createROSMessage({}))
+    let stopServoSuccessCallback = props.stopServoSuccessCallback
     return () => {
+      console.log('Stopping servo.')
       callROSAction(stopServoAction, createROSMessage({}), null, () => {
+        console.log('Successfully stopped servo.')
+        stopServoSuccessCallback.current()
         destroyActionClient(startServoAction)
         destroyActionClient(stopServoAction)
       })
     }
-  }, [startServoAction, stopServoAction])
+  }, [startServoAction, stopServoAction, props.stopServoSuccessCallback])
 
   /**
    * Callback function to publish constant cartesian cartesian velocity commands.
@@ -601,5 +607,11 @@ const TeleopSubcomponent = () => {
     </View>
   )
 }
-TeleopSubcomponent.propTypes = {}
+TeleopSubcomponent.propTypes = {
+  // A reference to a function to be called if StopServo is succesfully run.
+  stopServoSuccessCallback: PropTypes.object
+}
+TeleopSubcomponent.defaultProps = {
+  stopServoSuccessCallback: { current: () => {} }
+}
 export default TeleopSubcomponent
