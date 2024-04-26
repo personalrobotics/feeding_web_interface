@@ -125,7 +125,7 @@ const AbovePlate = (props) => {
       }
       return retval
     },
-    [setLocalCurrMealStateWrapper, setMountTeleopSubcomponent]
+    [mountTeleopSubcomponent, setLocalCurrMealStateWrapper, setMountTeleopSubcomponent]
   )
 
   // Store the props for the RobotMotion call.

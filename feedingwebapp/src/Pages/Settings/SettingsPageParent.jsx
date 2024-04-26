@@ -21,8 +21,6 @@ const SettingsPageParent = (props) => {
 
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  // Indicator of how to arrange screen elements based on orientation
-  let dimension = isPortrait ? 'column' : 'row'
   // Rendering variables
   let textFontSize = isPortrait ? 3.0 : 5.0
   let sizeSuffix = 'vh'
@@ -41,63 +39,24 @@ const SettingsPageParent = (props) => {
       >
         <View
           style={{
-            flex: dimension === 'row' ? 5 : 10,
-            flexDirection: dimension,
+            flex: 4,
+            flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
             height: '100%'
           }}
         >
-          <View
-            style={{
-              flex: 5,
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-              height: '100%'
-            }}
-          >
-            <p style={{ textAlign: 'center', fontSize: textFontSize.toString() + sizeSuffix, margin: 0 }} className='txt-huge'>
-              {props.title}
-            </p>
-          </View>
-          <View
-            style={{
-              flex: 5,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '100%'
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'end',
-                width: '100%'
-              }}
-            >
-              <p style={{ fontSize: textFontSize.toString() + sizeSuffix, textAlign: 'right', margin: '0rem' }}>Preset:</p>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'start',
-                width: '100%'
-              }}
-            >
-              <Button variant='secondary' disabled size='lg' style={{ fontSize: textFontSize.toString() + sizeSuffix, marginLeft: '1rem' }}>
-                {settingsPresets.current}
-              </Button>
-            </View>
-          </View>
+          <p style={{ textAlign: 'center', fontSize: textFontSize.toString() + sizeSuffix, margin: 0 }} className='txt-huge'>
+            {props.title}
+          </p>
+          <Button variant='secondary' disabled size='lg' style={{ fontSize: textFontSize.toString() + sizeSuffix, marginLeft: '1rem' }}>
+            {settingsPresets.current}
+          </Button>
         </View>
         <View
           style={{
-            flex: 30,
+            flex: 32,
             justifyContent: 'center',
             alignItems: 'center',
             width: '100%'
@@ -107,7 +66,7 @@ const SettingsPageParent = (props) => {
         </View>
         <View
           style={{
-            flex: 5,
+            flex: 4,
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
