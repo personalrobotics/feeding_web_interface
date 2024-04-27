@@ -144,9 +144,9 @@ const TeleopSubcomponent = (props) => {
       console.log('Stopping servo.')
       callROSAction(stopServoAction, createROSMessage({}), null, () => {
         console.log('Successfully stopped servo.')
-        stopServoSuccessCallback.current()
         destroyActionClient(startServoAction)
         destroyActionClient(stopServoAction)
+        stopServoSuccessCallback.current()
       })
     }
   }, [startServoAction, stopServoAction, props.stopServoSuccessCallback])
@@ -189,6 +189,7 @@ const TeleopSubcomponent = (props) => {
    */
   const publishJointJog = useCallback(
     (joint, velocity) => {
+      console.log('Publishing joint jog.')
       let msg = createROSMessage({
         header: {
           frame_id: ROBOT_BASE_LINK
@@ -381,6 +382,7 @@ const TeleopSubcomponent = (props) => {
    */
   const getCartesianHoldButton = useCallback(
     (x, y, z, rx, ry, rz, text) => {
+      let teleopButtonOnReleaseCallback = props.teleopButtonOnReleaseCallback
       return (
         <HoldButton
           rate_hz={10.0}
@@ -396,6 +398,7 @@ const TeleopSubcomponent = (props) => {
           }}
           cleanupCallback={() => {
             publishCartesianVelocity(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+            teleopButtonOnReleaseCallback()
           }}
           buttonStyle={buttonStyle}
         >
@@ -403,7 +406,7 @@ const TeleopSubcomponent = (props) => {
         </HoldButton>
       )
     },
-    [publishCartesianVelocity, buttonStyle, teleopLinearSpeed, teleopAngularSpeed]
+    [publishCartesianVelocity, buttonStyle, teleopLinearSpeed, teleopAngularSpeed, props.teleopButtonOnReleaseCallback]
   )
 
   /**
@@ -411,6 +414,7 @@ const TeleopSubcomponent = (props) => {
    */
   const getJointHoldButton = useCallback(
     (joint, velocity, text) => {
+      let teleopButtonOnReleaseCallback = props.teleopButtonOnReleaseCallback
       return (
         <HoldButton
           rate_hz={10.0}
@@ -419,6 +423,7 @@ const TeleopSubcomponent = (props) => {
           }}
           cleanupCallback={() => {
             publishCartesianVelocity(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+            teleopButtonOnReleaseCallback()
           }}
           buttonStyle={buttonStyle}
         >
@@ -426,7 +431,7 @@ const TeleopSubcomponent = (props) => {
         </HoldButton>
       )
     },
-    [publishJointJog, buttonStyle, publishCartesianVelocity]
+    [publishJointJog, buttonStyle, publishCartesianVelocity, props.teleopButtonOnReleaseCallback]
   )
 
   /**
@@ -609,9 +614,12 @@ const TeleopSubcomponent = (props) => {
 }
 TeleopSubcomponent.propTypes = {
   // A reference to a function to be called if StopServo is succesfully run.
-  stopServoSuccessCallback: PropTypes.object
+  stopServoSuccessCallback: PropTypes.object,
+  // A function to be called when one of the teleop buttons are released
+  teleopButtonOnReleaseCallback: PropTypes.func
 }
 TeleopSubcomponent.defaultProps = {
-  stopServoSuccessCallback: { current: () => {} }
+  stopServoSuccessCallback: { current: () => {} },
+  teleopButtonOnReleaseCallback: () => {}
 }
 export default TeleopSubcomponent

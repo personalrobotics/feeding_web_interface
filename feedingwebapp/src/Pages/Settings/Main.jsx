@@ -13,7 +13,7 @@ import { toast } from 'react-toastify'
 
 // Local imports
 import { useGlobalState, DEFAULT_NAMESPACE, MEAL_STATE, SETTINGS_STATE } from '../GlobalState'
-import { useROS, createROSService, createROSServiceRequest, getParameterValue } from '../../ros/ros_helpers'
+import { useROS, createROSService, createROSServiceRequest, getValueFromParameter } from '../../ros/ros_helpers'
 import {
   GET_PARAMETERS_SERVICE_NAME,
   GET_PARAMETERS_SERVICE_TYPE,
@@ -59,8 +59,8 @@ const Main = () => {
       console.log('Got `custom_namespaces` response', response)
       if (response.values.length > 1 && response.values[0].type === 9 && response.values[1].type === 4) {
         setSettingsPresets({
-          current: getParameterValue(response.values[1]),
-          customNames: getParameterValue(response.values[0])
+          current: getValueFromParameter(response.values[1]),
+          customNames: getValueFromParameter(response.values[0])
         })
       } else {
         setSettingsPresets({

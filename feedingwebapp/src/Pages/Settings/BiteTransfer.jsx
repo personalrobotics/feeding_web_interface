@@ -1,24 +1,14 @@
 // React imports
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMediaQuery } from 'react-responsive'
 import PropTypes from 'prop-types'
 import { useId, Label, SpinButton } from '@fluentui/react-components'
 import Button from 'react-bootstrap/Button'
-import Dropdown from 'react-bootstrap/Dropdown'
-import SplitButton from 'react-bootstrap/SplitButton'
 import { View } from 'react-native'
 
 // Local imports
-import { useROS, createROSService, createROSServiceRequest, getParameterValue } from '../../ros/ros_helpers'
-import {
-  getRobotMotionText,
-  GET_PARAMETERS_SERVICE_NAME,
-  GET_PARAMETERS_SERVICE_TYPE,
-  SET_PARAMETERS_SERVICE_NAME,
-  SET_PARAMETERS_SERVICE_TYPE,
-  DISTANCE_TO_MOUTH_PARAM
-} from '../Constants'
-import { useGlobalState, MEAL_STATE, SETTINGS_STATE, DEFAULT_NAMESPACE } from '../GlobalState'
+import { getRobotMotionText, DISTANCE_TO_MOUTH_PARAM } from '../Constants'
+import { useGlobalState, MEAL_STATE, SETTINGS_STATE } from '../GlobalState'
 import RobotMotion from '../Home/MealStates/RobotMotion'
 import DetectingFaceSubcomponent from '../Home/MealStates/DetectingFaceSubcomponent'
 import SettingsPageParent from './SettingsPageParent'
@@ -29,7 +19,6 @@ import SettingsPageParent from './SettingsPageParent'
  */
 const BiteTransfer = (props) => {
   // Get relevant global state variables
-  const settingsPresets = useGlobalState((state) => state.settingsPresets)
   const setSettingsState = useGlobalState((state) => state.setSettingsState)
   const globalMealState = useGlobalState((state) => state.mealState)
   const setPaused = useGlobalState((state) => state.setPaused)
@@ -37,8 +26,9 @@ const BiteTransfer = (props) => {
   const setBiteTransferPageAtFace = useGlobalState((state) => state.setBiteTransferPageAtFace)
 
   // Create relevant local state variables
-  // Store the current distance to mouth
-  const [currentDistanceToMouth, setCurrentDistanceToMouth] = useState(null)
+  // Configure the parameters for SettingsPageParent
+  const paramNames = useMemo(() => [DISTANCE_TO_MOUTH_PARAM], [])
+  const [currentDistanceToMouth, setCurrentDistanceToMouth] = useState([null])
   const [localCurrAndNextMealState, setLocalCurrAndNextMealState] = useState(
     globalMealState === MEAL_STATE.U_BiteDone || globalMealState === MEAL_STATE.R_DetectingFace || biteTransferPageAtFace
       ? [MEAL_STATE.R_MovingFromMouth, null]
@@ -92,93 +82,12 @@ const BiteTransfer = (props) => {
     }
   }, [localCurrAndNextMealState, setLocalCurrMealStateWrapper, actionInput])
 
-  /**
-   * Connect to ROS, if not already connected. Put this in useRef to avoid
-   * re-connecting upon re-renders.
-   */
-  const ros = useRef(useROS().ros)
-
-  /**
-   * Create the ROS Service Clients to get/set parameters.
-   */
-  let getParametersService = useRef(createROSService(ros.current, GET_PARAMETERS_SERVICE_NAME, GET_PARAMETERS_SERVICE_TYPE))
-  let setParametersService = useRef(createROSService(ros.current, SET_PARAMETERS_SERVICE_NAME, SET_PARAMETERS_SERVICE_TYPE))
-
   // The first time the page is rendered, get the current distance to mouth
   useEffect(() => {
     setDoneButtonIsClicked(false)
     // Start in a moving state, not a paused state
     setPaused(false)
-    let service = getParametersService.current
-    // First, attempt to get the current distance to mouth
-    let currentRequest = createROSServiceRequest({
-      names: [settingsPresets.current.concat('.', DISTANCE_TO_MOUTH_PARAM)]
-    })
-    service.callService(currentRequest, (response) => {
-      console.log('Got current plan_distance_from_mouth response', response)
-      if (response.values.length === 0 || response.values[0].type === 0) {
-        // Parameter not set
-        // Second, attempt to get the default distance to mouth
-        let defaultRequest = createROSServiceRequest({
-          names: [DEFAULT_NAMESPACE.concat('.', DISTANCE_TO_MOUTH_PARAM)]
-        })
-        service.callService(defaultRequest, (response) => {
-          console.log('Got default plan_distance_from_mouth response', response)
-          if (response.values.length > 0 && response.values[0].type === 8) {
-            setCurrentDistanceToMouth(getParameterValue(response.values[0]))
-          }
-        })
-      } else {
-        setCurrentDistanceToMouth(getParameterValue(response.values[0]))
-      }
-    })
-  }, [getParametersService, setCurrentDistanceToMouth, setDoneButtonIsClicked, setPaused, settingsPresets])
-
-  // Callback to set the distance to mouth parameter
-  const setDistanceToMouth = useCallback(
-    (fullDistanceToMouth) => {
-      let service = setParametersService.current
-      let request = createROSServiceRequest({
-        parameters: [
-          {
-            name: settingsPresets.current.concat('.', DISTANCE_TO_MOUTH_PARAM),
-            value: {
-              type: 8, // double array
-              double_array_value: fullDistanceToMouth
-            }
-          }
-        ]
-      })
-      service.callService(request, (response) => {
-        console.log('Got response', response)
-        if (response != null && response.results.length > 0 && response.results[0].successful) {
-          setCurrentDistanceToMouth(fullDistanceToMouth)
-        }
-      })
-    },
-    [setParametersService, setCurrentDistanceToMouth, settingsPresets]
-  )
-
-  // Callback to restore the distance to mouth to a specified preset
-  const restoreToPreset = useCallback(
-    (preset) => {
-      console.log('restoreToPreset called with', preset)
-      let service = getParametersService.current
-      // Attempt to get the preset distance to mouth
-      let request = createROSServiceRequest({
-        names: [preset.concat('.', DISTANCE_TO_MOUTH_PARAM)]
-      })
-      service.callService(request, (response) => {
-        console.log('Got plan_distance_from_mouth response', response)
-        if (response.values.length > 0 && response.values[0].type === 8) {
-          setDistanceToMouth(getParameterValue(response.values[0]))
-        } else {
-          restoreToPreset(DEFAULT_NAMESPACE)
-        }
-      })
-    },
-    [getParametersService, setDistanceToMouth]
-  )
+  }, [setPaused, setDoneButtonIsClicked])
 
   // Callback to move the robot to the mouth
   const moveToMouthButtonClicked = useCallback(() => {
@@ -238,16 +147,16 @@ const BiteTransfer = (props) => {
       if (value > maxDistanceToMouth) {
         value = maxDistanceToMouth
       }
-      let fullDistanceToMouth = [value / 100.0, currentDistanceToMouth[1], currentDistanceToMouth[2]]
-      setDistanceToMouth(fullDistanceToMouth)
+      let fullDistanceToMouth = [value / 100.0, currentDistanceToMouth[0][1], currentDistanceToMouth[0][2]]
+      setCurrentDistanceToMouth([fullDistanceToMouth])
     },
-    [setDistanceToMouth, currentDistanceToMouth, minDistanceToMouth, maxDistanceToMouth]
+    [currentDistanceToMouth, minDistanceToMouth, maxDistanceToMouth]
   )
 
   // Callback to render the main contents of the page
   const distanceToMouthId = useId()
   const renderBiteTransferSettings = useCallback(() => {
-    if (currentDistanceToMouth === null) {
+    if (currentDistanceToMouth[0] === null) {
       return (
         <>
           <View
@@ -297,7 +206,7 @@ const BiteTransfer = (props) => {
               Distance To Mouth (cm)
             </Label>
             <SpinButton
-              value={currentDistanceToMouth[0] * 100}
+              value={currentDistanceToMouth[0][0] * 100}
               id={distanceToMouthId}
               step={0.5}
               onChange={onDistanceToMouthChange}
@@ -313,29 +222,6 @@ const BiteTransfer = (props) => {
                 size: 'large'
               }}
             />
-            <SplitButton
-              variant='warning'
-              className='mx-2 mb-2 btn-huge'
-              size='lg'
-              style={{
-                fontSize: textFontSize,
-                width: '60%',
-                color: 'black'
-              }}
-              title={'Set to '.concat(DEFAULT_NAMESPACE)}
-              onClick={() => restoreToPreset(DEFAULT_NAMESPACE)}
-            >
-              <Dropdown.Item key={DEFAULT_NAMESPACE} onClick={() => restoreToPreset(DEFAULT_NAMESPACE)}>
-                Set to {DEFAULT_NAMESPACE}
-              </Dropdown.Item>
-              {settingsPresets.customNames
-                .filter((x) => x !== settingsPresets.current)
-                .map((preset) => (
-                  <Dropdown.Item key={preset} onClick={() => restoreToPreset(preset)}>
-                    Set to {preset}
-                  </Dropdown.Item>
-                ))}
-            </SplitButton>
           </View>
           <View
             style={{
@@ -420,9 +306,7 @@ const BiteTransfer = (props) => {
     onDistanceToMouthChange,
     distanceToMouthId,
     moveToMouthButtonClicked,
-    moveAwayFromMouthButtonClicked,
-    restoreToPreset,
-    settingsPresets
+    moveAwayFromMouthButtonClicked
   ])
 
   // When a face is detected, switch to MoveToMouth
@@ -464,6 +348,9 @@ const BiteTransfer = (props) => {
       modalShow={localCurrAndNextMealState[0] !== null}
       modalOnHide={() => setLocalCurrMealStateWrapper(null)}
       modalChildren={renderModalBody()}
+      paramNames={paramNames}
+      localParamValues={currentDistanceToMouth}
+      setLocalParamValues={setCurrentDistanceToMouth}
     >
       {renderBiteTransferSettings()}
     </SettingsPageParent>

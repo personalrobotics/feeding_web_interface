@@ -28,7 +28,6 @@ MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToStagingConfiguration] = '/robot_stat
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingFromMouth] = '/robot_state_imgs/move_to_staging_configuration.svg'
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth] = '/robot_state_imgs/move_to_mouth_position.svg'
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_StowingArm] = '/robot_state_imgs/stowing_arm_position.svg'
-MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToConfigurationAbovePlate] = '/robot_state_imgs/move_above_plate_position.svg'
 export { MOVING_STATE_ICON_DICT }
 
 // The names of the ROS topic(s)
@@ -86,10 +85,6 @@ ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingToMouth] = {
 ROS_ACTIONS_NAMES[MEAL_STATE.R_StowingArm] = {
   actionName: 'MoveToStowLocation',
   messageType: 'ada_feeding_msgs/action/MoveTo'
-}
-ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingToConfigurationAbovePlate] = {
-  actionName: 'MoveToConfiguration',
-  messageType: 'ada_feeding_msgs/action/MoveToConfiguration'
 }
 export { ROS_ACTIONS_NAMES }
 export const START_SERVO_ACTION_NAME = 'StartServo'
@@ -176,7 +171,6 @@ export const ROS_ACTION_STATUS_CANCELED = '5'
 export function getRobotMotionText(mealState) {
   switch (mealState) {
     case MEAL_STATE.R_MovingAbovePlate:
-    case MEAL_STATE.R_MovingToConfigurationAbovePlate:
       return 'Waiting to move above the plate...'
     case MEAL_STATE.R_BiteAcquisition:
       return 'Waiting to acquire the food...'

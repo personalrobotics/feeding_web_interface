@@ -2,26 +2,20 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useMediaQuery } from 'react-responsive'
 import Button from 'react-bootstrap/Button'
-import Dropdown from 'react-bootstrap/Dropdown'
-import SplitButton from 'react-bootstrap/SplitButton'
 import PropTypes from 'prop-types'
 import { View } from 'react-native'
 
 // Local imports
-import { useROS, createROSService, createROSServiceRequest, getParameterValue } from '../../ros/ros_helpers'
+import { useROS, createROSService, createROSServiceRequest } from '../../ros/ros_helpers'
 import {
   ABOVE_PLATE_PARAM,
   CAMERA_FEED_TOPIC,
   getRobotMotionText,
   GET_JOINT_STATE_SERVICE_NAME,
   GET_JOINT_STATE_SERVICE_TYPE,
-  GET_PARAMETERS_SERVICE_NAME,
-  GET_PARAMETERS_SERVICE_TYPE,
-  ROBOT_JOINTS,
-  SET_PARAMETERS_SERVICE_NAME,
-  SET_PARAMETERS_SERVICE_TYPE
+  ROBOT_JOINTS
 } from '../Constants'
-import { useGlobalState, MEAL_STATE, SETTINGS_STATE, DEFAULT_NAMESPACE } from '../GlobalState'
+import { useGlobalState, MEAL_STATE, SETTINGS_STATE } from '../GlobalState'
 import RobotMotion from '../Home/MealStates/RobotMotion'
 import DetectingFaceSubcomponent from '../Home/MealStates/DetectingFaceSubcomponent'
 import TeleopSubcomponent from '../Header/TeleopSubcomponent'
@@ -34,28 +28,21 @@ import VideoFeed from '../Home/VideoFeed'
  */
 const AbovePlate = (props) => {
   // Get relevant global state variables
-  const settingsPresets = useGlobalState((state) => state.settingsPresets)
   const setSettingsState = useGlobalState((state) => state.setSettingsState)
   const globalMealState = useGlobalState((state) => state.mealState)
   const setPaused = useGlobalState((state) => state.setPaused)
   const biteTransferPageAtFace = useGlobalState((state) => state.biteTransferPageAtFace)
 
   // Create relevant local state variables
-  const [currentAbovePlateParam, setCurrentAbovePlateParam] = useState(null)
+  // Configure the parameters for SettingsPageParent
+  const paramNames = useMemo(() => [ABOVE_PLATE_PARAM], [])
+  const [currentAbovePlateParam, setCurrentAbovePlateParam] = useState([null])
   const [localCurrAndNextMealState, setLocalCurrAndNextMealState] = useState(
     globalMealState === MEAL_STATE.U_BiteDone || biteTransferPageAtFace
       ? [MEAL_STATE.R_MovingFromMouth, MEAL_STATE.R_MovingAbovePlate]
       : [MEAL_STATE.R_MovingAbovePlate, null]
   )
-  const actionInput = useMemo(() => {
-    console.log('actionInput set', currentAbovePlateParam)
-    if (localCurrAndNextMealState[0] === MEAL_STATE.R_MovingToConfigurationAbovePlate) {
-      return {
-        joint_positions: currentAbovePlateParam
-      }
-    }
-    return {}
-  }, [currentAbovePlateParam, localCurrAndNextMealState])
+  const actionInput = useMemo(() => ({}), [])
   const [doneButtonIsClicked, setDoneButtonIsClicked] = useState(false)
   const [robotIsAbovePlate, setRobotIsAbovePlate] = useState(true)
   const [zoomLevel, setZoomLevel] = useState(1.0)
@@ -80,9 +67,7 @@ const AbovePlate = (props) => {
       console.log('setLocalCurrMealStateWrapper evaluated')
       let oldLocalCurrMealState = localCurrAndNextMealState[0]
       // If the oldlocalCurrMealState was R_MovingToMouth, then the robot is at the mouth
-      setRobotIsAbovePlate(
-        oldLocalCurrMealState === MEAL_STATE.R_MovingAbovePlate || oldLocalCurrMealState === MEAL_STATE.R_MovingToConfigurationAbovePlate
-      )
+      setRobotIsAbovePlate(oldLocalCurrMealState === MEAL_STATE.R_MovingAbovePlate)
       // Start in a moving state, not a paused state
       setPaused(false)
       if (newLocalCurrMealState === null && doneButtonIsClicked) {
@@ -156,125 +141,45 @@ const AbovePlate = (props) => {
    * Create the ROS Service Clients to get/set parameters.
    */
   let getJointStateService = useRef(createROSService(ros.current, GET_JOINT_STATE_SERVICE_NAME, GET_JOINT_STATE_SERVICE_TYPE))
-  let getParametersService = useRef(createROSService(ros.current, GET_PARAMETERS_SERVICE_NAME, GET_PARAMETERS_SERVICE_TYPE))
-  let setParametersService = useRef(createROSService(ros.current, SET_PARAMETERS_SERVICE_NAME, SET_PARAMETERS_SERVICE_TYPE))
 
   // Reset state the first time the page is rendered
   useEffect(() => {
     setDoneButtonIsClicked(false)
     // Start in a moving state, not a paused state
     setPaused(false)
-    let service = getParametersService.current
-    // First, attempt to get the current above plate param
-    let currentRequest = createROSServiceRequest({
-      names: [settingsPresets.current.concat('.', ABOVE_PLATE_PARAM)]
-    })
-    service.callService(currentRequest, (response) => {
-      console.log('Got current above plate param response', response)
-      if (response.values.length === 0 || response.values[0].type === 0) {
-        // Parameter not set
-        // Second, attempt to get the default distance to mouth
-        let defaultRequest = createROSServiceRequest({
-          names: [DEFAULT_NAMESPACE.concat('.', ABOVE_PLATE_PARAM)]
-        })
-        service.callService(defaultRequest, (response) => {
-          console.log('Got default above plate param response', response)
-          if (response.values.length > 0 && response.values[0].type === 8) {
-            setCurrentAbovePlateParam(getParameterValue(response.values[0]))
-          }
-        })
-      } else {
-        setCurrentAbovePlateParam(getParameterValue(response.values[0]))
-      }
-    })
-  }, [settingsPresets, setPaused, getParametersService, setCurrentAbovePlateParam])
-
-  // Callback to set the above plate parameter
-  const setAbovePlateParam = useCallback(
-    (jointStates) => {
-      let service = setParametersService.current
-      let request = createROSServiceRequest({
-        parameters: [
-          {
-            name: settingsPresets.current.concat('.', ABOVE_PLATE_PARAM),
-            value: {
-              type: 8, // double array
-              double_array_value: jointStates
-            }
-          }
-        ]
-      })
-      service.callService(request, (response) => {
-        console.log('Got response from setting parameter', response)
-      })
-    },
-    [setParametersService, settingsPresets]
-  )
-
-  // Callback to restore the above plate param to a specified preset
-  const restoreToPreset = useCallback(
-    (preset) => {
-      console.log('restoreToPreset called with', preset)
-      let service = getParametersService.current
-      // Attempt to get the preset above plate param
-      let request = createROSServiceRequest({
-        names: [preset.concat('.', ABOVE_PLATE_PARAM)]
-      })
-      service.callService(request, (response) => {
-        console.log('Got above plate param from preset', preset, 'response', response)
-        if (response.values.length > 0 && response.values[0].type === 8) {
-          setCurrentAbovePlateParam(getParameterValue(response.values[0]))
-          stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(MEAL_STATE.R_MovingToConfigurationAbovePlate)
-        } else {
-          restoreToPreset(DEFAULT_NAMESPACE)
-        }
-      })
-    },
-    [getParametersService, getSetLocalCurrMealStateWrapper, setCurrentAbovePlateParam, stopServoSuccessCallback]
-  )
+  }, [setDoneButtonIsClicked, setPaused])
 
   // Get the current joint states and store them as the above plate param
   const storeJointStatesAsLocalParam = useCallback(() => {
     console.log('storeJointStatesAsLocalParam called')
-    let service = getJointStateService.current
-    let request = createROSServiceRequest({
-      joint_names: ROBOT_JOINTS
-    })
-    service.callService(request, (response) => {
-      console.log('Got joint state response', response)
-      setCurrentAbovePlateParam(response.joint_state.position)
-    })
-  }, [getJointStateService, setCurrentAbovePlateParam])
+    if (robotIsAbovePlate) {
+      let service = getJointStateService.current
+      let request = createROSServiceRequest({
+        joint_names: ROBOT_JOINTS
+      })
+      service.callService(request, (response) => {
+        console.log('Got joint state response', response)
+        setCurrentAbovePlateParam([response.joint_state.position])
+      })
+    }
+  }, [getJointStateService, robotIsAbovePlate, setCurrentAbovePlateParam])
 
   // Callback to move the robot to the staging configuration
   const moveToStagingButtonClicked = useCallback(() => {
-    console.log('moveToStagingButtonClicked', robotIsAbovePlate)
-    if (robotIsAbovePlate) {
-      storeJointStatesAsLocalParam()
-    }
     setDoneButtonIsClicked(false)
     stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(MEAL_STATE.R_MovingToStagingConfiguration)
-  }, [getSetLocalCurrMealStateWrapper, setDoneButtonIsClicked, storeJointStatesAsLocalParam, stopServoSuccessCallback, robotIsAbovePlate])
-
-  // Callback to move the robot away from the staging configuration
-  const moveFromStagingButtonClicked = useCallback(() => {
-    setDoneButtonIsClicked(false)
-    stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(MEAL_STATE.R_MovingToConfigurationAbovePlate)
   }, [getSetLocalCurrMealStateWrapper, setDoneButtonIsClicked, stopServoSuccessCallback])
 
   // Callback to move the robot to the resting configuration
   const moveToRestingButtonClicked = useCallback(() => {
-    if (robotIsAbovePlate) {
-      storeJointStatesAsLocalParam()
-    }
     setDoneButtonIsClicked(false)
     stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(MEAL_STATE.R_MovingToRestingPosition)
-  }, [getSetLocalCurrMealStateWrapper, setDoneButtonIsClicked, storeJointStatesAsLocalParam, stopServoSuccessCallback, robotIsAbovePlate])
+  }, [getSetLocalCurrMealStateWrapper, setDoneButtonIsClicked, stopServoSuccessCallback])
 
-  // Callback to move the robot away from the resting configuration
-  const moveFromRestingButtonClicked = useCallback(() => {
+  // Callback to move the robot above the plate
+  const moveAbovePlateButtonClicked = useCallback(() => {
     setDoneButtonIsClicked(false)
-    stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(MEAL_STATE.R_MovingToConfigurationAbovePlate)
+    stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(MEAL_STATE.R_MovingAbovePlate)
   }, [getSetLocalCurrMealStateWrapper, setDoneButtonIsClicked, stopServoSuccessCallback])
 
   // Callback to return to the main settings page
@@ -330,30 +235,10 @@ const AbovePlate = (props) => {
           {mountTeleopSubcomponent ? (
             <>
               <View style={{ flex: 5, alignItems: 'center', justifyContent: 'center', width: '95%', height: '95%' }}>
-                <TeleopSubcomponent stopServoSuccessCallback={stopServoSuccessCallback} />
-              </View>
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
-                <SplitButton
-                  variant='warning'
-                  className='mx-2 mb-2 btn-huge'
-                  size='lg'
-                  style={{
-                    fontSize: (textFontSize * 0.5).toString() + sizeSuffix,
-                    width: '60%',
-                    color: 'black'
-                  }}
-                  title={'Set to '.concat(DEFAULT_NAMESPACE)}
-                  onClick={() => restoreToPreset(DEFAULT_NAMESPACE)}
-                >
-                  <Dropdown.Item key={DEFAULT_NAMESPACE} onClick={() => restoreToPreset(DEFAULT_NAMESPACE)}>
-                    Set to {DEFAULT_NAMESPACE}
-                  </Dropdown.Item>
-                  {settingsPresets.customNames.map((preset) => (
-                    <Dropdown.Item key={preset} onClick={() => restoreToPreset(preset)}>
-                      Set to {preset}
-                    </Dropdown.Item>
-                  ))}
-                </SplitButton>
+                <TeleopSubcomponent
+                  stopServoSuccessCallback={stopServoSuccessCallback}
+                  teleopButtonOnReleaseCallback={storeJointStatesAsLocalParam}
+                />
               </View>
             </>
           ) : (
@@ -371,81 +256,53 @@ const AbovePlate = (props) => {
             height: '100%'
           }}
         >
-          <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
-            <View
-              style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+            <Button
+              variant='warning'
+              className='mx-2 mb-2 btn-huge'
+              size='lg'
+              style={{
+                fontSize: (textFontSize * 0.5).toString() + sizeSuffix,
+                width: '90%',
+                height: '90%',
+                color: 'black'
+              }}
+              onClick={moveToStagingButtonClicked}
             >
-              <Button
-                variant='warning'
-                className='mx-2 mb-2 btn-huge'
-                size='lg'
-                style={{
-                  fontSize: (textFontSize * 0.5).toString() + sizeSuffix,
-                  width: '90%',
-                  height: '90%',
-                  color: 'black'
-                }}
-                onClick={moveToStagingButtonClicked}
-              >
-                Move To Staging
-              </Button>
-            </View>
-            <View
-              style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
+              Move To Staging
+            </Button>
+          </View>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+            <Button
+              variant='warning'
+              className='mx-2 mb-2 btn-huge'
+              size='lg'
+              style={{
+                fontSize: (textFontSize * 0.5).toString() + sizeSuffix,
+                width: '90%',
+                height: '90%',
+                color: 'black'
+              }}
+              onClick={moveToRestingButtonClicked}
             >
-              <Button
-                variant='warning'
-                className='mx-2 mb-2 btn-huge'
-                size='lg'
-                style={{
-                  fontSize: (textFontSize * 0.5).toString() + sizeSuffix,
-                  width: '90%',
-                  height: '90%',
-                  color: 'black'
-                }}
-                onClick={moveToRestingButtonClicked}
-              >
-                Move To Resting
-              </Button>
-            </View>
+              Move To Resting
+            </Button>
           </View>
           <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
-            <View
-              style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
+            <Button
+              variant='warning'
+              className='mx-2 mb-2 btn-huge'
+              size='lg'
+              style={{
+                fontSize: (textFontSize * 0.5).toString() + sizeSuffix,
+                width: '90%',
+                height: '90%',
+                color: 'black'
+              }}
+              onClick={moveAbovePlateButtonClicked}
             >
-              <Button
-                variant='warning'
-                className='mx-2 mb-2 btn-huge'
-                size='lg'
-                style={{
-                  fontSize: (textFontSize * 0.5).toString() + sizeSuffix,
-                  width: '90%',
-                  height: '90%',
-                  color: 'black'
-                }}
-                onClick={moveFromStagingButtonClicked}
-              >
-                Move From Staging
-              </Button>
-            </View>
-            <View
-              style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
-            >
-              <Button
-                variant='warning'
-                className='mx-2 mb-2 btn-huge'
-                size='lg'
-                style={{
-                  fontSize: (textFontSize * 0.5).toString() + sizeSuffix,
-                  width: '90%',
-                  height: '90%',
-                  color: 'black'
-                }}
-                onClick={moveFromRestingButtonClicked}
-              >
-                Move From Resting
-              </Button>
-            </View>
+              Move Above Plate
+            </Button>
           </View>
         </View>
       </View>
@@ -457,14 +314,12 @@ const AbovePlate = (props) => {
     sizeSuffix,
     zoomLevel,
     props.webrtcURL,
-    settingsPresets,
-    restoreToPreset,
     mountTeleopSubcomponent,
     moveToStagingButtonClicked,
-    moveFromStagingButtonClicked,
     moveToRestingButtonClicked,
-    moveFromRestingButtonClicked,
-    stopServoSuccessCallback
+    moveAbovePlateButtonClicked,
+    stopServoSuccessCallback,
+    storeJointStatesAsLocalParam
   ])
 
   // When a face is detected, switch to MoveToMouth
@@ -484,7 +339,6 @@ const AbovePlate = (props) => {
       case MEAL_STATE.R_MovingAbovePlate:
       case MEAL_STATE.R_MovingToRestingPosition:
       case MEAL_STATE.R_StowingArm:
-      case MEAL_STATE.R_MovingToConfigurationAbovePlate:
         return (
           <RobotMotion
             mealState={robotMotionProps.mealState}
@@ -509,6 +363,10 @@ const AbovePlate = (props) => {
       modalShow={localCurrAndNextMealState[0] !== null}
       modalOnHide={() => setLocalCurrMealStateWrapper(null)}
       modalChildren={renderModalBody()}
+      paramNames={paramNames}
+      localParamValues={currentAbovePlateParam}
+      setLocalParamValues={setCurrentAbovePlateParam}
+      resetToPresetSuccessCallback={moveAbovePlateButtonClicked}
     >
       {renderAbovePlateSettings()}
     </SettingsPageParent>
