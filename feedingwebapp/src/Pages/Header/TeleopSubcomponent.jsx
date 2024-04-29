@@ -1,5 +1,6 @@
 // React Imports
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import Button from 'react-bootstrap/Button'
 import { useId, Label, SpinButton } from '@fluentui/react-components'
 import { useMediaQuery } from 'react-responsive'
 import PropTypes from 'prop-types'
@@ -33,6 +34,7 @@ const TeleopSubcomponent = (props) => {
   const CARTESIAN_ANGULAR_MODE = 'Rotate'
   const JOINT_MODE = 'Joints'
   const [teleopMode, setTeleopMode] = useState(CARTESIAN_LINEAR_MODE)
+  const [refreshCount, setRefreshCount] = useState(0)
   const speedSpinButtonID = useId()
 
   // Cartesian teleop speeds
@@ -137,7 +139,7 @@ const TeleopSubcomponent = (props) => {
    * unmounted.
    */
   useEffect(() => {
-    console.log()
+    console.log('Starting servo', refreshCount)
     callROSAction(startServoAction, createROSMessage({}))
     let stopServoSuccessCallback = props.stopServoSuccessCallback
     return () => {
@@ -149,7 +151,7 @@ const TeleopSubcomponent = (props) => {
         stopServoSuccessCallback.current()
       })
     }
-  }, [startServoAction, stopServoAction, props.stopServoSuccessCallback])
+  }, [refreshCount, startServoAction, stopServoAction, props.stopServoSuccessCallback])
 
   /**
    * Callback function to publish constant cartesian cartesian velocity commands.
@@ -557,6 +559,20 @@ const TeleopSubcomponent = (props) => {
             width: '100%'
           }}
         >
+          <Button
+            variant='secondary'
+            className='mx-2 mb-2 btn-huge'
+            size='lg'
+            style={{
+              fontSize: textFontSize,
+              paddingTop: 0,
+              paddingBottom: 0,
+              margin: '0 !important'
+            }}
+            onClick={() => setRefreshCount(refreshCount + 1)}
+          >
+            &#10227;
+          </Button>
           <Label
             htmlFor={speedSpinButtonID}
             style={{

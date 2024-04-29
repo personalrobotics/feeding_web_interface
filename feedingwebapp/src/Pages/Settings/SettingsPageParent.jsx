@@ -1,5 +1,5 @@
 // React imports
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import { useMediaQuery } from 'react-responsive'
 import Button from 'react-bootstrap/Button'
 import Dropdown from 'react-bootstrap/Dropdown'
@@ -29,7 +29,7 @@ const SettingsPageParent = (props) => {
   const settingsPresets = useGlobalState((state) => state.settingsPresets)
 
   // Get relevant local state variables
-  const [isResettingToPreset, setIsResettingToPreset] = useState(false)
+  const isResettingToPreset = useRef(false)
 
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
@@ -126,10 +126,10 @@ const SettingsPageParent = (props) => {
     service.callService(currentRequest, (response) => {
       console.log('For request', currentRequest, 'received SetParameter response', response)
       // If this is wrapping up a reset to preset, call the callback
-      if (isResettingToPreset) {
+      if (isResettingToPreset.current) {
         let resetToPresetSuccessCallback = props.resetToPresetSuccessCallback
         resetToPresetSuccessCallback()
-        setIsResettingToPreset(false)
+        isResettingToPreset.current = false
       }
     })
   }, [
@@ -143,11 +143,12 @@ const SettingsPageParent = (props) => {
 
   /**
    * Every time the local parameter values change, update the global parameter.
+   * The above frequency holds true because setGlobalParameter only changes when
+   * props.localParamValues changes -- everything else should be constant.
    */
   useEffect(() => {
-    console.log('Local parameter values changed', props.localParamValues)
     setGlobalParameter()
-  }, [props.localParamValues, setGlobalParameter])
+  }, [setGlobalParameter])
 
   /**
    * A callback for when the user asks to reset parameters to a preset.
@@ -155,10 +156,10 @@ const SettingsPageParent = (props) => {
   const resetToPreset = useCallback(
     (preset) => {
       console.log('Resetting parameters to preset', preset)
-      setIsResettingToPreset(true)
+      isResettingToPreset.current = true
       setLocalParametersToGlobalValues(preset)
     },
-    [setLocalParametersToGlobalValues, setIsResettingToPreset]
+    [setLocalParametersToGlobalValues, isResettingToPreset]
   )
 
   return (

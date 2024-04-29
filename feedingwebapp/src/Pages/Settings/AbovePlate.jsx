@@ -8,7 +8,7 @@ import { View } from 'react-native'
 // Local imports
 import { useROS, createROSService, createROSServiceRequest } from '../../ros/ros_helpers'
 import {
-  ABOVE_PLATE_PARAM,
+  ABOVE_PLATE_PARAM_JOINTS,
   CAMERA_FEED_TOPIC,
   getRobotMotionText,
   GET_JOINT_STATE_SERVICE_NAME,
@@ -35,7 +35,7 @@ const AbovePlate = (props) => {
 
   // Create relevant local state variables
   // Configure the parameters for SettingsPageParent
-  const paramNames = useMemo(() => [ABOVE_PLATE_PARAM], [])
+  const paramNames = useMemo(() => [ABOVE_PLATE_PARAM_JOINTS], [])
   const [currentAbovePlateParam, setCurrentAbovePlateParam] = useState([null])
   const [localCurrAndNextMealState, setLocalCurrAndNextMealState] = useState(
     globalMealState === MEAL_STATE.U_BiteDone || biteTransferPageAtFace
@@ -44,7 +44,6 @@ const AbovePlate = (props) => {
   )
   const actionInput = useMemo(() => ({}), [])
   const [doneButtonIsClicked, setDoneButtonIsClicked] = useState(false)
-  const [robotIsAbovePlate, setRobotIsAbovePlate] = useState(true)
   const [zoomLevel, setZoomLevel] = useState(1.0)
   const [mountTeleopSubcomponent, setMountTeleopSubcomponent] = useState(false)
   const stopServoSuccessCallback = useRef(() => {})
@@ -61,13 +60,12 @@ const AbovePlate = (props) => {
   // Update other state variables that are related to the local meal state
   const setLocalCurrMealStateWrapper = useCallback(
     (newLocalCurrMealState, newLocalNextMealState = null) => {
-      if (newLocalCurrMealState === null) {
-        setMountTeleopSubcomponent(true)
-      }
       console.log('setLocalCurrMealStateWrapper evaluated')
       let oldLocalCurrMealState = localCurrAndNextMealState[0]
-      // If the oldlocalCurrMealState was R_MovingToMouth, then the robot is at the mouth
-      setRobotIsAbovePlate(oldLocalCurrMealState === MEAL_STATE.R_MovingAbovePlate)
+      // Only mount the teleop subcomponent if the robot finished moving above the plate
+      if (newLocalCurrMealState === null && oldLocalCurrMealState === MEAL_STATE.R_MovingAbovePlate) {
+        setMountTeleopSubcomponent(true)
+      }
       // Start in a moving state, not a paused state
       setPaused(false)
       if (newLocalCurrMealState === null && doneButtonIsClicked) {
@@ -79,15 +77,7 @@ const AbovePlate = (props) => {
         setLocalCurrAndNextMealState([newLocalCurrMealState, newLocalNextMealState])
       }
     },
-    [
-      localCurrAndNextMealState,
-      setLocalCurrAndNextMealState,
-      setMountTeleopSubcomponent,
-      setRobotIsAbovePlate,
-      doneButtonIsClicked,
-      setPaused,
-      setSettingsState
-    ]
+    [localCurrAndNextMealState, setLocalCurrAndNextMealState, setMountTeleopSubcomponent, doneButtonIsClicked, setPaused, setSettingsState]
   )
 
   // Get the function that sets the local curr meal state and next meal state variables.
@@ -98,6 +88,7 @@ const AbovePlate = (props) => {
       let retval = () => {
         console.log('getSetLocalCurrMealStateWrapper retval evaluated')
         setLocalCurrMealStateWrapper(newLocalCurrMealState, newLocalNextMealState)
+        stopServoSuccessCallback.current = () => {}
       }
       // If the teleop subcomponent was mounted, unmount it and let the stopServo
       // success callback handle the rest. However, sometimes the success message
@@ -110,7 +101,7 @@ const AbovePlate = (props) => {
       }
       return retval
     },
-    [mountTeleopSubcomponent, setLocalCurrMealStateWrapper, setMountTeleopSubcomponent]
+    [mountTeleopSubcomponent, setLocalCurrMealStateWrapper, setMountTeleopSubcomponent, stopServoSuccessCallback]
   )
 
   // Store the props for the RobotMotion call.
@@ -152,35 +143,24 @@ const AbovePlate = (props) => {
   // Get the current joint states and store them as the above plate param
   const storeJointStatesAsLocalParam = useCallback(() => {
     console.log('storeJointStatesAsLocalParam called')
-    if (robotIsAbovePlate) {
-      let service = getJointStateService.current
-      let request = createROSServiceRequest({
-        joint_names: ROBOT_JOINTS
-      })
-      service.callService(request, (response) => {
-        console.log('Got joint state response', response)
-        setCurrentAbovePlateParam([response.joint_state.position])
-      })
-    }
-  }, [getJointStateService, robotIsAbovePlate, setCurrentAbovePlateParam])
+    let service = getJointStateService.current
+    let request = createROSServiceRequest({
+      joint_names: ROBOT_JOINTS
+    })
+    service.callService(request, (response) => {
+      console.log('Got joint state response', response)
+      setCurrentAbovePlateParam([response.joint_state.position])
+    })
+  }, [getJointStateService, setCurrentAbovePlateParam])
 
-  // Callback to move the robot to the staging configuration
-  const moveToStagingButtonClicked = useCallback(() => {
-    setDoneButtonIsClicked(false)
-    stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(MEAL_STATE.R_MovingToStagingConfiguration)
-  }, [getSetLocalCurrMealStateWrapper, setDoneButtonIsClicked, stopServoSuccessCallback])
-
-  // Callback to move the robot to the resting configuration
-  const moveToRestingButtonClicked = useCallback(() => {
-    setDoneButtonIsClicked(false)
-    stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(MEAL_STATE.R_MovingToRestingPosition)
-  }, [getSetLocalCurrMealStateWrapper, setDoneButtonIsClicked, stopServoSuccessCallback])
-
-  // Callback to move the robot above the plate
-  const moveAbovePlateButtonClicked = useCallback(() => {
-    setDoneButtonIsClicked(false)
-    stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(MEAL_STATE.R_MovingAbovePlate)
-  }, [getSetLocalCurrMealStateWrapper, setDoneButtonIsClicked, stopServoSuccessCallback])
+  // Callback to move the robot to another configuration
+  const moveToButtonClicked = useCallback(
+    (nextMealState) => {
+      setDoneButtonIsClicked(false)
+      stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(nextMealState)
+    },
+    [getSetLocalCurrMealStateWrapper, setDoneButtonIsClicked, stopServoSuccessCallback]
+  )
 
   // Callback to return to the main settings page
   const doneButtonClicked = useCallback(() => {
@@ -196,19 +176,19 @@ const AbovePlate = (props) => {
         break
       case MEAL_STATE.U_PreMeal:
       case MEAL_STATE.U_BiteSelection:
-        localNextMealState = MEAL_STATE.R_MovingAbovePlate
+        localCurrMealState = MEAL_STATE.R_MovingAbovePlate
         break
       case MEAL_STATE.U_BiteAcquisitionCheck:
-        localNextMealState = MEAL_STATE.R_MovingToRestingPosition
+        localCurrMealState = MEAL_STATE.R_MovingToRestingPosition
         break
       case MEAL_STATE.R_DetectingFace:
-        localNextMealState = MEAL_STATE.R_MovingToStagingConfiguration
+        localCurrMealState = MEAL_STATE.R_MovingToStagingConfiguration
         break
       case MEAL_STATE.U_PostMeal:
-        localNextMealState = MEAL_STATE.R_StowingArm
+        localCurrMealState = MEAL_STATE.R_StowingArm
         break
       default:
-        localNextMealState = MEAL_STATE.R_MovingAbovePlate
+        localCurrMealState = MEAL_STATE.R_MovingAbovePlate
         break
     }
     stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(localCurrMealState, localNextMealState)
@@ -242,13 +222,15 @@ const AbovePlate = (props) => {
               </View>
             </>
           ) : (
-            <></>
+            <p style={{ textAlign: 'center', fontSize: (textFontSize * 0.75).toString() + sizeSuffix, margin: 0 }} className='txt-huge'>
+              To tune the &ldquo;Above Plate&rdquo; configuration, first &ldquo;Move Above Plate.&rdquo;
+            </p>
           )}
         </View>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}></View>
         <View
           style={{
-            flex: 4,
+            flex: 3,
             flexDirection: otherDimension,
             alignItems: 'center',
             justifyContent: 'center',
@@ -267,7 +249,7 @@ const AbovePlate = (props) => {
                 height: '90%',
                 color: 'black'
               }}
-              onClick={moveToStagingButtonClicked}
+              onClick={() => moveToButtonClicked(MEAL_STATE.R_MovingToStagingConfiguration)}
             >
               Move To Staging
             </Button>
@@ -283,7 +265,7 @@ const AbovePlate = (props) => {
                 height: '90%',
                 color: 'black'
               }}
-              onClick={moveToRestingButtonClicked}
+              onClick={() => moveToButtonClicked(MEAL_STATE.R_MovingToRestingPosition)}
             >
               Move To Resting
             </Button>
@@ -299,7 +281,7 @@ const AbovePlate = (props) => {
                 height: '90%',
                 color: 'black'
               }}
-              onClick={moveAbovePlateButtonClicked}
+              onClick={() => moveToButtonClicked(MEAL_STATE.R_MovingAbovePlate)}
             >
               Move Above Plate
             </Button>
@@ -315,9 +297,7 @@ const AbovePlate = (props) => {
     zoomLevel,
     props.webrtcURL,
     mountTeleopSubcomponent,
-    moveToStagingButtonClicked,
-    moveToRestingButtonClicked,
-    moveAbovePlateButtonClicked,
+    moveToButtonClicked,
     stopServoSuccessCallback,
     storeJointStatesAsLocalParam
   ])
@@ -366,7 +346,7 @@ const AbovePlate = (props) => {
       paramNames={paramNames}
       localParamValues={currentAbovePlateParam}
       setLocalParamValues={setCurrentAbovePlateParam}
-      resetToPresetSuccessCallback={moveAbovePlateButtonClicked}
+      resetToPresetSuccessCallback={() => moveToButtonClicked(MEAL_STATE.R_MovingAbovePlate)}
     >
       {renderAbovePlateSettings()}
     </SettingsPageParent>

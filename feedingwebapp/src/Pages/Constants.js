@@ -123,7 +123,15 @@ export const SET_PARAMETERS_SERVICE_TYPE = 'rcl_interfaces/srv/SetParameters'
 
 // The names of parameters users can change in the settings menu
 export const DISTANCE_TO_MOUTH_PARAM = 'MoveToMouth.tree_kwargs.plan_distance_from_mouth'
-export const ABOVE_PLATE_PARAM = 'MoveAbovePlate.tree_kwargs.joint_positions'
+export const ABOVE_PLATE_PARAM_JOINTS = 'MoveAbovePlate.tree_kwargs.joint_positions'
+export const STAGING_PARAM_JOINTS = 'MoveToStagingConfiguration.tree_kwargs.goal_configuration'
+export const STAGING_PARAM_POSITION = 'MoveFromMouth.tree_kwargs.staging_configuration_position'
+export const STAGING_PARAM_ORIENTATION = 'MoveFromMouth.tree_kwargs.staging_configuration_quat_xyzw'
+// TODO: Eventually, we should break AcquireFood into two actionss to avoid these
+// two different resting parameters.
+export const RESTING_PARAM_JOINTS_1 = 'AcquireFood.tree_kwargs.resting_joint_positions'
+// TODO: We may need to remove the orientation constraint from the below action.
+export const RESTING_PARAM_JOINTS_2 = 'MoveToRestingPosition.tree_kwargs.goal_configuration'
 
 // Robot link names
 export const ROBOT_BASE_LINK = 'j2n6s200_link_base'
