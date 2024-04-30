@@ -196,3 +196,7 @@ export function getRobotMotionText(mealState) {
       return 'Unknown meal state' + mealState.toString()
   }
 }
+
+// Container IDs for multiple ToastContainers
+export const REGULAR_CONTAINER_ID = 'RegularContainerID'
+export const MODAL_CONTAINER_ID = 'ModalContainerID'

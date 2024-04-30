@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css'
 // ROS imports
 import { useROS } from '../../ros/ros_helpers'
 // Local imports
-import { ROS_CHECK_INTERVAL_MS } from '../Constants'
+import { REGULAR_CONTAINER_ID, ROS_CHECK_INTERVAL_MS } from '../Constants'
 import { useGlobalState, APP_PAGE, NON_MOVING_STATES } from '../GlobalState'
 import InfoModal from './InfoModal'
 
@@ -26,7 +26,7 @@ const Header = (props) => {
   // TODO: Since this local state variable is in the header, the InfoModal
   // continues showing even if the state changes. Is this desirable? Perhaps
   // it should close if the state changes?
-  const [videoShow, setVideoShow] = useState(false)
+  const [infoModalShow, setInfoModalShow] = useState(false)
   // useROS gives us access to functions to configure and interact with ROS.
   let { ros } = useROS()
   const [isConnected, setIsConncected] = useState(ros.isConnected)
@@ -69,7 +69,10 @@ const Header = (props) => {
     if (inNonMovingState && NON_MOVING_STATES.has(mealState)) {
       setAppPage(APP_PAGE.Settings)
     } else {
-      toast('Wait for robot motion to complete before accessing Settings.')
+      toast.info('Wait for robot motion to complete before accessing Settings.', {
+        containerId: REGULAR_CONTAINER_ID,
+        toastId: 'noSettings'
+      })
     }
   }, [inNonMovingState, mealState, setAppPage])
 
@@ -80,7 +83,7 @@ const Header = (props) => {
        * The ToastContainer is an alert that pops up on the top of the screen
        * and has a timeout.
        */}
-      <ToastContainer style={{ fontSize: textFontSize }} />
+      <ToastContainer style={{ fontSize: textFontSize, zIndex: 9999 }} containerId={REGULAR_CONTAINER_ID} enableMultiContainer={true} />
       {/**
        * The NavBar has two elements, Home and Settings, on the left side and three
        * elements, Lock, Robot Connection Icon and VideoVideo, on the right side.
@@ -152,7 +155,7 @@ const Header = (props) => {
           )}
           <Nav>
             <Nav.Link
-              onClick={() => setVideoShow(true)}
+              onClick={() => setInfoModalShow(true)}
               className='text-dark bg-info rounded mx-1 btn-lg btn-huge p-2'
               style={{ fontSize: textFontSize }}
             >
@@ -165,7 +168,7 @@ const Header = (props) => {
        * The InfoModal toggles on and off with the Video button and shows the
        * robot's live camera feed.
        */}
-      <InfoModal show={videoShow} onHide={() => setVideoShow(false)} webrtcURL={props.webrtcURL} />
+      <InfoModal show={infoModalShow} onHide={() => setInfoModalShow(false)} webrtcURL={props.webrtcURL} />
     </>
   )
 }

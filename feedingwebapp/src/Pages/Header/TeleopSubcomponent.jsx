@@ -53,7 +53,8 @@ const TeleopSubcomponent = (props) => {
 
   // Style configuration
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  let textFontSize = isPortrait ? '2.2vh' : '2.5vw'
+  let textFontSize = isPortrait ? 2.2 : 2.5
+  let sizeSuffix = isPortrait ? 'vh' : 'vw'
   const buttonStyle = useMemo(() => {
     return {
       width: '100%',
@@ -67,7 +68,8 @@ const TeleopSubcomponent = (props) => {
   // Callback for when the user changes the speed
   const onSpeedChange = useCallback(
     (_ev, data) => {
-      let value = data.value ? data.value : parseFloat(data.displayValue)
+      let value = data.value !== null ? data.value : parseFloat(data.displayValue)
+      console.log('teleop value', value, data)
       let min_val =
         teleopMode === CARTESIAN_LINEAR_MODE
           ? LINEAR_MIN_SPEED
@@ -135,12 +137,19 @@ const TeleopSubcomponent = (props) => {
   }, [])
 
   /**
-   * When the component is mounted, start servo. Stop it when the component is
-   * unmounted.
+   * When the component is mounted and when the refresh button is pressed, start servo.
    */
   useEffect(() => {
     console.log('Starting servo', refreshCount)
-    callROSAction(startServoAction, createROSMessage({}))
+    callROSAction(startServoAction, createROSMessage({}), null, () => {
+      console.log('Succesfully started servo.')
+    })
+  }, [refreshCount, startServoAction])
+
+  /**
+   * When the component is unmounted, stop servo.
+   */
+  useEffect(() => {
     let stopServoSuccessCallback = props.stopServoSuccessCallback
     return () => {
       console.log('Stopping servo.')
@@ -151,7 +160,7 @@ const TeleopSubcomponent = (props) => {
         stopServoSuccessCallback.current()
       })
     }
-  }, [refreshCount, startServoAction, stopServoAction, props.stopServoSuccessCallback])
+  }, [startServoAction, stopServoAction, props.stopServoSuccessCallback])
 
   /**
    * Callback function to publish constant cartesian cartesian velocity commands.
@@ -190,14 +199,14 @@ const TeleopSubcomponent = (props) => {
    * Callback function to publish a JointJog command to move a single joint.
    */
   const publishJointJog = useCallback(
-    (joint, velocity) => {
+    (joints, velocities) => {
       console.log('Publishing joint jog.')
       let msg = createROSMessage({
         header: {
           frame_id: ROBOT_BASE_LINK
         },
-        joint_names: [joint],
-        velocities: [teleopJointSpeed * velocity]
+        joint_names: joints,
+        velocities: velocities.map((velocity) => teleopJointSpeed * velocity)
       })
       jointTopic.publish(msg)
     },
@@ -380,11 +389,20 @@ const TeleopSubcomponent = (props) => {
   }, [])
 
   /**
+   * Callback for when a teleop button gets released.
+   */
+  const stopTeleop = useCallback(() => {
+    let teleopButtonOnReleaseCallback = props.teleopButtonOnReleaseCallback
+    publishCartesianVelocity(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    publishJointJog(ROBOT_JOINTS, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    teleopButtonOnReleaseCallback()
+  }, [publishCartesianVelocity, publishJointJog, props.teleopButtonOnReleaseCallback])
+
+  /**
    * Callback to get cartesian hold buttons
    */
   const getCartesianHoldButton = useCallback(
     (x, y, z, rx, ry, rz, text) => {
-      let teleopButtonOnReleaseCallback = props.teleopButtonOnReleaseCallback
       return (
         <HoldButton
           rate_hz={10.0}
@@ -398,17 +416,14 @@ const TeleopSubcomponent = (props) => {
               teleopAngularSpeed * rz
             )
           }}
-          cleanupCallback={() => {
-            publishCartesianVelocity(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-            teleopButtonOnReleaseCallback()
-          }}
+          cleanupCallback={stopTeleop}
           buttonStyle={buttonStyle}
         >
           {text}
         </HoldButton>
       )
     },
-    [publishCartesianVelocity, buttonStyle, teleopLinearSpeed, teleopAngularSpeed, props.teleopButtonOnReleaseCallback]
+    [publishCartesianVelocity, buttonStyle, teleopLinearSpeed, teleopAngularSpeed, stopTeleop]
   )
 
   /**
@@ -416,24 +431,20 @@ const TeleopSubcomponent = (props) => {
    */
   const getJointHoldButton = useCallback(
     (joint, velocity, text) => {
-      let teleopButtonOnReleaseCallback = props.teleopButtonOnReleaseCallback
       return (
         <HoldButton
           rate_hz={10.0}
           holdCallback={() => {
-            publishJointJog(joint, velocity)
+            publishJointJog([joint], [velocity])
           }}
-          cleanupCallback={() => {
-            publishCartesianVelocity(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-            teleopButtonOnReleaseCallback()
-          }}
+          cleanupCallback={stopTeleop}
           buttonStyle={buttonStyle}
         >
           {text}
         </HoldButton>
       )
     },
-    [publishJointJog, buttonStyle, publishCartesianVelocity, props.teleopButtonOnReleaseCallback]
+    [publishJointJog, buttonStyle, stopTeleop]
   )
 
   /**
@@ -445,8 +456,8 @@ const TeleopSubcomponent = (props) => {
       getCartesianHoldButton(0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 'Down'),
       getCartesianHoldButton(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 'Left'),
       getCartesianHoldButton(-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 'Right'),
-      getCartesianHoldButton(0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 'Forward'),
-      getCartesianHoldButton(0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 'Backward'),
+      getCartesianHoldButton(0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 'Away From You'),
+      getCartesianHoldButton(0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 'Towards You'),
       false
     )
   }, [trackpadArrangement, getCartesianHoldButton])
@@ -470,11 +481,14 @@ const TeleopSubcomponent = (props) => {
    * Callback to render the joint teleop controls.
    */
   const jointTeleop = useCallback(() => {
+    // Swap J1, J2, J4 so that positive is "towards the user" and negative is "away"
+    // for the above plate configuration
+    let jointMultipliers = [-1, -1, 1, -4, 1, 1]
     let jointButtons = []
     for (let i = 0; i < ROBOT_JOINTS.length; i++) {
       jointButtons.push(
-        getJointHoldButton(ROBOT_JOINTS[i], 1.0, 'J' + (i + 1).toString() + '+'),
-        getJointHoldButton(ROBOT_JOINTS[i], -1.0, 'J' + (i + 1).toString() + '-')
+        getJointHoldButton(ROBOT_JOINTS[i], jointMultipliers[i] * 1.0, 'J' + (i + 1).toString() + '+'),
+        getJointHoldButton(ROBOT_JOINTS[i], jointMultipliers[i] * -1.0, 'J' + (i + 1).toString() + '-')
       )
     }
     return arrayArrangement(ROBOT_JOINTS.length, 2, jointButtons, !isPortrait)
@@ -495,7 +509,7 @@ const TeleopSubcomponent = (props) => {
             height: '100%'
           }}
         >
-          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize }}>
+          <p className='transitionMessage' style={{ marginBottom: '0px', fontSize: textFontSize.toString() + sizeSuffix }}>
             <input
               name='teleopMode'
               type='radio'
@@ -512,7 +526,7 @@ const TeleopSubcomponent = (props) => {
         </View>
       )
     },
-    [teleopMode, setTeleopMode, textFontSize]
+    [teleopMode, setTeleopMode, textFontSize, sizeSuffix]
   )
   // Render the component
   return (
@@ -564,7 +578,7 @@ const TeleopSubcomponent = (props) => {
             className='mx-2 mb-2 btn-huge'
             size='lg'
             style={{
-              fontSize: textFontSize,
+              fontSize: (textFontSize * 1.0).toString() + sizeSuffix,
               paddingTop: 0,
               paddingBottom: 0,
               margin: '0 !important'
@@ -576,7 +590,7 @@ const TeleopSubcomponent = (props) => {
           <Label
             htmlFor={speedSpinButtonID}
             style={{
-              fontSize: textFontSize,
+              fontSize: textFontSize.toString() + sizeSuffix,
               width: '90%',
               color: 'black',
               textAlign: 'center'
@@ -597,7 +611,7 @@ const TeleopSubcomponent = (props) => {
             onChange={onSpeedChange}
             appearance='filled-lighter'
             style={{
-              fontSize: textFontSize,
+              fontSize: textFontSize.toString() + sizeSuffix,
               width: '90%',
               color: 'black'
             }}

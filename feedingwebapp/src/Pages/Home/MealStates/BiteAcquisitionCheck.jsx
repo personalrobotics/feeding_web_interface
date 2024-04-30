@@ -15,6 +15,7 @@ import {
   ACQUISITION_REPORT_SERVICE_TYPE,
   FOOD_ON_FORK_DETECTION_TOPIC,
   FOOD_ON_FORK_DETECTION_TOPIC_MSG,
+  REGULAR_CONTAINER_ID,
   ROS_SERVICE_NAMES
 } from '../../Constants'
 
@@ -74,7 +75,10 @@ const BiteAcquisitionCheck = () => {
   const acquisitionSuccess = useCallback(() => {
     console.log('acquisitionSuccess')
     // NOTE: This uses the ToastContainer in Header
-    toast.info('Reporting Food Acquisition Success!')
+    toast.info('Reporting Food Acquisition Success!', {
+      containerId: REGULAR_CONTAINER_ID,
+      toastId: 'foodAcquisitionSuccess'
+    })
     // Create a service request
     let request = createROSServiceRequest({
       loss: 0.0,
@@ -95,7 +99,10 @@ const BiteAcquisitionCheck = () => {
   const acquisitionFailure = useCallback(() => {
     console.log('acquisitionFailure')
     // NOTE: This uses the ToastContainer in Header
-    toast.info('Reporting Food Acquisition Failure.')
+    toast.info('Reporting Food Acquisition Failure.', {
+      containerId: REGULAR_CONTAINER_ID,
+      toastId: 'foodAcquisitionFailure'
+    })
     // Create a service request
     let request = createROSServiceRequest({
       loss: 1.0,

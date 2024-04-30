@@ -18,6 +18,7 @@ import {
   GET_PARAMETERS_SERVICE_NAME,
   GET_PARAMETERS_SERVICE_TYPE,
   MOVING_STATE_ICON_DICT,
+  REGULAR_CONTAINER_ID,
   SET_PARAMETERS_SERVICE_NAME,
   SET_PARAMETERS_SERVICE_TYPE
 } from '../Constants'
@@ -126,7 +127,10 @@ const Main = () => {
     let newPresetName = newPresetInput.current.value.trim()
 
     if (newPresetName.length === 0) {
-      toast('Please enter a name for the new preset.', { type: 'error' })
+      toast.error('Please enter a name for the new preset.', {
+        containerId: REGULAR_CONTAINER_ID,
+        toastId: 'newPresetName'
+      })
       return
     } else {
       setPreset(newPresetName)
@@ -138,7 +142,10 @@ const Main = () => {
   const onClickSettingsPage = useCallback(
     (settingsState) => {
       if (settingsPresets.current === DEFAULT_NAMESPACE) {
-        toast('To change settings, select a preset other than `' + DEFAULT_NAMESPACE + '`.', { type: 'error' })
+        toast.error('To change settings, select a preset other than `' + DEFAULT_NAMESPACE + '`.', {
+          containerId: REGULAR_CONTAINER_ID,
+          toastId: 'changePresets'
+        })
       } else {
         setSettingsState(settingsState)
       }

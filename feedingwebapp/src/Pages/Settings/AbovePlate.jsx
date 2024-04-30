@@ -43,7 +43,7 @@ const AbovePlate = (props) => {
       : [MEAL_STATE.R_MovingAbovePlate, null]
   )
   const actionInput = useMemo(() => ({}), [])
-  const [doneButtonIsClicked, setDoneButtonIsClicked] = useState(false)
+  const doneButtonIsClicked = useRef(false)
   const [zoomLevel, setZoomLevel] = useState(1.0)
   const [mountTeleopSubcomponent, setMountTeleopSubcomponent] = useState(false)
   const stopServoSuccessCallback = useRef(() => {})
@@ -68,7 +68,7 @@ const AbovePlate = (props) => {
       }
       // Start in a moving state, not a paused state
       setPaused(false)
-      if (newLocalCurrMealState === null && doneButtonIsClicked) {
+      if (newLocalCurrMealState === null && doneButtonIsClicked.current) {
         // After the done button is clicked, the robot may have to do up to two
         // motions to restore itself to its old state. After that, this goes
         // back to the main settings page.
@@ -135,10 +135,10 @@ const AbovePlate = (props) => {
 
   // Reset state the first time the page is rendered
   useEffect(() => {
-    setDoneButtonIsClicked(false)
+    doneButtonIsClicked.current = false
     // Start in a moving state, not a paused state
     setPaused(false)
-  }, [setDoneButtonIsClicked, setPaused])
+  }, [doneButtonIsClicked, setPaused])
 
   // Get the current joint states and store them as the above plate param
   const storeJointStatesAsLocalParam = useCallback(() => {
@@ -156,15 +156,15 @@ const AbovePlate = (props) => {
   // Callback to move the robot to another configuration
   const moveToButtonClicked = useCallback(
     (nextMealState) => {
-      setDoneButtonIsClicked(false)
+      doneButtonIsClicked.current = false
       stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(nextMealState)
     },
-    [getSetLocalCurrMealStateWrapper, setDoneButtonIsClicked, stopServoSuccessCallback]
+    [getSetLocalCurrMealStateWrapper, doneButtonIsClicked, stopServoSuccessCallback]
   )
 
   // Callback to return to the main settings page
   const doneButtonClicked = useCallback(() => {
-    setDoneButtonIsClicked(true)
+    doneButtonIsClicked.current = true
     // Determine the state to move to based on the state before entering settings
     let localCurrMealState
     let localNextMealState = null
@@ -192,7 +192,7 @@ const AbovePlate = (props) => {
         break
     }
     stopServoSuccessCallback.current = getSetLocalCurrMealStateWrapper(localCurrMealState, localNextMealState)
-  }, [getSetLocalCurrMealStateWrapper, globalMealState, setDoneButtonIsClicked, stopServoSuccessCallback])
+  }, [getSetLocalCurrMealStateWrapper, globalMealState, doneButtonIsClicked, stopServoSuccessCallback])
 
   // Callback to render the main contents of the page
   const renderAbovePlateSettings = useCallback(() => {
@@ -338,7 +338,7 @@ const AbovePlate = (props) => {
 
   return (
     <SettingsPageParent
-      title='Above Plate Settings'
+      title='Above Plate &#9881;'
       doneCallback={doneButtonClicked}
       modalShow={localCurrAndNextMealState[0] !== null}
       modalOnHide={() => setLocalCurrMealStateWrapper(null)}

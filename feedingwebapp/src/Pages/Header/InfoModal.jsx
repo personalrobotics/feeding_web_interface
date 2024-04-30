@@ -1,5 +1,5 @@
 // React imports
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useMediaQuery } from 'react-responsive'
 import Modal from 'react-bootstrap/Modal'
 import PropTypes from 'prop-types'
@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import { View } from 'react-native'
 
 // Local imports
-import { CAMERA_FEED_TOPIC } from '../Constants'
+import { CAMERA_FEED_TOPIC, MODAL_CONTAINER_ID } from '../Constants'
 import { useGlobalState } from '../GlobalState'
 import TeleopSubcomponent from './TeleopSubcomponent'
 import VideoFeed from '../Home/VideoFeed'
@@ -18,9 +18,9 @@ import ToggleButtonGroup from '../../buttons/ToggleButtonGroup'
  */
 function InfoModal(props) {
   // The three different modes of the info modal
-  const VIDEO_MODE = 'Video'
-  const TELEOP_MODE = 'Teleop'
-  const SYSTEM_STATUS_MODE = 'Status'
+  const VIDEO_MODE = useMemo(() => 'Video', [])
+  const TELEOP_MODE = useMemo(() => 'Teleop', [])
+  const SYSTEM_STATUS_MODE = useMemo(() => 'Status', [])
   const [mode, setMode] = useState(VIDEO_MODE)
 
   // Teleop don't allow changing to teleop mode if app is in a moving state
@@ -34,9 +34,12 @@ function InfoModal(props) {
     if (inNonMovingState) {
       setMode(TELEOP_MODE)
     } else {
-      toast('Cannot switch to teleop until the app is on a non-moving page.')
+      toast.info('Cannot switch to teleop until the app is on a non-moving page.', {
+        containerId: MODAL_CONTAINER_ID,
+        toastId: 'noTeleop'
+      })
     }
-  }, [inNonMovingState])
+  }, [inNonMovingState, TELEOP_MODE])
 
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
@@ -45,10 +48,20 @@ function InfoModal(props) {
   // Text font size for portrait and landscape orientations
   let textFontSize = isPortrait ? '3vh' : '6vh'
 
+  /**
+   * When the InfoModal is closed, switch to Video mode and call the parent-specified
+   * callback.
+   */
+  const onModalHide = useCallback(() => {
+    setMode(VIDEO_MODE)
+    let onHide = props.onHide
+    onHide()
+  }, [props.onHide, setMode, VIDEO_MODE])
+
   return (
     <Modal
       show={props.show}
-      onHide={props.onHide}
+      onHide={onModalHide}
       size='lg'
       aria-labelledby='contained-modal-title-vcenter'
       backdrop='static'
@@ -78,7 +91,7 @@ function InfoModal(props) {
          * The ToastContainer is an alert that pops up on the top of the screen
          * and has a timeout.
          */}
-        <ToastContainer style={{ fontSize: textFontSize }} />
+        <ToastContainer style={{ fontSize: textFontSize }} containerId={MODAL_CONTAINER_ID} enableMultiContainer={true} />
         <View
           style={{
             flex: 2,

@@ -1,5 +1,5 @@
 // React imports
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useMediaQuery } from 'react-responsive'
 import PropTypes from 'prop-types'
 import { useId, Label, SpinButton } from '@fluentui/react-components'
@@ -35,7 +35,7 @@ const BiteTransfer = (props) => {
       : [MEAL_STATE.R_MovingToStagingConfiguration, null]
   )
   const actionInput = useMemo(() => ({}), [])
-  const [doneButtonIsClicked, setDoneButtonIsClicked] = useState(false)
+  const doneButtonIsClicked = useRef(false)
 
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
@@ -53,10 +53,13 @@ const BiteTransfer = (props) => {
     (newLocalCurrMealState, newLocalNextMealState = null) => {
       let oldLocalCurrMealState = localCurrAndNextMealState[0]
       // If the oldlocalCurrMealState was R_MovingToMouth, then the robot is at the mouth
-      setBiteTransferPageAtFace(oldLocalCurrMealState === MEAL_STATE.R_MovingToMouth)
+      setBiteTransferPageAtFace(
+        newLocalCurrMealState === null && (biteTransferPageAtFace || oldLocalCurrMealState === MEAL_STATE.R_MovingToMouth)
+      )
       // Start in a moving state, not a paused state
       setPaused(false)
-      if (newLocalCurrMealState === null && doneButtonIsClicked) {
+      console.log('setLocalCurrMealStateWrapper', newLocalCurrMealState, newLocalNextMealState, doneButtonIsClicked.current)
+      if (newLocalCurrMealState === null && doneButtonIsClicked.current) {
         // After the done button is clicked, the robot may have to do up to two
         // motions to restore itself to its old state. After that, this goes
         // back to the main settings page.
@@ -65,7 +68,15 @@ const BiteTransfer = (props) => {
         setLocalCurrAndNextMealState([newLocalCurrMealState, newLocalNextMealState])
       }
     },
-    [localCurrAndNextMealState, setLocalCurrAndNextMealState, setBiteTransferPageAtFace, doneButtonIsClicked, setPaused, setSettingsState]
+    [
+      biteTransferPageAtFace,
+      localCurrAndNextMealState,
+      setLocalCurrAndNextMealState,
+      setBiteTransferPageAtFace,
+      doneButtonIsClicked,
+      setPaused,
+      setSettingsState
+    ]
   )
 
   // Store the props for the RobotMotion call.
@@ -84,26 +95,28 @@ const BiteTransfer = (props) => {
 
   // The first time the page is rendered, get the current distance to mouth
   useEffect(() => {
-    setDoneButtonIsClicked(false)
+    doneButtonIsClicked.current = false
+    // Since we start by moving to staging, this should be initialized to false
+    setBiteTransferPageAtFace(false)
     // Start in a moving state, not a paused state
     setPaused(false)
-  }, [setPaused, setDoneButtonIsClicked])
+  }, [setBiteTransferPageAtFace, setPaused, doneButtonIsClicked])
 
   // Callback to move the robot to the mouth
   const moveToMouthButtonClicked = useCallback(() => {
     setLocalCurrMealStateWrapper(MEAL_STATE.R_DetectingFace)
-    setDoneButtonIsClicked(false)
-  }, [setLocalCurrMealStateWrapper, setDoneButtonIsClicked])
+    doneButtonIsClicked.current = false
+  }, [setLocalCurrMealStateWrapper, doneButtonIsClicked])
 
   // Callback to move the robot away from the mouth
   const moveAwayFromMouthButtonClicked = useCallback(() => {
     setLocalCurrMealStateWrapper(MEAL_STATE.R_MovingFromMouth)
-    setDoneButtonIsClicked(false)
-  }, [setLocalCurrMealStateWrapper, setDoneButtonIsClicked])
+    doneButtonIsClicked.current = false
+  }, [setLocalCurrMealStateWrapper, doneButtonIsClicked])
 
   // Callback to return to the main settings page
   const doneButtonClicked = useCallback(() => {
-    setDoneButtonIsClicked(true)
+    doneButtonIsClicked.current = true
     // Determine the state to move to based on the state before entering settings
     let localCurrMealState = MEAL_STATE.R_MovingFromMouth
     let localNextMealState
@@ -114,33 +127,33 @@ const BiteTransfer = (props) => {
           localCurrMealState = null
           localNextMealState = null
         } else {
-          localNextMealState = MEAL_STATE.R_DetectingFace
+          localCurrMealState = MEAL_STATE.R_DetectingFace
         }
         break
       case MEAL_STATE.U_PreMeal:
       case MEAL_STATE.U_BiteSelection:
-        localNextMealState = MEAL_STATE.R_MovingAbovePlate
+        localCurrMealState = MEAL_STATE.R_MovingAbovePlate
         break
       case MEAL_STATE.U_BiteAcquisitionCheck:
-        localNextMealState = MEAL_STATE.R_MovingToRestingPosition
+        localCurrMealState = MEAL_STATE.R_MovingToRestingPosition
         break
       case MEAL_STATE.R_DetectingFace:
-        localNextMealState = MEAL_STATE.R_MovingToStagingConfiguration
+        localCurrMealState = MEAL_STATE.R_MovingToStagingConfiguration
         break
       case MEAL_STATE.U_PostMeal:
-        localNextMealState = MEAL_STATE.R_StowingArm
+        localCurrMealState = MEAL_STATE.R_StowingArm
         break
       default:
-        localNextMealState = MEAL_STATE.R_MovingAbovePlate
+        localCurrMealState = MEAL_STATE.R_MovingAbovePlate
         break
     }
     setLocalCurrMealStateWrapper(localCurrMealState, localNextMealState)
-  }, [biteTransferPageAtFace, globalMealState, setLocalCurrMealStateWrapper, setDoneButtonIsClicked])
+  }, [biteTransferPageAtFace, globalMealState, setLocalCurrMealStateWrapper, doneButtonIsClicked])
 
   // Callback for when the user changes the distance to mouth
   const onDistanceToMouthChange = useCallback(
     (_ev, data) => {
-      let value = data.value ? data.value : parseFloat(data.displayValue)
+      let value = data.value !== null ? data.value : parseFloat(data.displayValue)
       if (value < minDistanceToMouth) {
         value = minDistanceToMouth
       }
@@ -343,7 +356,7 @@ const BiteTransfer = (props) => {
 
   return (
     <SettingsPageParent
-      title='Bite Transfer Settings'
+      title='Bite Transfer &#9881;'
       doneCallback={doneButtonClicked}
       modalShow={localCurrAndNextMealState[0] !== null}
       modalOnHide={() => setLocalCurrMealStateWrapper(null)}
