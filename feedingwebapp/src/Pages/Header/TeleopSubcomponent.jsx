@@ -16,10 +16,10 @@ import {
   SERVO_CARTESIAN_TOPIC_MSG,
   SERVO_JOINT_TOPIC,
   SERVO_JOINT_TOPIC_MSG,
-  START_SERVO_ACTION_NAME,
-  START_SERVO_ACTION_TYPE,
-  STOP_SERVO_ACTION_NAME,
-  STOP_SERVO_ACTION_TYPE
+  START_CARTESIAN_CONTROLLER_ACTION_NAME,
+  START_CARTESIAN_CONTROLLER_ACTION_TYPE,
+  START_JOINT_CONTROLLER_ACTION_NAME,
+  START_JOINT_CONTROLLER_ACTION_TYPE
 } from '../Constants'
 import { useGlobalState } from '../GlobalState'
 import HoldButton from '../../buttons/HoldButton'
@@ -47,7 +47,7 @@ const TeleopSubcomponent = (props) => {
   const teleopAngularSpeed = useGlobalState((state) => state.teleopAngularSpeed)
   const setTeleopAngularSpeed = useGlobalState((state) => state.setTeleopAngularSpeed)
   const JOINT_MAX_SPEED = useMemo(() => 0.6, []) // rad/s
-  const JOINT_MIN_SPEED = useMemo(() => 0.2, []) // rad/s
+  const JOINT_MIN_SPEED = useMemo(() => 0.05, []) // rad/s
   const teleopJointSpeed = useGlobalState((state) => state.teleopJointSpeed)
   const setTeleopJointSpeed = useGlobalState((state) => state.setTeleopJointSpeed)
 
@@ -120,13 +120,13 @@ const TeleopSubcomponent = (props) => {
   const ros = useRef(useROS().ros)
 
   /**
-   * Create the ROS Action Client to start/stop servo.
+   * Create the ROS Action Client to start the teleop controllers.
    */
-  let startServoAction = useMemo(() => {
-    return createROSActionClient(ros.current, START_SERVO_ACTION_NAME, START_SERVO_ACTION_TYPE)
+  let startCartesianControllerAction = useMemo(() => {
+    return createROSActionClient(ros.current, START_CARTESIAN_CONTROLLER_ACTION_NAME, START_CARTESIAN_CONTROLLER_ACTION_TYPE)
   }, [])
-  let stopServoAction = useMemo(() => {
-    return createROSActionClient(ros.current, STOP_SERVO_ACTION_NAME, STOP_SERVO_ACTION_TYPE)
+  let startJointControllerAction = useMemo(() => {
+    return createROSActionClient(ros.current, START_JOINT_CONTROLLER_ACTION_NAME, START_JOINT_CONTROLLER_ACTION_TYPE)
   }, [])
 
   /**
@@ -143,11 +143,10 @@ const TeleopSubcomponent = (props) => {
    * When the component is mounted and when the refresh button is pressed, start servo.
    */
   useEffect(() => {
-    console.log('Starting servo', refreshCount)
-    callROSAction(startServoAction, createROSMessage({}), null, () => {
-      console.log('Succesfully started servo.')
-    })
-  }, [refreshCount, startServoAction])
+    console.log('Starting controller', refreshCount)
+    let action = teleopMode === JOINT_MODE ? startJointControllerAction : startCartesianControllerAction
+    callROSAction(action, createROSMessage({}), null, null)
+  }, [refreshCount, startCartesianControllerAction, startJointControllerAction, teleopMode])
 
   /**
    * When the component is unmounted, stop servo.
@@ -155,15 +154,12 @@ const TeleopSubcomponent = (props) => {
   useEffect(() => {
     let stopServoSuccessCallback = props.stopServoSuccessCallback
     return () => {
-      console.log('Stopping servo.')
-      callROSAction(stopServoAction, createROSMessage({}), null, () => {
-        console.log('Successfully stopped servo.')
-        destroyActionClient(startServoAction)
-        destroyActionClient(stopServoAction)
-        stopServoSuccessCallback.current()
-      })
+      console.log('Unmounting teleop subcomponent.')
+      destroyActionClient(startCartesianControllerAction)
+      destroyActionClient(startJointControllerAction)
+      stopServoSuccessCallback.current()
     }
-  }, [startServoAction, stopServoAction, props.stopServoSuccessCallback])
+  }, [startCartesianControllerAction, startJointControllerAction, props.stopServoSuccessCallback])
 
   /**
    * Callback function to publish constant cartesian cartesian velocity commands.
@@ -395,12 +391,18 @@ const TeleopSubcomponent = (props) => {
   /**
    * Callback for when a teleop button gets released.
    */
-  const stopTeleop = useCallback(() => {
-    let teleopButtonOnReleaseCallback = props.teleopButtonOnReleaseCallback
-    publishCartesianVelocity(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-    publishJointJog(ROBOT_JOINTS, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-    teleopButtonOnReleaseCallback()
-  }, [publishCartesianVelocity, publishJointJog, props.teleopButtonOnReleaseCallback])
+  const stopTeleop = useCallback(
+    (cartesian = true) => {
+      let teleopButtonOnReleaseCallback = props.teleopButtonOnReleaseCallback
+      if (cartesian) {
+        publishCartesianVelocity(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+      } else {
+        publishJointJog(ROBOT_JOINTS, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+      }
+      teleopButtonOnReleaseCallback()
+    },
+    [publishCartesianVelocity, publishJointJog, props.teleopButtonOnReleaseCallback]
+  )
 
   /**
    * Callback to get cartesian hold buttons
@@ -420,7 +422,7 @@ const TeleopSubcomponent = (props) => {
               teleopAngularSpeed * rz
             )
           }}
-          cleanupCallback={stopTeleop}
+          cleanupCallback={() => stopTeleop(true)}
           buttonStyle={buttonStyle}
         >
           {text}
@@ -441,7 +443,7 @@ const TeleopSubcomponent = (props) => {
           holdCallback={() => {
             publishJointJog([joint], [velocity])
           }}
-          cleanupCallback={stopTeleop}
+          cleanupCallback={() => stopTeleop(false)}
           buttonStyle={buttonStyle}
         >
           {text}

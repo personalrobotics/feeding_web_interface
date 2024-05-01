@@ -149,6 +149,9 @@ export function createROSActionClient(ros, serverName, actionType) {
  *                                  result is received.
  */
 export function callROSAction(actionClient, goal, feedbackCallback, resultCallback) {
+  // TODO: After the callback is executed, it should be removed from the action
+  // server's callback list to prevent multiple callbacks from being executed in
+  // further calls.
   actionClient.createClient(goal, resultCallback, feedbackCallback)
 }
 

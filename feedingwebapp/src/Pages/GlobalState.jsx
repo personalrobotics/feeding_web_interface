@@ -126,7 +126,7 @@ export const useGlobalState = create(
       // Store the user;s current settings for teleop speeds
       teleopLinearSpeed: 0.1, // m/s
       teleopAngularSpeed: 0.15, // rad/s
-      teleopJointSpeed: 0.5, // rad/s
+      teleopJointSpeed: 0.15, // rad/s
       // Flag to indicate whether to auto-continue after face detection
       faceDetectionAutoContinue: true,
       // Flag to indicate whether to auto-continue in bite done after food-on-fork detection

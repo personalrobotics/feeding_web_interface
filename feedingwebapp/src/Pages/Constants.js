@@ -87,10 +87,10 @@ ROS_ACTIONS_NAMES[MEAL_STATE.R_StowingArm] = {
   messageType: 'ada_feeding_msgs/action/MoveTo'
 }
 export { ROS_ACTIONS_NAMES }
-export const START_SERVO_ACTION_NAME = 'StartServo'
-export const START_SERVO_ACTION_TYPE = 'ada_feeding_msgs/action/Trigger'
-export const STOP_SERVO_ACTION_NAME = 'StopServo'
-export const STOP_SERVO_ACTION_TYPE = 'ada_feeding_msgs/action/Trigger'
+export const START_CARTESIAN_CONTROLLER_ACTION_NAME = 'ActivateCartesianController'
+export const START_CARTESIAN_CONTROLLER_ACTION_TYPE = 'ada_feeding_msgs/action/Trigger'
+export const START_JOINT_CONTROLLER_ACTION_NAME = 'ActivateJointController'
+export const START_JOINT_CONTROLLER_ACTION_TYPE = 'ada_feeding_msgs/action/Trigger'
 
 /**
  * For states that call ROS services, this dictionary contains
