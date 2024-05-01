@@ -39,17 +39,20 @@ const TeleopSubcomponent = (props) => {
 
   // Cartesian teleop speeds
   const LINEAR_MAX_SPEED = useMemo(() => 0.3, []) // m/s
-  const LINEAR_MIN_SPEED = useMemo(() => 0.05, []) // m/s
+  const LINEAR_MIN_SPEED = useMemo(() => 0.025, []) // m/s
   const teleopLinearSpeed = useGlobalState((state) => state.teleopLinearSpeed)
   const setTeleopLinearSpeed = useGlobalState((state) => state.setTeleopLinearSpeed)
   const ANGULAR_MAX_SPEED = useMemo(() => 0.6, []) // rad/s
-  const ANGULAR_MIN_SPEED = useMemo(() => 0.3, []) // rad/s
+  const ANGULAR_MIN_SPEED = useMemo(() => 0.05, []) // rad/s
   const teleopAngularSpeed = useGlobalState((state) => state.teleopAngularSpeed)
   const setTeleopAngularSpeed = useGlobalState((state) => state.setTeleopAngularSpeed)
   const JOINT_MAX_SPEED = useMemo(() => 0.6, []) // rad/s
   const JOINT_MIN_SPEED = useMemo(() => 0.2, []) // rad/s
   const teleopJointSpeed = useGlobalState((state) => state.teleopJointSpeed)
   const setTeleopJointSpeed = useGlobalState((state) => state.setTeleopJointSpeed)
+
+  // Teleop publication frequency
+  const rate_hz = useMemo(() => 10.0, [])
 
   // Style configuration
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
@@ -206,11 +209,12 @@ const TeleopSubcomponent = (props) => {
           frame_id: ROBOT_BASE_LINK
         },
         joint_names: joints,
-        velocities: velocities.map((velocity) => teleopJointSpeed * velocity)
+        velocities: velocities.map((velocity) => teleopJointSpeed * velocity),
+        duration: 1.0 / rate_hz
       })
       jointTopic.publish(msg)
     },
-    [jointTopic, teleopJointSpeed]
+    [jointTopic, rate_hz, teleopJointSpeed]
   )
 
   /**
@@ -405,7 +409,7 @@ const TeleopSubcomponent = (props) => {
     (x, y, z, rx, ry, rz, text) => {
       return (
         <HoldButton
-          rate_hz={10.0}
+          rate_hz={rate_hz}
           holdCallback={() => {
             publishCartesianVelocity(
               teleopLinearSpeed * x,
@@ -423,7 +427,7 @@ const TeleopSubcomponent = (props) => {
         </HoldButton>
       )
     },
-    [publishCartesianVelocity, buttonStyle, teleopLinearSpeed, teleopAngularSpeed, stopTeleop]
+    [publishCartesianVelocity, buttonStyle, teleopLinearSpeed, teleopAngularSpeed, rate_hz, stopTeleop]
   )
 
   /**
@@ -433,7 +437,7 @@ const TeleopSubcomponent = (props) => {
     (joint, velocity, text) => {
       return (
         <HoldButton
-          rate_hz={10.0}
+          rate_hz={rate_hz}
           holdCallback={() => {
             publishJointJog([joint], [velocity])
           }}
@@ -444,7 +448,7 @@ const TeleopSubcomponent = (props) => {
         </HoldButton>
       )
     },
-    [publishJointJog, buttonStyle, stopTeleop]
+    [publishJointJog, buttonStyle, rate_hz, stopTeleop]
   )
 
   /**
@@ -607,7 +611,7 @@ const TeleopSubcomponent = (props) => {
                 : teleopJointSpeed
             }
             id={speedSpinButtonID}
-            step={0.05}
+            step={0.025}
             onChange={onSpeedChange}
             appearance='filled-lighter'
             style={{

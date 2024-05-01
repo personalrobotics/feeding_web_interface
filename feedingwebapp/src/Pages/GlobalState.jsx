@@ -125,7 +125,7 @@ export const useGlobalState = create(
       paused: false,
       // Store the user;s current settings for teleop speeds
       teleopLinearSpeed: 0.1, // m/s
-      teleopAngularSpeed: 0.3, // rad/s
+      teleopAngularSpeed: 0.15, // rad/s
       teleopJointSpeed: 0.5, // rad/s
       // Flag to indicate whether to auto-continue after face detection
       faceDetectionAutoContinue: true,
