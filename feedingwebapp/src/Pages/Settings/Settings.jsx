@@ -8,7 +8,7 @@ import { useGlobalState, SETTINGS_STATE, MEAL_STATE } from '../GlobalState'
 import Main from './Main'
 import CustomizeConfiguration from './CustomizeConfiguration'
 import BiteTransfer from './BiteTransfer'
-import { ABOVE_PLATE_PARAM_JOINTS } from '../Constants'
+import { ABOVE_PLATE_PARAM_JOINTS, RESTING_PARAM_JOINTS_1, RESTING_PARAM_JOINTS_2 } from '../Constants'
 
 /**
  * The Settings components displays the appropriate settings page based on the
@@ -40,6 +40,26 @@ const Settings = (props) => {
               {
                 name: 'Move to Resting',
                 mealState: MEAL_STATE.R_MovingToRestingPosition
+              }
+            ]}
+            webrtcURL={props.webrtcURL}
+          />
+        )
+      case SETTINGS_STATE.RESTING_CONFIGURATION:
+        return (
+          <CustomizeConfiguration
+            startingMealState={MEAL_STATE.R_MovingToRestingPosition}
+            paramNames={[RESTING_PARAM_JOINTS_1, RESTING_PARAM_JOINTS_2]}
+            configurationName='Resting Position'
+            buttonName='Move to Resting'
+            otherButtonConfigs={[
+              {
+                name: 'Move to Staging',
+                mealState: MEAL_STATE.R_MovingToStagingConfiguration
+              },
+              {
+                name: 'Move Above Plate',
+                mealState: MEAL_STATE.R_MovingAbovePlate
               }
             ]}
             webrtcURL={props.webrtcURL}
