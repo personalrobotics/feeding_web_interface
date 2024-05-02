@@ -4,10 +4,11 @@ import PropTypes from 'prop-types'
 import { View } from 'react-native'
 
 // Local imports
-import { useGlobalState, SETTINGS_STATE } from '../GlobalState'
+import { useGlobalState, SETTINGS_STATE, MEAL_STATE } from '../GlobalState'
 import Main from './Main'
-import AbovePlate from './AbovePlate'
+import CustomizeConfiguration from './CustomizeConfiguration'
 import BiteTransfer from './BiteTransfer'
+import { ABOVE_PLATE_PARAM_JOINTS } from '../Constants'
 
 /**
  * The Settings components displays the appropriate settings page based on the
@@ -25,7 +26,25 @@ const Settings = (props) => {
       case SETTINGS_STATE.BITE_TRANSFER:
         return <BiteTransfer webrtcURL={props.webrtcURL} />
       case SETTINGS_STATE.ABOVE_PLATE:
-        return <AbovePlate webrtcURL={props.webrtcURL} />
+        return (
+          <CustomizeConfiguration
+            startingMealState={MEAL_STATE.R_MovingAbovePlate}
+            paramNames={[ABOVE_PLATE_PARAM_JOINTS]}
+            configurationName='Above Plate'
+            buttonName='Move Above Plate'
+            otherButtonConfigs={[
+              {
+                name: 'Move to Staging',
+                mealState: MEAL_STATE.R_MovingToStagingConfiguration
+              },
+              {
+                name: 'Move to Resting',
+                mealState: MEAL_STATE.R_MovingToRestingPosition
+              }
+            ]}
+            webrtcURL={props.webrtcURL}
+          />
+        )
       default:
         console.log('Invalid settings state', settingsState)
         return <Main />
