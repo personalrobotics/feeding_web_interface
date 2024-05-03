@@ -10,9 +10,12 @@ import { useROS, createROSService, createROSServiceRequest } from '../../ros/ros
 import {
   CAMERA_FEED_TOPIC,
   getRobotMotionText,
-  GET_JOINT_STATE_SERVICE_NAME,
-  GET_JOINT_STATE_SERVICE_TYPE,
-  ROBOT_JOINTS
+  GET_ROBOT_STATE_SERVICE_NAME,
+  GET_ROBOT_STATE_SERVICE_TYPE,
+  ROBOT_BASE_LINK,
+  ROBOT_END_EFFECTOR,
+  ROBOT_JOINTS,
+  ROS_SERVICE_NAMES
 } from '../Constants'
 import { useGlobalState, MEAL_STATE, SETTINGS_STATE } from '../GlobalState'
 import RobotMotion from '../Home/MealStates/RobotMotion'
@@ -20,6 +23,38 @@ import DetectingFaceSubcomponent from '../Home/MealStates/DetectingFaceSubcompon
 import TeleopSubcomponent from '../Header/TeleopSubcomponent'
 import SettingsPageParent from './SettingsPageParent'
 import VideoFeed from '../Home/VideoFeed'
+
+/**
+ * This function extracts the joint positions from the robot state service's response
+ * and returns it.
+ */
+export function getJointPositionsFromRobotStateResponse(response) {
+  return response.joint_state.position
+}
+
+/**
+ * The function extracts the end effector position and quaternion in the robot's
+ * base link frame, from the robot state service's response.
+ */
+export function getEndEffectorPositionFromRobotStateResponse(response) {
+  if (response.poses.length === 0) {
+    return []
+  }
+  let pose = response.poses[0].pose
+  return [pose.position.x, pose.position.y, pose.position.z]
+}
+
+/**
+ * This function extracts the end effector orientation in the robot's base link frame,
+ * from the robot state service's response.
+ */
+export function getEndEffectorOrientationFromRobotStateResponse(response) {
+  if (response.poses.length === 0) {
+    return []
+  }
+  let pose = response.poses[0].pose
+  return [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w]
+}
 
 /**
  * The CustomizeConfiguration component allows users to configure the one of the
@@ -139,29 +174,58 @@ const CustomizeConfiguration = (props) => {
   const ros = useRef(useROS().ros)
 
   /**
-   * Create the ROS Service Clients to get/set parameters.
+   * Create the ROS Service Clients to get/set parameters and to toggle face detection.
    */
-  let getJointStateService = useRef(createROSService(ros.current, GET_JOINT_STATE_SERVICE_NAME, GET_JOINT_STATE_SERVICE_TYPE))
+  let getRobotStateService = useRef(createROSService(ros.current, GET_ROBOT_STATE_SERVICE_NAME, GET_ROBOT_STATE_SERVICE_TYPE))
+  let { serviceName, messageType } = ROS_SERVICE_NAMES[MEAL_STATE.R_DetectingFace]
+  let toggleFaceDetectionService = useRef(createROSService(ros.current, serviceName, messageType))
 
   // Reset state the first time the page is rendered
   useEffect(() => {
     doneButtonIsClicked.current = false
     // Start in a moving state, not a paused state
     setPaused(false)
-  }, [doneButtonIsClicked, setPaused])
+    // Toggle face detection is specified
+    let service = toggleFaceDetectionService.current
+    if (props.toggleFaceDetection) {
+      // Create a service request
+      let request = createROSServiceRequest({ data: true })
+      // Call the service
+      service.callService(request, (response) => console.log('Got toggle face detection service response', response))
+    }
+
+    /**
+     * In practice, because the values passed in in the second argument of
+     * useEffect will not change on re-renders, this return statement will
+     * only be called when the component unmounts.
+     */
+    return () => {
+      if (props.toggleFaceDetection) {
+        // Create a service request
+        let request = createROSServiceRequest({ data: false })
+        // Call the service
+        service.callService(request, (response) => console.log('Got toggle face detection service response', response))
+      }
+    }
+  }, [doneButtonIsClicked, props.toggleFaceDetection, setPaused, toggleFaceDetectionService])
 
   // Get the current joint states and store them as the above plate param
   const storeJointStatesAsLocalParam = useCallback(() => {
-    console.log('storeJointStatesAsLocalParam called')
-    let service = getJointStateService.current
-    let request = createROSServiceRequest({
+    let service = getRobotStateService.current
+    let request_object = {
       joint_names: ROBOT_JOINTS
-    })
+    }
+    if (props.getEndEffectorPose) {
+      request_object.child_frames = [ROBOT_END_EFFECTOR]
+      request_object.parent_frames = [ROBOT_BASE_LINK]
+    }
+    let request = createROSServiceRequest(request_object)
+    console.log('storeJointStatesAsLocalParam called with request', request)
     service.callService(request, (response) => {
       console.log('Got joint state response', response)
-      setCurrentConfigurationParams(props.paramNames.map(() => response.joint_state.position))
+      setCurrentConfigurationParams(props.paramNames.map((_, i) => props.getParamValues[i](response)))
     })
-  }, [getJointStateService, props.paramNames, setCurrentConfigurationParams])
+  }, [getRobotStateService, props.getEndEffectorPose, props.getParamValues, props.paramNames, setCurrentConfigurationParams])
 
   // Callback to move the robot to another configuration
   const moveToButtonClicked = useCallback(
@@ -218,7 +282,7 @@ const CustomizeConfiguration = (props) => {
         }}
       >
         <View style={{ flex: 8, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
-          <VideoFeed topic={CAMERA_FEED_TOPIC} updateRateHz={10} webrtcURL={props.webrtcURL} zoom={zoomLevel} setZoom={setZoomLevel} />
+          <VideoFeed topic={props.videoTopic} updateRateHz={10} webrtcURL={props.webrtcURL} zoom={zoomLevel} setZoom={setZoomLevel} />
         </View>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}></View>
         <View style={{ flex: 12, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
@@ -258,7 +322,7 @@ const CustomizeConfiguration = (props) => {
                   fontSize: (textFontSize * 0.5).toString() + sizeSuffix,
                   width: '90%',
                   height: '90%',
-                  color: 'black'
+                  padding: 0
                 }}
                 onClick={() => moveToButtonClicked(mealState)}
               >
@@ -275,7 +339,7 @@ const CustomizeConfiguration = (props) => {
                 fontSize: (textFontSize * 0.5).toString() + sizeSuffix,
                 width: '90%',
                 height: '90%',
-                color: 'black'
+                padding: 0
               }}
               onClick={() => moveToButtonClicked(props.startingMealState)}
             >
@@ -295,6 +359,7 @@ const CustomizeConfiguration = (props) => {
     props.configurationName,
     props.otherButtonConfigs,
     props.startingMealState,
+    props.videoTopic,
     props.webrtcURL,
     mountTeleopSubcomponent,
     moveToButtonClicked,
@@ -358,6 +423,10 @@ CustomizeConfiguration.propTypes = {
   startingMealState: PropTypes.string.isRequired,
   // The names of the parameter this component should tune.
   paramNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+  // Whether to get the end effector pose from the robot state service
+  getEndEffectorPose: PropTypes.bool,
+  // Functions to get the param values from the robot state service's response
+  getParamValues: PropTypes.arrayOf(PropTypes.func).isRequired,
   // The name of the configuration this component tunes.
   configurationName: PropTypes.string.isRequired,
   // The name of the button that should be clicked to tune the configuration.
@@ -369,8 +438,17 @@ CustomizeConfiguration.propTypes = {
       mealState: PropTypes.string.isRequired
     })
   ).isRequired,
+  // Whether to toggle face detection on/off when this component mounts/unmounts
+  toggleFaceDetection: PropTypes.bool,
+  // The video topic to display
+  videoTopic: PropTypes.string,
   // The URL of the webrtc signalling server
   webrtcURL: PropTypes.string.isRequired
+}
+CustomizeConfiguration.defaultProps = {
+  getEndEffectorPose: false,
+  toggleFaceDetection: false,
+  videoTopic: CAMERA_FEED_TOPIC
 }
 
 export default CustomizeConfiguration

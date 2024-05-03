@@ -6,9 +6,21 @@ import { View } from 'react-native'
 // Local imports
 import { useGlobalState, SETTINGS_STATE, MEAL_STATE } from '../GlobalState'
 import Main from './Main'
-import CustomizeConfiguration from './CustomizeConfiguration'
+import CustomizeConfiguration, {
+  getJointPositionsFromRobotStateResponse,
+  getEndEffectorPositionFromRobotStateResponse,
+  getEndEffectorOrientationFromRobotStateResponse
+} from './CustomizeConfiguration'
 import BiteTransfer from './BiteTransfer'
-import { ABOVE_PLATE_PARAM_JOINTS, RESTING_PARAM_JOINTS_1, RESTING_PARAM_JOINTS_2 } from '../Constants'
+import {
+  ABOVE_PLATE_PARAM_JOINTS,
+  FACE_DETECTION_IMG_TOPIC,
+  RESTING_PARAM_JOINTS_1,
+  RESTING_PARAM_JOINTS_2,
+  STAGING_PARAM_JOINTS,
+  STAGING_PARAM_ORIENTATION,
+  STAGING_PARAM_POSITION
+} from '../Constants'
 
 /**
  * The Settings components displays the appropriate settings page based on the
@@ -30,6 +42,8 @@ const Settings = (props) => {
           <CustomizeConfiguration
             startingMealState={MEAL_STATE.R_MovingAbovePlate}
             paramNames={[ABOVE_PLATE_PARAM_JOINTS]}
+            getEndEffectorPose={false}
+            getParamValues={[getJointPositionsFromRobotStateResponse]}
             configurationName='Above Plate'
             buttonName='Move Above Plate'
             otherButtonConfigs={[
@@ -50,6 +64,8 @@ const Settings = (props) => {
           <CustomizeConfiguration
             startingMealState={MEAL_STATE.R_MovingToRestingPosition}
             paramNames={[RESTING_PARAM_JOINTS_1, RESTING_PARAM_JOINTS_2]}
+            getEndEffectorPose={false}
+            getParamValues={[getJointPositionsFromRobotStateResponse, getJointPositionsFromRobotStateResponse]}
             configurationName='Resting Position'
             buttonName='Move to Resting'
             otherButtonConfigs={[
@@ -62,6 +78,38 @@ const Settings = (props) => {
                 mealState: MEAL_STATE.R_MovingAbovePlate
               }
             ]}
+            webrtcURL={props.webrtcURL}
+          />
+        )
+      case SETTINGS_STATE.STAGING_CONFIGURATION:
+        return (
+          <CustomizeConfiguration
+            startingMealState={MEAL_STATE.R_MovingToStagingConfiguration}
+            paramNames={[STAGING_PARAM_JOINTS, STAGING_PARAM_POSITION, STAGING_PARAM_ORIENTATION]}
+            getEndEffectorPose={true}
+            getParamValues={[
+              getJointPositionsFromRobotStateResponse,
+              getEndEffectorPositionFromRobotStateResponse,
+              getEndEffectorOrientationFromRobotStateResponse
+            ]}
+            configurationName='Staging Position'
+            buttonName='Move to Staging'
+            otherButtonConfigs={[
+              {
+                name: 'Move to Mouth',
+                mealState: MEAL_STATE.R_DetectingFace
+              },
+              {
+                name: 'Move Above Plate',
+                mealState: MEAL_STATE.R_MovingAbovePlate
+              },
+              {
+                name: 'Move to Resting',
+                mealState: MEAL_STATE.R_MovingToRestingPosition
+              }
+            ]}
+            toggleFaceDetection={true}
+            videoTopic={FACE_DETECTION_IMG_TOPIC}
             webrtcURL={props.webrtcURL}
           />
         )

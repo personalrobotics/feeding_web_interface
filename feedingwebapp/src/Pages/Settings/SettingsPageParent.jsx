@@ -244,24 +244,6 @@ const SettingsPageParent = (props) => {
           >
             Done
           </Button>
-          {/* <SplitButton
-            variant='success'
-            className='mx-2 mb-2 btn-huge'
-            size='lg'
-            style={{
-              fontSize: textFontSize.toString() + sizeSuffix,
-              width: '90%',
-              height: '90%',
-              color: 'black',
-              padding: '0rem'
-            }}
-            title={'Save and Go To Menu'}
-            onClick={saveAndGoToMenu}
-          >
-            <Dropdown.Item key={DEFAULT_NAMESPACE} onClick={() => props.doneCallback()}>
-              Go To Menu Without Saving
-            </Dropdown.Item>
-          </SplitButton> */}
         </View>
       </View>
       <Modal

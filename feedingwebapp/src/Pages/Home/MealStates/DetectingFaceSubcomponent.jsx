@@ -70,7 +70,7 @@ const DetectingFaceSubcomponent = (props) => {
   }, [faceDetectionCallback])
 
   /**
-   * Create the ROS Service. This is created in local state to avoid re-creating
+   * Create the ROS Service. This is created in as a ref to avoid re-creating
    * it upon every re-render.
    */
   let { serviceName, messageType } = ROS_SERVICE_NAMES[MEAL_STATE.R_DetectingFace]
