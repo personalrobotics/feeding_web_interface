@@ -47,12 +47,7 @@ function HoldButton(props) {
       let holdCallback = props.holdCallback
       holdCallback()
     }, 1000.0 / props.rate_hz)
-  }, [
-    props.rate_hz,
-    props.holdCallback,
-    stopInterval
-    // setCounter
-  ])
+  }, [props.rate_hz, props.holdCallback, stopInterval])
 
   // Callback for when the touch moves
   const onTouchMove = useCallback(
