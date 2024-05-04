@@ -235,6 +235,7 @@ const CustomizeConfiguration = (props) => {
     (nextMealState) => {
       doneButtonIsClicked.current = false
       let nextNextMealState = null
+      // If we are at the user's mouth, prepend MoveFromMouth to the motion.
       if (settingsPageAtFace) {
         // MoveIt often fails to execute small trajectories, which are often planned
         // when doing MovetoStaging immediately following MoveFromMouth. Thus, we
