@@ -14,8 +14,7 @@ import {
   GET_ROBOT_STATE_SERVICE_TYPE,
   ROBOT_BASE_LINK,
   ROBOT_END_EFFECTOR,
-  ROBOT_JOINTS,
-  ROS_SERVICE_NAMES
+  ROBOT_JOINTS
 } from '../Constants'
 import { useGlobalState, MEAL_STATE, SETTINGS_STATE } from '../GlobalState'
 import RobotMotion from '../Home/MealStates/RobotMotion'
@@ -71,19 +70,27 @@ const CustomizeConfiguration = (props) => {
   const setSettingsState = useGlobalState((state) => state.setSettingsState)
   const globalMealState = useGlobalState((state) => state.mealState)
   const setPaused = useGlobalState((state) => state.setPaused)
-  const biteTransferPageAtFace = useGlobalState((state) => state.biteTransferPageAtFace)
+  const settingsPageAtFace = useGlobalState((state) => state.settingsPageAtFace)
+  const setSettingsPageAtFace = useGlobalState((state) => state.setSettingsPageAtFace)
+  const moveToMouthActionGoal = useGlobalState((state) => state.moveToMouthActionGoal)
 
   // Create relevant local state variables
   // Configure the parameters for SettingsPageParent
   const [currentConfigurationParams, setCurrentConfigurationParams] = useState(props.paramNames.map(() => null))
   const [localCurrAndNextMealState, setLocalCurrAndNextMealState] = useState(
-    globalMealState === MEAL_STATE.U_BiteDone || biteTransferPageAtFace
+    globalMealState === MEAL_STATE.U_BiteDone || settingsPageAtFace
       ? [MEAL_STATE.R_MovingFromMouth, props.startingMealState]
       : [props.startingMealState, null]
   )
-  const actionInput = useMemo(() => ({}), [])
+  const actionInput = useMemo(() => {
+    if (localCurrAndNextMealState[0] === MEAL_STATE.R_MovingToMouth) {
+      return moveToMouthActionGoal
+    }
+    return {}
+  }, [localCurrAndNextMealState, moveToMouthActionGoal])
   const doneButtonIsClicked = useRef(false)
   const [zoomLevel, setZoomLevel] = useState(1.0)
+  const [videoFeedRefreshCount, setVideoFeedrefreshCount] = useState(0)
   const [mountTeleopSubcomponent, setMountTeleopSubcomponent] = useState(false)
   const unmountTeleopSubcomponentCallback = useRef(() => {})
 
@@ -96,14 +103,38 @@ const CustomizeConfiguration = (props) => {
   let textFontSize = 3.5
   let sizeSuffix = isPortrait ? 'vh' : 'vw'
 
+  /**
+   * Connect to ROS, if not already connected. Put this in useRef to avoid
+   * re-connecting upon re-renders.
+   */
+  const ros = useRef(useROS().ros)
+
+  /**
+   * Create the ROS Service Clients to get joint states
+   */
+  let getRobotStateService = useRef(createROSService(ros.current, GET_ROBOT_STATE_SERVICE_NAME, GET_ROBOT_STATE_SERVICE_TYPE))
+
   // Update other state variables that are related to the local meal state
   const setLocalCurrMealStateWrapper = useCallback(
     (newLocalCurrMealState, newLocalNextMealState = null) => {
-      console.log('setLocalCurrMealStateWrapper evaluated')
+      console.log('setLocalCurrMealStateWrapper evaluated', newLocalCurrMealState, newLocalNextMealState)
       let oldLocalCurrMealState = localCurrAndNextMealState[0]
-      // Only mount the teleop subcomponent if the robot finished the prereq motion for this page
-      if (newLocalCurrMealState === null && oldLocalCurrMealState === props.startingMealState) {
-        setMountTeleopSubcomponent(true)
+
+      if (newLocalCurrMealState === null) {
+        // If toggling face detection is enabled, refresh the video feed. This is
+        // because other elements/actions might have toggled face detection off.
+        if (props.toggleFaceDetection) {
+          setVideoFeedrefreshCount((x) => x + 1)
+        }
+
+        // Only mount the teleop subcomponent if the robot finished the prereq motion for this page
+        // Treat MoveFromMouth and MoveToStaging as the same.
+        if (
+          oldLocalCurrMealState === props.startingMealState ||
+          (props.startingMealState === MEAL_STATE.R_MovingToStagingConfiguration && oldLocalCurrMealState === MEAL_STATE.R_MovingFromMouth)
+        ) {
+          setMountTeleopSubcomponent(true)
+        }
       }
       // Start in a moving state, not a paused state
       setPaused(false)
@@ -115,15 +146,21 @@ const CustomizeConfiguration = (props) => {
       } else {
         setLocalCurrAndNextMealState([newLocalCurrMealState, newLocalNextMealState])
       }
+      // If the oldlocalCurrMealState was R_MovingToMouth, then the robot is at the mouth
+      setSettingsPageAtFace(newLocalCurrMealState === null && (settingsPageAtFace || oldLocalCurrMealState === MEAL_STATE.R_MovingToMouth))
     },
     [
       doneButtonIsClicked,
       localCurrAndNextMealState,
       props.startingMealState,
+      props.toggleFaceDetection,
       setLocalCurrAndNextMealState,
       setMountTeleopSubcomponent,
       setPaused,
-      setSettingsState
+      settingsPageAtFace,
+      setSettingsPageAtFace,
+      setSettingsState,
+      setVideoFeedrefreshCount
     ]
   )
 
@@ -167,47 +204,12 @@ const CustomizeConfiguration = (props) => {
     }
   }, [localCurrAndNextMealState, setLocalCurrMealStateWrapper, actionInput])
 
-  /**
-   * Connect to ROS, if not already connected. Put this in useRef to avoid
-   * re-connecting upon re-renders.
-   */
-  const ros = useRef(useROS().ros)
-
-  /**
-   * Create the ROS Service Clients to get/set parameters and to toggle face detection.
-   */
-  let getRobotStateService = useRef(createROSService(ros.current, GET_ROBOT_STATE_SERVICE_NAME, GET_ROBOT_STATE_SERVICE_TYPE))
-  let { serviceName, messageType } = ROS_SERVICE_NAMES[MEAL_STATE.R_DetectingFace]
-  let toggleFaceDetectionService = useRef(createROSService(ros.current, serviceName, messageType))
-
   // Reset state the first time the page is rendered
   useEffect(() => {
     doneButtonIsClicked.current = false
     // Start in a moving state, not a paused state
     setPaused(false)
-    // Toggle face detection is specified
-    let service = toggleFaceDetectionService.current
-    if (props.toggleFaceDetection) {
-      // Create a service request
-      let request = createROSServiceRequest({ data: true })
-      // Call the service
-      service.callService(request, (response) => console.log('Got toggle face detection service response', response))
-    }
-
-    /**
-     * In practice, because the values passed in in the second argument of
-     * useEffect will not change on re-renders, this return statement will
-     * only be called when the component unmounts.
-     */
-    return () => {
-      if (props.toggleFaceDetection) {
-        // Create a service request
-        let request = createROSServiceRequest({ data: false })
-        // Call the service
-        service.callService(request, (response) => console.log('Got toggle face detection service response', response))
-      }
-    }
-  }, [doneButtonIsClicked, props.toggleFaceDetection, setPaused, toggleFaceDetectionService])
+  }, [doneButtonIsClicked, setPaused])
 
   // Get the current joint states and store them as the above plate param
   const storeJointStatesAsLocalParam = useCallback(() => {
@@ -227,13 +229,26 @@ const CustomizeConfiguration = (props) => {
     })
   }, [getRobotStateService, props.getEndEffectorPose, props.getParamValues, props.paramNames, setCurrentConfigurationParams])
 
-  // Callback to move the robot to another configuration
+  // Callback to move the robot to another configuration. If the robot is at the user's face,
+  // first moves back from their mouth.
   const moveToButtonClicked = useCallback(
     (nextMealState) => {
       doneButtonIsClicked.current = false
-      unmountTeleopSubcomponentCallback.current = getSetLocalCurrMealStateWrapper(nextMealState)
+      let nextNextMealState = null
+      if (settingsPageAtFace) {
+        // MoveIt often fails to execute small trajectories, which are often planned
+        // when doing MovetoStaging immediately following MoveFromMouth. Thus, we
+        // leave the robot in the MoveFromMouth configuration. It is not technically
+        // the actual staging configuration, but it is the best we can do given
+        // the MoveIt limitation.
+        if (nextMealState !== MEAL_STATE.R_MovingToStagingConfiguration) {
+          nextNextMealState = nextMealState
+        }
+        nextMealState = MEAL_STATE.R_MovingFromMouth
+      }
+      unmountTeleopSubcomponentCallback.current = getSetLocalCurrMealStateWrapper(nextMealState, nextNextMealState)
     },
-    [getSetLocalCurrMealStateWrapper, doneButtonIsClicked, unmountTeleopSubcomponentCallback]
+    [getSetLocalCurrMealStateWrapper, doneButtonIsClicked, settingsPageAtFace, unmountTeleopSubcomponentCallback]
   )
 
   // Callback to return to the main settings page
@@ -282,7 +297,15 @@ const CustomizeConfiguration = (props) => {
         }}
       >
         <View style={{ flex: 8, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
-          <VideoFeed topic={props.videoTopic} updateRateHz={10} webrtcURL={props.webrtcURL} zoom={zoomLevel} setZoom={setZoomLevel} />
+          <VideoFeed
+            topic={props.videoTopic}
+            updateRateHz={10}
+            webrtcURL={props.webrtcURL}
+            zoom={zoomLevel}
+            setZoom={setZoomLevel}
+            toggleFaceDetection={props.toggleFaceDetection}
+            externalRefreshCount={videoFeedRefreshCount}
+          />
         </View>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}></View>
         <View style={{ flex: 12, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
@@ -315,7 +338,7 @@ const CustomizeConfiguration = (props) => {
           {props.otherButtonConfigs.map(({ name, mealState }) => (
             <View key={name} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
               <Button
-                variant='warning'
+                variant={mountTeleopSubcomponent ? 'warning' : 'secondary'}
                 className='mx-2 mb-2 btn-huge'
                 size='lg'
                 style={{
@@ -332,7 +355,7 @@ const CustomizeConfiguration = (props) => {
           ))}
           <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
             <Button
-              variant='warning'
+              variant={mountTeleopSubcomponent ? 'secondary' : 'warning'}
               className='mx-2 mb-2 btn-huge'
               size='lg'
               style={{
@@ -359,12 +382,14 @@ const CustomizeConfiguration = (props) => {
     props.configurationName,
     props.otherButtonConfigs,
     props.startingMealState,
+    props.toggleFaceDetection,
     props.videoTopic,
     props.webrtcURL,
     mountTeleopSubcomponent,
     moveToButtonClicked,
     unmountTeleopSubcomponentCallback,
-    storeJointStatesAsLocalParam
+    storeJointStatesAsLocalParam,
+    videoFeedRefreshCount
   ])
 
   // When a face is detected, switch to MoveToMouth
@@ -402,17 +427,19 @@ const CustomizeConfiguration = (props) => {
     }
   }, [localCurrAndNextMealState, props.webrtcURL, robotMotionProps, faceDetectedCallback])
 
+  const resetToPresetSuccessCallback = useRef(() => moveToButtonClicked(props.startingMealState))
+
   return (
     <SettingsPageParent
       title={props.configurationName + ' \u2699'}
       doneCallback={doneButtonClicked}
       modalShow={localCurrAndNextMealState[0] !== null}
       modalOnHide={() => setLocalCurrMealStateWrapper(null)}
-      modalChildren={renderModalBody()}
+      modalChildren={localCurrAndNextMealState[0] === null ? <></> : renderModalBody()}
       paramNames={props.paramNames}
       localParamValues={currentConfigurationParams}
       setLocalParamValues={setCurrentConfigurationParams}
-      resetToPresetSuccessCallback={() => moveToButtonClicked(props.startingMealState)}
+      resetToPresetSuccessCallback={resetToPresetSuccessCallback}
     >
       {renderSettings()}
     </SettingsPageParent>

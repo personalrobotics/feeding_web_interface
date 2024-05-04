@@ -1,5 +1,5 @@
 // React imports
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { View } from 'react-native'
 
@@ -30,6 +30,11 @@ const Settings = (props) => {
   // Get the relevant values from global state
   const settingsState = useGlobalState((state) => state.settingsState)
 
+  // Get the param names, to avoid re-creating them on re-renders
+  const abovePlateParamNames = useMemo(() => [ABOVE_PLATE_PARAM_JOINTS], [])
+  const restingParamNames = useMemo(() => [RESTING_PARAM_JOINTS_1, RESTING_PARAM_JOINTS_2], [])
+  const stagingParamNames = useMemo(() => [STAGING_PARAM_JOINTS, STAGING_PARAM_POSITION, STAGING_PARAM_ORIENTATION], [])
+
   const getComponentBySettingsState = useCallback(() => {
     console.log('getComponentBySettingsState', settingsState)
     switch (settingsState) {
@@ -41,7 +46,7 @@ const Settings = (props) => {
         return (
           <CustomizeConfiguration
             startingMealState={MEAL_STATE.R_MovingAbovePlate}
-            paramNames={[ABOVE_PLATE_PARAM_JOINTS]}
+            paramNames={abovePlateParamNames}
             getEndEffectorPose={false}
             getParamValues={[getJointPositionsFromRobotStateResponse]}
             configurationName='Above Plate'
@@ -63,7 +68,7 @@ const Settings = (props) => {
         return (
           <CustomizeConfiguration
             startingMealState={MEAL_STATE.R_MovingToRestingPosition}
-            paramNames={[RESTING_PARAM_JOINTS_1, RESTING_PARAM_JOINTS_2]}
+            paramNames={restingParamNames}
             getEndEffectorPose={false}
             getParamValues={[getJointPositionsFromRobotStateResponse, getJointPositionsFromRobotStateResponse]}
             configurationName='Resting Position'
@@ -85,7 +90,7 @@ const Settings = (props) => {
         return (
           <CustomizeConfiguration
             startingMealState={MEAL_STATE.R_MovingToStagingConfiguration}
-            paramNames={[STAGING_PARAM_JOINTS, STAGING_PARAM_POSITION, STAGING_PARAM_ORIENTATION]}
+            paramNames={stagingParamNames}
             getEndEffectorPose={true}
             getParamValues={[
               getJointPositionsFromRobotStateResponse,
@@ -117,11 +122,11 @@ const Settings = (props) => {
         console.log('Invalid settings state', settingsState)
         return <Main />
     }
-  }, [props.webrtcURL, settingsState])
+  }, [abovePlateParamNames, restingParamNames, stagingParamNames, props.webrtcURL, settingsState])
 
   // Render the component
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'start' }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'start', width: '100%', height: '100%' }}>
       {/**
        * The main contents of the screen depends on the settingsState.
        */}

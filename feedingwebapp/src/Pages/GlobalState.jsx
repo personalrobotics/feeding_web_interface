@@ -145,7 +145,7 @@ export const useGlobalState = create(
       // or not. This is in the off-chance that the mealState is not at the user's
       // face, the settings page is, and the user refreshes -- the page should
       // call MoveFromMouthToStaging instead of just MoveToStaging.
-      biteTransferPageAtFace: false,
+      settingsPageAtFace: false,
       // The button the user most recently clicked on the BiteDone page. In practice,
       // this is the state we transition to after R_MovingFromMouth. In practice,
       // it is either R_MovingAbovePlate, R_MovingToRestingPosition, or R_DetectingFace.
@@ -169,7 +169,7 @@ export const useGlobalState = create(
           let retval = {
             mealState: mealState,
             mealStateTransitionTime: Date.now(),
-            biteTransferPageAtFace: false // Reset this flag when the meal state changes
+            settingsPageAtFace: false // Reset this flag when the meal state changes
           }
           // Only update the previous state if it is not a self-transition (to
           // account for cases where a MoveTo action result message is reveived twice)
@@ -212,9 +212,12 @@ export const useGlobalState = create(
           lastMotionActionResponse: lastMotionActionResponse
         })),
       setMoveToMouthActionGoal: (moveToMouthActionGoal) =>
-        set(() => ({
-          moveToMouthActionGoal: moveToMouthActionGoal
-        })),
+        set(() => {
+          console.log('setMoveToMouthActionGoal called with', moveToMouthActionGoal)
+          return {
+            moveToMouthActionGoal: moveToMouthActionGoal
+          }
+        }),
       setPaused: (paused) =>
         set(() => {
           let retval = { paused: paused }
@@ -277,9 +280,9 @@ export const useGlobalState = create(
         set(() => ({
           biteAcquisitionCheckAutoContinueProbThreshUpper: biteAcquisitionCheckAutoContinueProbThreshUpper
         })),
-      setBiteTransferPageAtFace: (biteTransferPageAtFace) =>
+      setSettingsPageAtFace: (settingsPageAtFace) =>
         set(() => ({
-          biteTransferPageAtFace: biteTransferPageAtFace
+          settingsPageAtFace: settingsPageAtFace
         })),
       setBiteSelectionZoom: (biteSelectionZoom) =>
         set(() => ({
