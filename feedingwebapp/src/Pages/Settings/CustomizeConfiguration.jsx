@@ -428,7 +428,10 @@ const CustomizeConfiguration = (props) => {
     }
   }, [localCurrAndNextMealState, props.webrtcURL, robotMotionProps, faceDetectedCallback])
 
-  const resetToPresetSuccessCallback = useRef(() => moveToButtonClicked(props.startingMealState))
+  // The below pattern keeps resetToPresetSuccessCallback up-to-date, while ensuring
+  // it doesn't trigger unnecessary calls to set global parameters in the SettingsPageParent
+  const resetToPresetSuccessCallback = useRef(null)
+  resetToPresetSuccessCallback.current = () => moveToButtonClicked(props.startingMealState)
 
   return (
     <SettingsPageParent

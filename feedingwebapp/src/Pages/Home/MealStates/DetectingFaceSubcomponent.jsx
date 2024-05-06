@@ -5,11 +5,7 @@ import { useMediaQuery } from 'react-responsive'
 import { View } from 'react-native'
 
 // Local Imports
-import {
-  useROS,
-  subscribeToROSTopic,
-  unsubscribeFromROSTopic
-} from '../../../ros/ros_helpers'
+import { useROS, subscribeToROSTopic, unsubscribeFromROSTopic } from '../../../ros/ros_helpers'
 import '../Home.css'
 import { FACE_DETECTION_IMG_TOPIC, FACE_DETECTION_TOPIC, FACE_DETECTION_TOPIC_MSG } from '../../Constants'
 import VideoFeed from '../VideoFeed'

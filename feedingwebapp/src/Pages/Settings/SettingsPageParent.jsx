@@ -62,7 +62,7 @@ const SettingsPageParent = (props) => {
       let currentRequest = createROSServiceRequest({
         names: props.paramNames.map((name) => preset.concat('.', name))
       })
-      console.log('Sending GetParameter request for current values', currentRequest)
+      console.log('Sending GetParameter request for values in preset', preset, currentRequest)
       service.callService(currentRequest, (response) => {
         console.log('For request', currentRequest, 'received GetParameter response', response)
         let defaultRequest = createROSServiceRequest({

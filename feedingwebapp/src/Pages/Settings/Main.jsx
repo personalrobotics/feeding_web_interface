@@ -110,7 +110,7 @@ const Main = () => {
       console.log('Calling service', request)
       service.callService(request, (response) => {
         console.log('Got response', response)
-        if (response != null && response.results.length > 1 && response.results[0].successful && response.results[1].successful) {
+        if (response != null && response.result.successful) {
           setSettingsPresets({
             current: preset,
             customNames: presetOptions

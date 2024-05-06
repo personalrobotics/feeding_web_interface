@@ -122,8 +122,8 @@ export const GET_ROBOT_STATE_SERVICE_NAME = 'get_robot_state'
 export const GET_ROBOT_STATE_SERVICE_TYPE = 'ada_feeding_msgs/srv/GetRobotState'
 export const GET_PARAMETERS_SERVICE_NAME = 'ada_feeding_action_servers/get_parameters'
 export const GET_PARAMETERS_SERVICE_TYPE = 'rcl_interfaces/srv/GetParameters'
-export const SET_PARAMETERS_SERVICE_NAME = 'ada_feeding_action_servers/set_parameters'
-export const SET_PARAMETERS_SERVICE_TYPE = 'rcl_interfaces/srv/SetParameters'
+export const SET_PARAMETERS_SERVICE_NAME = 'ada_feeding_action_servers/set_parameters_atomically'
+export const SET_PARAMETERS_SERVICE_TYPE = 'rcl_interfaces/srv/SetParametersAtomically'
 
 // The names of parameters users can change in the settings menu
 export const DISTANCE_TO_MOUTH_PARAM = 'MoveToMouth.tree_kwargs.plan_distance_from_mouth'

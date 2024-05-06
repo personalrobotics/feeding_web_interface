@@ -62,7 +62,7 @@ function VideoStream(props) {
       }
       img.src = URL.createObjectURL(dataURItoBlob('data:image/jpg;base64,' + message.data))
     },
-    [img/*, props.topic*/]
+    [img /*, props.topic*/]
   )
 
   // Subscribe to the image topic
