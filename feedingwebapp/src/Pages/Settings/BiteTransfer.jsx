@@ -22,8 +22,8 @@ const BiteTransfer = (props) => {
   const setSettingsState = useGlobalState((state) => state.setSettingsState)
   const globalMealState = useGlobalState((state) => state.mealState)
   const setPaused = useGlobalState((state) => state.setPaused)
-  const settingsPageAtFace = useGlobalState((state) => state.settingsPageAtFace)
-  const setSettingsPageAtFace = useGlobalState((state) => state.setSettingsPageAtFace)
+  const settingsPageAtMouth = useGlobalState((state) => state.settingsPageAtMouth)
+  const setSettingsPageAtMouth = useGlobalState((state) => state.setSettingsPageAtMouth)
   const moveToMouthActionGoal = useGlobalState((state) => state.moveToMouthActionGoal)
 
   // Create relevant local state variables
@@ -31,7 +31,7 @@ const BiteTransfer = (props) => {
   const paramNames = useMemo(() => [DISTANCE_TO_MOUTH_PARAM], [])
   const [currentDistanceToMouth, setCurrentDistanceToMouth] = useState([null])
   const [localCurrAndNextMealState, setLocalCurrAndNextMealState] = useState(
-    globalMealState === MEAL_STATE.U_BiteDone || globalMealState === MEAL_STATE.R_DetectingFace || settingsPageAtFace
+    globalMealState === MEAL_STATE.U_BiteDone || globalMealState === MEAL_STATE.R_DetectingFace || settingsPageAtMouth
       ? [MEAL_STATE.R_MovingFromMouth, null]
       : [MEAL_STATE.R_MovingToStagingConfiguration, null]
   )
@@ -59,7 +59,9 @@ const BiteTransfer = (props) => {
     (newLocalCurrMealState, newLocalNextMealState = null) => {
       let oldLocalCurrMealState = localCurrAndNextMealState[0]
       // If the oldlocalCurrMealState was R_MovingToMouth, then the robot is at the mouth
-      setSettingsPageAtFace(newLocalCurrMealState === null && (settingsPageAtFace || oldLocalCurrMealState === MEAL_STATE.R_MovingToMouth))
+      setSettingsPageAtMouth(
+        newLocalCurrMealState === null && (settingsPageAtMouth || oldLocalCurrMealState === MEAL_STATE.R_MovingToMouth)
+      )
       // Start in a moving state, not a paused state
       setPaused(false)
       console.log('setLocalCurrMealStateWrapper', newLocalCurrMealState, newLocalNextMealState, doneButtonIsClicked.current)
@@ -73,10 +75,10 @@ const BiteTransfer = (props) => {
       }
     },
     [
-      settingsPageAtFace,
+      settingsPageAtMouth,
       localCurrAndNextMealState,
       setLocalCurrAndNextMealState,
-      setSettingsPageAtFace,
+      setSettingsPageAtMouth,
       doneButtonIsClicked,
       setPaused,
       setSettingsState
@@ -101,10 +103,10 @@ const BiteTransfer = (props) => {
   useEffect(() => {
     doneButtonIsClicked.current = false
     // Since we start by moving to staging, this should be initialized to false
-    setSettingsPageAtFace(false)
+    setSettingsPageAtMouth(false)
     // Start in a moving state, not a paused state
     setPaused(false)
-  }, [setSettingsPageAtFace, setPaused, doneButtonIsClicked])
+  }, [setSettingsPageAtMouth, setPaused, doneButtonIsClicked])
 
   // Callback to move the robot to the mouth
   const moveToMouthButtonClicked = useCallback(() => {
@@ -127,7 +129,7 @@ const BiteTransfer = (props) => {
     // To get to Settings, the globalMealState must be one of the NON_MOVING_STATES
     switch (globalMealState) {
       case MEAL_STATE.U_BiteDone:
-        if (settingsPageAtFace) {
+        if (settingsPageAtMouth) {
           localCurrMealState = null
           localNextMealState = null
         } else {
@@ -152,7 +154,7 @@ const BiteTransfer = (props) => {
         break
     }
     setLocalCurrMealStateWrapper(localCurrMealState, localNextMealState)
-  }, [settingsPageAtFace, globalMealState, setLocalCurrMealStateWrapper, doneButtonIsClicked])
+  }, [settingsPageAtMouth, globalMealState, setLocalCurrMealStateWrapper, doneButtonIsClicked])
 
   // Callback for when the user changes the distance to mouth
   const onDistanceToMouthChange = useCallback(

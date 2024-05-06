@@ -70,15 +70,15 @@ const CustomizeConfiguration = (props) => {
   const setSettingsState = useGlobalState((state) => state.setSettingsState)
   const globalMealState = useGlobalState((state) => state.mealState)
   const setPaused = useGlobalState((state) => state.setPaused)
-  const settingsPageAtFace = useGlobalState((state) => state.settingsPageAtFace)
-  const setSettingsPageAtFace = useGlobalState((state) => state.setSettingsPageAtFace)
+  const settingsPageAtMouth = useGlobalState((state) => state.settingsPageAtMouth)
+  const setSettingsPageAtMouth = useGlobalState((state) => state.setSettingsPageAtMouth)
   const moveToMouthActionGoal = useGlobalState((state) => state.moveToMouthActionGoal)
 
   // Create relevant local state variables
   // Configure the parameters for SettingsPageParent
   const [currentConfigurationParams, setCurrentConfigurationParams] = useState(props.paramNames.map(() => null))
   const [localCurrAndNextMealState, setLocalCurrAndNextMealState] = useState(
-    globalMealState === MEAL_STATE.U_BiteDone || settingsPageAtFace
+    globalMealState === MEAL_STATE.U_BiteDone || settingsPageAtMouth
       ? [MEAL_STATE.R_MovingFromMouth, props.startingMealState]
       : [props.startingMealState, null]
   )
@@ -147,7 +147,9 @@ const CustomizeConfiguration = (props) => {
         setLocalCurrAndNextMealState([newLocalCurrMealState, newLocalNextMealState])
       }
       // If the oldlocalCurrMealState was R_MovingToMouth, then the robot is at the mouth
-      setSettingsPageAtFace(newLocalCurrMealState === null && (settingsPageAtFace || oldLocalCurrMealState === MEAL_STATE.R_MovingToMouth))
+      setSettingsPageAtMouth(
+        newLocalCurrMealState === null && (settingsPageAtMouth || oldLocalCurrMealState === MEAL_STATE.R_MovingToMouth)
+      )
     },
     [
       doneButtonIsClicked,
@@ -157,8 +159,8 @@ const CustomizeConfiguration = (props) => {
       setLocalCurrAndNextMealState,
       setMountTeleopSubcomponent,
       setPaused,
-      settingsPageAtFace,
-      setSettingsPageAtFace,
+      settingsPageAtMouth,
+      setSettingsPageAtMouth,
       setSettingsState,
       setVideoFeedrefreshCount
     ]
@@ -236,7 +238,7 @@ const CustomizeConfiguration = (props) => {
       doneButtonIsClicked.current = false
       let nextNextMealState = null
       // If we are at the user's mouth, prepend MoveFromMouth to the motion.
-      if (settingsPageAtFace) {
+      if (settingsPageAtMouth) {
         // MoveIt often fails to execute small trajectories, which are often planned
         // when doing MovetoStaging immediately following MoveFromMouth. Thus, we
         // leave the robot in the MoveFromMouth configuration. It is not technically
@@ -249,7 +251,7 @@ const CustomizeConfiguration = (props) => {
       }
       unmountTeleopSubcomponentCallback.current = getSetLocalCurrMealStateWrapper(nextMealState, nextNextMealState)
     },
-    [getSetLocalCurrMealStateWrapper, doneButtonIsClicked, settingsPageAtFace, unmountTeleopSubcomponentCallback]
+    [getSetLocalCurrMealStateWrapper, doneButtonIsClicked, settingsPageAtMouth, unmountTeleopSubcomponentCallback]
   )
 
   // Callback to return to the main settings page

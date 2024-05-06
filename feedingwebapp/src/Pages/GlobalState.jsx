@@ -141,11 +141,11 @@ export const useGlobalState = create(
       biteAcquisitionCheckAutoContinueSecs: 3.0,
       biteAcquisitionCheckAutoContinueProbThreshLower: 0.25,
       biteAcquisitionCheckAutoContinueProbThreshUpper: 0.75,
-      // Whether the settings bite transfer page is currently at the user's face
+      // Whether any of the settings pages is currently at the user's mouth
       // or not. This is in the off-chance that the mealState is not at the user's
-      // face, the settings page is, and the user refreshes -- the page should
-      // call MoveFromMouthToStaging instead of just MoveToStaging.
-      settingsPageAtFace: false,
+      // mouth, the settings page is, and the user refreshes -- the page should
+      // call MoveFromMouth instead of just MoveToStaging.
+      settingsPageAtMouth: false,
       // The button the user most recently clicked on the BiteDone page. In practice,
       // this is the state we transition to after R_MovingFromMouth. In practice,
       // it is either R_MovingAbovePlate, R_MovingToRestingPosition, or R_DetectingFace.
@@ -169,7 +169,7 @@ export const useGlobalState = create(
           let retval = {
             mealState: mealState,
             mealStateTransitionTime: Date.now(),
-            settingsPageAtFace: false // Reset this flag when the meal state changes
+            settingsPageAtMouth: false // Reset this flag when the meal state changes
           }
           // Only update the previous state if it is not a self-transition (to
           // account for cases where a MoveTo action result message is reveived twice)
@@ -280,9 +280,9 @@ export const useGlobalState = create(
         set(() => ({
           biteAcquisitionCheckAutoContinueProbThreshUpper: biteAcquisitionCheckAutoContinueProbThreshUpper
         })),
-      setSettingsPageAtFace: (settingsPageAtFace) =>
+      setSettingsPageAtMouth: (settingsPageAtMouth) =>
         set(() => ({
-          settingsPageAtFace: settingsPageAtFace
+          settingsPageAtMouth: settingsPageAtMouth
         })),
       setBiteSelectionZoom: (biteSelectionZoom) =>
         set(() => ({
