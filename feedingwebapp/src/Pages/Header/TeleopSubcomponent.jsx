@@ -10,16 +10,16 @@ import { View } from 'react-native'
 import { useROS, createROSTopic, createROSMessage, createROSActionClient, callROSAction, destroyActionClient } from '../../ros/ros_helpers'
 import '../Home/Home.css'
 import {
+  CARTESIAN_CONTROLLER_NAME,
+  JOINT_CONTROLLER_NAME,
   ROBOT_BASE_LINK,
   ROBOT_JOINTS,
   SERVO_CARTESIAN_TOPIC,
   SERVO_CARTESIAN_TOPIC_MSG,
   SERVO_JOINT_TOPIC,
   SERVO_JOINT_TOPIC_MSG,
-  START_CARTESIAN_CONTROLLER_ACTION_NAME,
-  START_CARTESIAN_CONTROLLER_ACTION_TYPE,
-  START_JOINT_CONTROLLER_ACTION_NAME,
-  START_JOINT_CONTROLLER_ACTION_TYPE
+  ACTIVATE_CONTROLLER_ACTION_NAME,
+  ACTIVATE_CONTROLLER_ACTION_TYPE
 } from '../Constants'
 import { useGlobalState } from '../GlobalState'
 import HoldButton from '../../buttons/HoldButton'
@@ -122,11 +122,17 @@ const TeleopSubcomponent = (props) => {
   /**
    * Create the ROS Action Client to start the teleop controllers.
    */
-  let startCartesianControllerAction = useMemo(() => {
-    return createROSActionClient(ros.current, START_CARTESIAN_CONTROLLER_ACTION_NAME, START_CARTESIAN_CONTROLLER_ACTION_TYPE)
-  }, [])
-  let startJointControllerAction = useMemo(() => {
-    return createROSActionClient(ros.current, START_JOINT_CONTROLLER_ACTION_NAME, START_JOINT_CONTROLLER_ACTION_TYPE)
+  let activateControllerActionGoal = useMemo(
+    () =>
+      createROSMessage({
+        controller_to_activate: teleopMode === JOINT_MODE ? JOINT_CONTROLLER_NAME : CARTESIAN_CONTROLLER_NAME,
+        re_tare: true
+      }),
+    [teleopMode]
+  )
+
+  let activateControllerAction = useMemo(() => {
+    return createROSActionClient(ros.current, ACTIVATE_CONTROLLER_ACTION_NAME, ACTIVATE_CONTROLLER_ACTION_TYPE)
   }, [])
 
   /**
@@ -144,9 +150,9 @@ const TeleopSubcomponent = (props) => {
    */
   useEffect(() => {
     console.log('Starting controller', refreshCount)
-    let action = teleopMode === JOINT_MODE ? startJointControllerAction : startCartesianControllerAction
-    callROSAction(action, createROSMessage({}), null, null)
-  }, [refreshCount, startCartesianControllerAction, startJointControllerAction, teleopMode])
+    let action = activateControllerAction
+    callROSAction(action, activateControllerActionGoal, null, null)
+  }, [refreshCount, activateControllerAction, activateControllerActionGoal])
 
   /**
    * When the component is unmounted, stop servo.
@@ -155,11 +161,10 @@ const TeleopSubcomponent = (props) => {
     let unmountCallback = props.unmountCallback
     return () => {
       console.log('Unmounting teleop subcomponent.')
-      destroyActionClient(startCartesianControllerAction)
-      destroyActionClient(startJointControllerAction)
+      destroyActionClient(activateControllerAction)
       unmountCallback.current()
     }
-  }, [startCartesianControllerAction, startJointControllerAction, props.unmountCallback])
+  }, [activateControllerAction, props.unmountCallback])
 
   /**
    * Callback function to publish constant cartesian cartesian velocity commands.

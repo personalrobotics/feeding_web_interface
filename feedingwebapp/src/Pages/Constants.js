@@ -87,10 +87,10 @@ ROS_ACTIONS_NAMES[MEAL_STATE.R_StowingArm] = {
   messageType: 'ada_feeding_msgs/action/MoveTo'
 }
 export { ROS_ACTIONS_NAMES }
-export const START_CARTESIAN_CONTROLLER_ACTION_NAME = 'ActivateCartesianController'
-export const START_CARTESIAN_CONTROLLER_ACTION_TYPE = 'ada_feeding_msgs/action/Trigger'
-export const START_JOINT_CONTROLLER_ACTION_NAME = 'ActivateJointController'
-export const START_JOINT_CONTROLLER_ACTION_TYPE = 'ada_feeding_msgs/action/Trigger'
+export const ACTIVATE_CONTROLLER_ACTION_NAME = 'ActivateController'
+export const ACTIVATE_CONTROLLER_ACTION_TYPE = 'ada_feeding_msgs/action/ActivateController'
+export const CARTESIAN_CONTROLLER_NAME = 'jaco_arm_cartesian_controller'
+export const JOINT_CONTROLLER_NAME = 'jaco_arm_servo_controller'
 export const RECOMPUTE_WORKSPACE_WALLS_ACTION_NAME = 'recompute_workspace_walls'
 export const RECOMPUTE_WORKSPACE_WALLS_ACTION_TYPE = 'ada_feeding_msgs/action/Trigger'
 
