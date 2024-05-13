@@ -139,6 +139,11 @@ export const RESTING_PARAM_JOINTS_1 = 'AcquireFood.tree_kwargs.resting_joint_pos
 // TODO: We may need to remove the orientation constraint from the below action.
 export const RESTING_PARAM_JOINTS_2 = 'MoveToRestingPosition.tree_kwargs.goal_configuration'
 
+// Parameters for modifying the force threshold
+export const FORCE_THRESHOLD_PARAM = 'wrench_threshold.fMag'
+export const DEFAULT_FORCE_THRESHOLD = 1.0 // N
+export const INCREASED_FORCE_THRESHOLD = 75.0 // N
+
 // Robot link names
 export const ROBOT_BASE_LINK = 'j2n6s200_link_base'
 export const ROBOT_END_EFFECTOR = 'forkTip'
