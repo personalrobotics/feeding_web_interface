@@ -623,7 +623,7 @@ const TeleopSubcomponent = (props) => {
         {/* Allow users to tune to speed of the current teleop mode */}
         <View
           style={{
-            flex: 1,
+            flex: props.allowIncreasingForceThreshold ? 1 : 2,
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
