@@ -59,6 +59,10 @@ const RobotMotion = (props) => {
     actionStatus: null
   })
 
+  // Track the number of times the action has been called, to ensure that we do not
+  // process responses that are received before the action is called.
+  const actionCallCount = useRef(0)
+
   // Get the relevant global variables
   const paused = useGlobalState((state) => state.paused)
   const setPaused = useGlobalState((state) => state.setPaused)
@@ -147,6 +151,10 @@ const RobotMotion = (props) => {
    */
   const responseCallback = useCallback(
     (response) => {
+      if (actionCallCount.current === 0) {
+        console.log('Ignoring response message because an action has not yet been called', response)
+        return
+      }
       console.log('Got response message', response)
       if (response.response_type === 'result' && response.values.status === MOTION_STATUS_SUCCESS) {
         setActionStatus({
@@ -173,7 +181,7 @@ const RobotMotion = (props) => {
         }
       }
     },
-    [setLastMotionActionResponse, setActionStatus, setPaused, robotMotionDone]
+    [actionCallCount, setLastMotionActionResponse, setActionStatus, setPaused, robotMotionDone]
   )
 
   /**
@@ -203,6 +211,7 @@ const RobotMotion = (props) => {
   const callRobotMotionAction = useCallback(
     (feedbackCb, responseCb) => {
       if (!paused) {
+        actionCallCount.current += 1
         setActionStatus({
           actionStatus: ROS_ACTION_STATUS_EXECUTE
         })
@@ -210,7 +219,7 @@ const RobotMotion = (props) => {
         callROSAction(robotMotionAction, props.actionInput, feedbackCb, responseCb)
       }
     },
-    [paused, robotMotionAction, props.actionInput]
+    [actionCallCount, paused, robotMotionAction, props.actionInput]
   )
 
   /**
