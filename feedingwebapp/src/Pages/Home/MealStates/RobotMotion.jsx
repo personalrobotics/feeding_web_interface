@@ -22,7 +22,6 @@ import { useGlobalState } from '../../GlobalState'
 import {
   CLEAR_OCTOMAP_SERVICE_NAME,
   CLEAR_OCTOMAP_SERVICE_TYPE,
-  NON_RETRYABLE_STATES,
   ROS_ACTIONS_NAMES,
   MOTION_STATUS_SUCCESS,
   ROS_ACTION_STATUS_CANCEL_GOAL,
@@ -125,14 +124,27 @@ const RobotMotion = (props) => {
   )
 
   /**
+   * Callback function to change the meal state.
+   */
+  const changeMealState = useCallback(
+    (nextMealState, msg = null) => {
+      if (msg) {
+        console.log(msg)
+      }
+      setPaused(false)
+      let setMealState = props.setMealState
+      setMealState(nextMealState)
+    },
+    [setPaused, props.setMealState]
+  )
+
+  /**
    * Callback function for when the robot has finished moving to its staging
    * location.
    */
   const robotMotionDone = useCallback(() => {
-    console.log('robotMotionDone')
-    let setMealState = props.setMealState
-    setMealState(props.nextMealState)
-  }, [props.nextMealState, props.setMealState])
+    changeMealState(props.nextMealState, 'robotMotionDone')
+  }, [changeMealState, props.nextMealState])
 
   /**
    * Callback function for when the action sends a response. It updates the
@@ -264,10 +276,8 @@ const RobotMotion = (props) => {
   }, [clearOctomapService, resumeCallback])
 
   const backCallback = useCallback(() => {
-    setPaused(false)
-    let setMealState = props.setMealState
-    setMealState(props.backMealState)
-  }, [setPaused, props.backMealState, props.setMealState])
+    changeMealState(props.backMealState, 'backCallback')
+  }, [changeMealState, props.backMealState])
 
   /**
    * Get the action status text and progress bar or blank view to render.
@@ -310,6 +320,22 @@ const RobotMotion = (props) => {
               ) : (
                 <></>
               )}
+              {props.errorMealState ? (
+                <Button
+                  variant='warning'
+                  className='mx-2 btn-huge'
+                  size='lg'
+                  onClick={() => changeMealState(props.errorMealState, 'errorMealState')}
+                  style={{
+                    width: '90%',
+                    height: '20%'
+                  }}
+                >
+                  <h5 style={{ textAlign: 'center', fontSize: motionTextFontSize }}>{props.errorMealStateDescription}</h5>
+                </Button>
+              ) : (
+                <></>
+              )}
             </View>
             <View
               style={{
@@ -326,7 +352,16 @@ const RobotMotion = (props) => {
         </>
       )
     },
-    [dimension, props.waitingText, motionTextFontSize, waitingTextFontSize, retryCallback]
+    [
+      dimension,
+      props.waitingText,
+      props.errorMealState,
+      props.errorMealStateDescription,
+      motionTextFontSize,
+      waitingTextFontSize,
+      retryCallback,
+      changeMealState
+    ]
   )
 
   /**
@@ -342,7 +377,6 @@ const RobotMotion = (props) => {
       let showTime = false
       let time = 0
       let progress = null
-      let retry = false
       switch (actionStatus.actionStatus) {
         case ROS_ACTION_STATUS_EXECUTE:
           if (actionStatus.feedback) {
@@ -377,9 +411,19 @@ const RobotMotion = (props) => {
            * users on how to troubleshoot/fix it.
            */
           text = 'Robot encountered an error'
-          retry = NON_RETRYABLE_STATES.has(props.mealState) ? false : true
           return (
-            <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, progress, retry)}</>
+            <>
+              {actionStatusTextAndVisual(
+                flexSizeOuter,
+                flexSizeTextInner,
+                flexSizeVisualInner,
+                text,
+                showTime,
+                time,
+                progress,
+                props.allowRetry
+              )}
+            </>
           )
         case ROS_ACTION_STATUS_CANCELED:
           return <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, progress)}</>
@@ -397,7 +441,7 @@ const RobotMotion = (props) => {
           }
       }
     },
-    [paused, dimension, actionStatusTextAndVisual, props.mealState]
+    [paused, dimension, actionStatusTextAndVisual, props.allowRetry]
   )
 
   // Render the component
@@ -421,7 +465,7 @@ const RobotMotion = (props) => {
         pauseCallback={pauseCallback}
         backCallback={props.backMealState ? backCallback : null}
         backMealState={props.backMealState}
-        resumeCallback={NON_RETRYABLE_STATES.has(props.mealState) ? null : resumeCallback}
+        resumeCallback={props.allowRetry ? resumeCallback : null}
         paused={paused}
       />
     </>
@@ -454,10 +498,16 @@ RobotMotion.propTypes = {
   // the action client, then calling it again, etc.)
   actionInput: PropTypes.object.isRequired,
   // The static text to display while the robot is executing the action
-  waitingText: PropTypes.string.isRequired
+  waitingText: PropTypes.string.isRequired,
+  // Whether to show the retry/resume option if the action fails
+  allowRetry: PropTypes.bool,
+  // If error, show the user the option to transition to this meal state
+  errorMealState: PropTypes.string,
+  errorMealStateDescription: PropTypes.string
 }
 
 RobotMotion.defaultProps = {
+  allowRetry: true,
   debug: false
 }
 

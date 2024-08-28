@@ -118,6 +118,8 @@ function Home(props) {
         let currentMealState = MEAL_STATE.R_BiteAcquisition
         let nextMealState = MEAL_STATE.U_BiteAcquisitionCheck
         let backMealState = MEAL_STATE.R_MovingAbovePlate
+        let errorMealState = MEAL_STATE.R_MovingToRestingPosition
+        let errorMealStateDescription = 'Proceed'
         return (
           <RobotMotion
             debug={props.debug}
@@ -127,6 +129,9 @@ function Home(props) {
             backMealState={backMealState}
             actionInput={biteAcquisitionActionInput}
             waitingText={getRobotMotionText(currentMealState)}
+            allowRetry={false} // Don't allow retrying bite acquisition
+            errorMealState={errorMealState}
+            errorMealStateDescription={errorMealStateDescription}
           />
         )
       }
