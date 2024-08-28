@@ -289,12 +289,12 @@ const RobotMotion = (props) => {
    * @param {showTime} - indicates if elapsed time needs to be shown
    * @param {time} - calculated elapsed time, 0 if time not available
    * @param {progress} - progress proportion; if null progress bar not shown
-   * @param {retry} - indicates if retry needed for error
+   * @param {error} - indicates if there was an error
    *
    * @returns {JSX.Element} the action status text, progress bar or blank view
    */
   const actionStatusTextAndVisual = useCallback(
-    (flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, progress, retry = false) => {
+    (flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, progress, error = false) => {
       return (
         <>
           <View style={{ flex: flexSizeOuter, flexDirection: dimension, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
@@ -304,35 +304,41 @@ const RobotMotion = (props) => {
               </p>
               <p style={{ fontSize: motionTextFontSize }}>{text}</p>
               {showTime ? <p style={{ fontSize: motionTextFontSize }}>&nbsp;&nbsp;Elapsed: {time} sec</p> : <></>}
-              {retry ? (
-                <Button
-                  variant='warning'
-                  className='mx-2 btn-huge'
-                  size='lg'
-                  onClick={retryCallback}
-                  style={{
-                    width: '90%',
-                    height: '20%'
-                  }}
-                >
-                  <h5 style={{ textAlign: 'center', fontSize: motionTextFontSize }}>Retry</h5>
-                </Button>
-              ) : (
-                <></>
-              )}
-              {props.errorMealState ? (
-                <Button
-                  variant='warning'
-                  className='mx-2 btn-huge'
-                  size='lg'
-                  onClick={() => changeMealState(props.errorMealState, 'errorMealState')}
-                  style={{
-                    width: '90%',
-                    height: '20%'
-                  }}
-                >
-                  <h5 style={{ textAlign: 'center', fontSize: motionTextFontSize }}>{props.errorMealStateDescription}</h5>
-                </Button>
+              {error ? (
+                <>
+                  {props.allowRetry ? (
+                    <Button
+                      variant='warning'
+                      className='mx-2 btn-huge'
+                      size='lg'
+                      onClick={retryCallback}
+                      style={{
+                        width: '90%',
+                        height: '20%'
+                      }}
+                    >
+                      <h5 style={{ textAlign: 'center', fontSize: motionTextFontSize }}>Retry</h5>
+                    </Button>
+                  ) : (
+                    <></>
+                  )}
+                  {props.errorMealState ? (
+                    <Button
+                      variant='warning'
+                      className='mx-2 btn-huge'
+                      size='lg'
+                      onClick={() => changeMealState(props.errorMealState, 'errorMealState')}
+                      style={{
+                        width: '90%',
+                        height: '20%'
+                      }}
+                    >
+                      <h5 style={{ textAlign: 'center', fontSize: motionTextFontSize }}>{props.errorMealStateDescription}</h5>
+                    </Button>
+                  ) : (
+                    <></>
+                  )}
+                </>
               ) : (
                 <></>
               )}
@@ -355,6 +361,7 @@ const RobotMotion = (props) => {
     [
       dimension,
       props.waitingText,
+      props.allowRetry,
       props.errorMealState,
       props.errorMealStateDescription,
       motionTextFontSize,
@@ -377,6 +384,7 @@ const RobotMotion = (props) => {
       let showTime = false
       let time = 0
       let progress = null
+      let error = false
       switch (actionStatus.actionStatus) {
         case ROS_ACTION_STATUS_EXECUTE:
           if (actionStatus.feedback) {
@@ -411,19 +419,9 @@ const RobotMotion = (props) => {
            * users on how to troubleshoot/fix it.
            */
           text = 'Robot encountered an error'
+          error = true
           return (
-            <>
-              {actionStatusTextAndVisual(
-                flexSizeOuter,
-                flexSizeTextInner,
-                flexSizeVisualInner,
-                text,
-                showTime,
-                time,
-                progress,
-                props.allowRetry
-              )}
-            </>
+            <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, progress, error)}</>
           )
         case ROS_ACTION_STATUS_CANCELED:
           return <>{actionStatusTextAndVisual(flexSizeOuter, flexSizeTextInner, flexSizeVisualInner, text, showTime, time, progress)}</>
@@ -441,7 +439,7 @@ const RobotMotion = (props) => {
           }
       }
     },
-    [paused, dimension, actionStatusTextAndVisual, props.allowRetry]
+    [paused, dimension, actionStatusTextAndVisual]
   )
 
   // Render the component
