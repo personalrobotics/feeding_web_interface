@@ -119,7 +119,7 @@ function Home(props) {
         let nextMealState = MEAL_STATE.U_BiteAcquisitionCheck
         let backMealState = MEAL_STATE.R_MovingAbovePlate
         // TODO: Add an icon for this errorMealState!
-        let errorMealState = MEAL_STATE.R_MovingToRestingPosition
+        let errorMealState = MEAL_STATE.R_MovingToStagingConfiguration
         let errorMealStateDescription = 'Skip Acquisition'
         return (
           <RobotMotion
