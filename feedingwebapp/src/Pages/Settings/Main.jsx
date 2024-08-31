@@ -163,9 +163,9 @@ const Main = () => {
   // Configure the different options in the settings menu
   let settingsConfig = [
     {
-      title: 'Distance to Mouth',
+      title: 'Motion to/from Mouth',
       icon: moveToMouthConfigurationImage,
-      onClick: () => onClickSettingsPage(SETTINGS_STATE.DISTANCE_TO_MOUTH)
+      onClick: () => onClickSettingsPage(SETTINGS_STATE.BITE_TRANSFER)
     },
     {
       title: 'Above Plate',

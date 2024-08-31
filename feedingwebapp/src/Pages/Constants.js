@@ -125,6 +125,10 @@ export const SET_PARAMETERS_SERVICE_TYPE = 'rcl_interfaces/srv/SetParametersAtom
 
 // The names of parameters users can change in the settings menu
 export const DISTANCE_TO_MOUTH_PARAM = 'MoveToMouth.tree_kwargs.plan_distance_from_mouth'
+export const MOVE_TO_MOUTH_SPEED_PARAM = 'MoveToMouth.tree_kwargs.max_linear_speed'
+export const MOVE_TO_MOUTH_SPEED_NEAR_MOUTH_PARAM = 'MoveToMouth.tree_kwargs.linear_speed_near_mouth'
+export const MOVE_FROM_MOUTH_SPEED_PARAM = 'MoveFromMouth.tree_kwargs.max_linear_speed_to_staging_configuration'
+export const MOVE_FROM_MOUTH_SPEED_NEAR_MOUTH_PARAM = 'MoveFromMouth.tree_kwargs.linear_speed_near_mouth'
 export const ABOVE_PLATE_PARAM_JOINTS = 'MoveAbovePlate.tree_kwargs.joint_positions'
 export const STAGING_PARAM_JOINTS = 'MoveToStagingConfiguration.tree_kwargs.goal_configuration'
 export const STAGING_PARAM_POSITION = 'MoveFromMouth.tree_kwargs.staging_configuration_position'

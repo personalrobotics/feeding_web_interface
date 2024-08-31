@@ -42,7 +42,7 @@ const Settings = (props) => {
     switch (settingsState) {
       case SETTINGS_STATE.MAIN:
         return <Main />
-      case SETTINGS_STATE.DISTANCE_TO_MOUTH:
+      case SETTINGS_STATE.BITE_TRANSFER:
         return <BiteTransfer webrtcURL={props.webrtcURL} />
       case SETTINGS_STATE.ABOVE_PLATE:
         return (
