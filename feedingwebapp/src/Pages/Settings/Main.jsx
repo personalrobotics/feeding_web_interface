@@ -277,7 +277,7 @@ const Main = () => {
                   display: 'flex'
                 }}
                 alt={config.title}
-                className='center'
+                className='settingsImage'
               />
               <p
                 style={{
