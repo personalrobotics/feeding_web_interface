@@ -186,6 +186,11 @@ const Main = () => {
       title: 'Stow Position',
       icon: moveToStowConfigurationImage,
       onClick: () => onClickSettingsPage(SETTINGS_STATE.STOW_CONFIGURATION)
+    },
+    {
+      title: 'Planning Scene',
+      icon: null,
+      onClick: () => onClickSettingsPage(SETTINGS_STATE.PLANNING_SCENE)
     }
   ]
 

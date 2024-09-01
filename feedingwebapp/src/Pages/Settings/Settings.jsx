@@ -22,6 +22,7 @@ import {
   STAGING_PARAM_POSITION,
   STOW_PARAM_JOINTS
 } from '../Constants'
+import PlanningScene from './PlanningScene'
 
 /**
  * The Settings components displays the appropriate settings page based on the
@@ -138,6 +139,8 @@ const Settings = (props) => {
             webrtcURL={props.webrtcURL}
           />
         )
+      case SETTINGS_STATE.PLANNING_SCENE:
+        return <PlanningScene />
       default:
         console.log('Invalid settings state', settingsState)
         return <Main />
