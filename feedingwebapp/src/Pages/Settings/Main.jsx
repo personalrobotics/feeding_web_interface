@@ -20,7 +20,8 @@ import {
   MOVING_STATE_ICON_DICT,
   REGULAR_CONTAINER_ID,
   SET_PARAMETERS_SERVICE_NAME,
-  SET_PARAMETERS_SERVICE_TYPE
+  SET_PARAMETERS_SERVICE_TYPE,
+  TABLE_ICON
 } from '../Constants'
 
 /**
@@ -189,7 +190,7 @@ const Main = () => {
     },
     {
       title: 'Planning Scene',
-      icon: null,
+      icon: TABLE_ICON,
       onClick: () => onClickSettingsPage(SETTINGS_STATE.PLANNING_SCENE)
     }
   ]

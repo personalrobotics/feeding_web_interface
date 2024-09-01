@@ -1,6 +1,5 @@
 // React imports
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useMediaQuery } from 'react-responsive'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
@@ -20,10 +19,6 @@ const PlanningScene = () => {
   // Get relevant global state variables
   const setSettingsState = useGlobalState((state) => state.setSettingsState)
 
-  // Flag to check if the current orientation is portrait
-  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
-  // Indicator of how to arrange screen elements based on orientation
-  let dimension = isPortrait ? 'column' : 'row'
   // Rendering variables
   let textFontSize = '3.5vh'
 
@@ -42,12 +37,14 @@ const PlanningScene = () => {
     createROSService(ros.current, PLANNING_SCENE_GET_PARAMETERS_SERVICE_NAME, PLANNING_SCENE_GET_PARAMETERS_SERVICE_TYPE)
   )
   const [planningSceneNamespaces, setPlanningSceneNamespaces] = useState([])
-  useEffect(() => {
+  const getPlanningSceneNamespaces = useCallback(() => {
     let service = getParametersService.current
     let request = createROSServiceRequest({
       names: ['namespaces']
     })
+    console.log('PlanningScene: Requesting planning scene namespaces', service, request)
     service.callService(request, (response) => {
+      console.log('PlanningScene: Received planning scene namespaces', request, response)
       if (response.values.length > 0 && response.values[0].type === 9) {
         setPlanningSceneNamespaces(getValueFromParameter(response.values[0]))
       } else {
@@ -55,6 +52,9 @@ const PlanningScene = () => {
       }
     })
   }, [getParametersService, setPlanningSceneNamespaces])
+  useEffect(() => {
+    getPlanningSceneNamespaces()
+  }, [getPlanningSceneNamespaces])
 
   // Render the settings for the planning scene
   const renderPlanningSceneSettings = useCallback(() => {
@@ -79,13 +79,14 @@ const PlanningScene = () => {
         <View
           style={{
             flex: 1,
-            flexDirection: dimension,
+            flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
             width: '100%',
             height: '100%'
           }}
         >
+          <h5 style={{ textAlign: 'center', fontSize: textFontSize }}>Select Planning Scene:</h5>
           <DropdownButton
             as={ButtonGroup}
             key='planningSceneOptions'
@@ -94,6 +95,11 @@ const PlanningScene = () => {
             variant='secondary'
             title={currentParams[0]}
             size='lg'
+            onClick={() => {
+              if (planningSceneNamespaces.length === 0) {
+                getPlanningSceneNamespaces()
+              }
+            }}
           >
             {planningSceneNamespaces.map((namespace) => (
               <Dropdown.Item key={namespace} onClick={() => setCurrentParams([namespace])} active={namespace === currentParams[0]}>
@@ -104,7 +110,7 @@ const PlanningScene = () => {
         </View>
       )
     }
-  }, [currentParams, dimension, planningSceneNamespaces, setCurrentParams, textFontSize])
+  }, [currentParams, planningSceneNamespaces, getPlanningSceneNamespaces, setCurrentParams, textFontSize])
 
   return (
     <SettingsPageParent

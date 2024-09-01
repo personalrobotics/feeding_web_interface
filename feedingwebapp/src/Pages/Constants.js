@@ -29,6 +29,7 @@ MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingFromMouth] = '/robot_state_imgs/move_t
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToMouth] = '/robot_state_imgs/move_to_mouth_position.svg'
 MOVING_STATE_ICON_DICT[MEAL_STATE.R_StowingArm] = '/robot_state_imgs/stowing_arm_position.svg'
 export { MOVING_STATE_ICON_DICT }
+export const TABLE_ICON = '/robot_state_imgs/table.svg'
 
 // The names of the ROS topic(s)
 export const CAMERA_FEED_TOPIC = '/local/camera/color/image_raw/compressed'
@@ -122,7 +123,7 @@ export const GET_PARAMETERS_SERVICE_NAME = 'ada_feeding_action_servers/get_param
 export const GET_PARAMETERS_SERVICE_TYPE = 'rcl_interfaces/srv/GetParameters'
 export const SET_PARAMETERS_SERVICE_NAME = 'ada_feeding_action_servers/set_parameters_atomically'
 export const SET_PARAMETERS_SERVICE_TYPE = 'rcl_interfaces/srv/SetParametersAtomically'
-export const PLANNING_SCENE_GET_PARAMETERS_SERVICE_NAME = 'ada_feeding_action_servers/get_parameters'
+export const PLANNING_SCENE_GET_PARAMETERS_SERVICE_NAME = 'ada_planning_scene/get_parameters'
 export const PLANNING_SCENE_GET_PARAMETERS_SERVICE_TYPE = 'rcl_interfaces/srv/GetParameters'
 
 // The names of parameters users can change in the settings menu
