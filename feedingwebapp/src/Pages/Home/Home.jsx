@@ -12,6 +12,7 @@ import BiteAcquisitionCheck from './MealStates/BiteAcquisitionCheck'
 import BiteDone from './MealStates/BiteDone'
 import BiteSelection from './MealStates/BiteSelection'
 import DetectingFace from './MealStates/DetectingFace'
+import LabelGeneration from './MealStates/LabelGeneration'
 import PostMeal from './MealStates/PostMeal'
 import PreMeal from './MealStates/PreMeal'
 import RobotMotion from './MealStates/RobotMotion'
@@ -135,6 +136,9 @@ function Home(props) {
     switch (mealState) {
       case MEAL_STATE.U_PreMeal: {
         return <PreMeal debug={props.debug} />
+      }
+      case MEAL_STATE.U_LabelGeneration: {
+        return <LabelGeneration debug={props.debug} />
       }
       case MEAL_STATE.R_MovingAbovePlate: {
         /**
