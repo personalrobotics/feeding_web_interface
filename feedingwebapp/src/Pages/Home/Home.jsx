@@ -43,6 +43,7 @@ function Home(props) {
   const biteAcquisitionActionGoal = useGlobalState((state) => state.biteAcquisitionActionGoal)
   const moveToMouthActionGoal = useGlobalState((state) => state.moveToMouthActionGoal)
   const mostRecentBiteDoneResponse = useGlobalState((state) => state.mostRecentBiteDoneResponse)
+  const labelGenerationConfirmed = useGlobalState((state) => state.labelGenerationConfirmed)
 
   // Implement a wrapper around setMealState, that resets mostRecentBiteDoneResponse to
   // R_DetectingFace if the mealState is mostRecentBiteDoneResponse. In other words,
@@ -146,7 +147,7 @@ function Home(props) {
          * the app is performing a re-rendering and *then* the state is updated.
          */
         let currentMealState = MEAL_STATE.R_MovingAbovePlate
-        let nextMealState = MEAL_STATE.U_BiteSelection
+        let nextMealState = labelGenerationConfirmed ? MEAL_STATE.U_BiteSelection : MEAL_STATE.U_LabelGeneration
         let backMealState = null
         return (
           <RobotMotion

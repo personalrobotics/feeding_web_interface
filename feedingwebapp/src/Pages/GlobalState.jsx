@@ -26,6 +26,8 @@ export const APP_PAGE = {
  *   - U_PreMeal: Waiting for the user to click "Start Feeding."
  *   - U_LabelGeneration: Waiting for the user to label the food items on the
  *     plate.
+ *   - U_DetectingFoods: Waiting for the robot to detect the food items on the
+ *     plate.
  *   - R_MovingAbovePlate: Waiting for the robot to move above the plate.
  *   - U_BiteSelection: Waiting for the user to select the food item they want.
  *   - R_BiteAcquisition: Waiting for the robot to execute one bite acquisition
@@ -50,6 +52,7 @@ export const APP_PAGE = {
 export const MEAL_STATE = {
   U_PreMeal: 'U_PreMeal',
   U_LabelGeneration: 'U_LabelGeneration',
+  U_DetectingFoods: 'U_DetectingFoods',
   R_MovingAbovePlate: 'R_MovingAbovePlate',
   U_BiteSelection: 'U_BiteSelection',
   R_BiteAcquisition: 'R_BiteAcquisition',
@@ -70,6 +73,7 @@ export const MEAL_STATE = {
 let NON_MOVING_STATES = new Set()
 NON_MOVING_STATES.add(MEAL_STATE.U_PreMeal)
 NON_MOVING_STATES.add(MEAL_STATE.U_LabelGeneration)
+NON_MOVING_STATES.add(MEAL_STATE.U_DetectingFoods)
 NON_MOVING_STATES.add(MEAL_STATE.U_BiteSelection)
 NON_MOVING_STATES.add(MEAL_STATE.U_BiteAcquisitionCheck)
 NON_MOVING_STATES.add(MEAL_STATE.R_DetectingFace)
@@ -167,7 +171,11 @@ export const useGlobalState = create(
       mostRecentBiteDoneResponse: MEAL_STATE.R_DetectingFace,
       // How much the video on the Bite Selection page should be zoomed in.
       biteSelectionZoom: 1.0,
-
+      // Boolean to indicate whether the user has visited the Label Generation page 
+      // and clicked the "Begin Meal" button to confirm the labels
+      labelGenerationConfirmed: false,
+      // A set of labels inputted by the user defining the food items on the plate
+      foodItemLabels: new Set([]),
       // Setters for global state
       setAppPage: (appPage) =>
         set(() => ({
@@ -302,6 +310,14 @@ export const useGlobalState = create(
       setBiteSelectionZoom: (biteSelectionZoom) =>
         set(() => ({
           biteSelectionZoom: biteSelectionZoom
+        })),
+      setLabelGenerationConfirmed: (labelGenerationConfirmed) =>
+        set(() => ({
+          labelGenerationConfirmed: labelGenerationConfirmed
+        })),
+      setFoodItemLabels: (foodItemLabels) =>
+        set(() => ({
+          foodItemLabels: foodItemLabels
         }))
     }),
     { name: 'ada_web_app_global_state' }

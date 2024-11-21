@@ -58,6 +58,10 @@ ROS_ACTIONS_NAMES[MEAL_STATE.U_BiteSelection] = {
   actionName: 'SegmentFromPoint',
   messageType: 'ada_feeding_msgs/action/SegmentFromPoint'
 }
+ROS_ACTIONS_NAMES[MEAL_STATE.U_DetectingFoods] = {
+  actionName: 'SegmentAllItems',
+  messageType: 'ada_feeding_msgs/action/SegmentAllItems'
+}
 ROS_ACTIONS_NAMES[MEAL_STATE.R_BiteAcquisition] = {
   actionName: 'AcquireFood',
   messageType: 'ada_feeding_msgs/action/AcquireFood'
@@ -95,6 +99,14 @@ export const RECOMPUTE_WORKSPACE_WALLS_ACTION_TYPE = 'ada_feeding_msgs/action/Tr
  * the service name and the message type
  */
 let ROS_SERVICE_NAMES = {}
+ROS_SERVICE_NAMES[MEAL_STATE.U_LabelGeneration] = {
+  serviceName: 'invoke_gpt4o',
+  messageType: 'ada_feeding_msgs/srv/GenerateCaption'
+}
+ROS_SERVICE_NAMES[MEAL_STATE.U_DetectingFoods] = {
+  serviceName: 'invoke_gpt4o',
+  messageType: 'ada_feeding_msgs/srv/GenerateCaption'
+}
 ROS_SERVICE_NAMES[MEAL_STATE.U_BiteSelection] = {
   serviceName: 'toggle_table_detection',
   messageType: 'std_srvs/srv/SetBool'

@@ -14,6 +14,7 @@ import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 const PostMeal = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
+  const setLabelGenerationConfirmed = useGlobalState((state) => state.setLabelGenerationConfirmed)
   // Font size for text
   let textFontSize = '4.2vh'
   // Width for button
@@ -29,6 +30,7 @@ const PostMeal = () => {
   const returnToStartClicked = useCallback(() => {
     console.log('startFeedingClicked')
     setMealState(MEAL_STATE.U_PreMeal)
+    setLabelGenerationConfirmed(false)
   }, [setMealState])
 
   // Render the component
