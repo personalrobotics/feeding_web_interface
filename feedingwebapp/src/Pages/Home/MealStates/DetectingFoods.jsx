@@ -31,4 +31,30 @@ const DetectingFoods = (props) => {
    */
   let actionDetails = ROS_ACTIONS_NAMES[MEAL_STATE.U_DetectingFoods]
   let segmentAllItems = useRef(createROSActionClient(ros.current, actionDetails.actionName, actionDetails.messageType))
+
+  /** Get the full page view
+   * 
+   * @returns {JSX.Element} the full page view
+   */
+  const fullPageView = useCallback(() => {
+    return (
+      <>
+        <View
+          style={{
+            flex: 2,
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          <p className='transitionMessage' style={{ marginBottom: margin, marginTop: '0', fontSize: textFontSize }}>
+            Detecting food items...
+          </p>
+          <CircularProgressbar value={progress} text={`${progress}%`} />
+        </View>
+      </>
+    )  
+  })
 }
