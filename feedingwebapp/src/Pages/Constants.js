@@ -85,8 +85,8 @@ ROS_ACTIONS_NAMES[MEAL_STATE.R_StowingArm] = {
 export { ROS_ACTIONS_NAMES }
 export const ACTIVATE_CONTROLLER_ACTION_NAME = 'ActivateController'
 export const ACTIVATE_CONTROLLER_ACTION_TYPE = 'ada_feeding_msgs/action/ActivateController'
-export const CARTESIAN_CONTROLLER_NAME = 'jaco_arm_cartesian_controller'
-export const JOINT_CONTROLLER_NAME = 'jaco_arm_servo_controller'
+export const CARTESIAN_CONTROLLER_NAME = 'jaco_af_cartesian_controller'
+export const JOINT_CONTROLLER_NAME = 'jaco_af_servo_controller'
 export const RECOMPUTE_WORKSPACE_WALLS_ACTION_NAME = 'recompute_workspace_walls'
 export const RECOMPUTE_WORKSPACE_WALLS_ACTION_TYPE = 'ada_feeding_msgs/action/Trigger'
 
@@ -159,7 +159,9 @@ export const ROBOT_JOINTS = [
   'j2n6s200_joint_3',
   'j2n6s200_joint_4',
   'j2n6s200_joint_5',
-  'j2n6s200_joint_6'
+  'j2n6s200_joint_6',
+  'af_joint_1',
+  'af_joint_2'
 ]
 
 /**
