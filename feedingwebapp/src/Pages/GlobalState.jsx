@@ -175,7 +175,7 @@ export const useGlobalState = create(
       // and clicked the "Begin Meal" button to confirm the labels
       labelGenerationConfirmed: false,
       // A set of labels inputted by the user defining the food items on the plate
-      foodItemLabels: new Set([]),
+      foodItemLabels: new Set([""]),
       // Setters for global state
       setAppPage: (appPage) =>
         set(() => ({
@@ -318,7 +318,7 @@ export const useGlobalState = create(
       setFoodItemLabels: (foodItemLabels) =>
         set(() => ({
           foodItemLabels: foodItemLabels
-        }))
+        })),
     }),
     { name: 'ada_web_app_global_state' }
   )

@@ -53,17 +53,37 @@ const LabelGeneration = () => {
    * as a list of items
    */
   const renderLabels = () => {
-    const listItems = [...foodItemLabels].map((label, index) =>
-      <li key={index} style={{fontSize: textFontSize}}>{label}</li>
-    )
+    const listItems = null
+    if (foodItemLabels.size > 0) {
+      listItems = [...foodItemLabels].map((label, index) =>
+        <li key={index} style={{fontSize: textFontSize}}>{label}</li>
+      )
+    }
     return <ul>{listItems}</ul>
   }
 
+  /**
+   * Callback function when the user clicks the "Add Label" button.
+   */
+  const onAddLabelClicked = useCallback(() => {
+    const newLabel = document.querySelector('.inputLabel').value
+    console.log('size of foodItemLabels: ', foodItemLabels.size)
+    if (foodItemLabels.size === 1) {
+      setFoodItemLabels(new Set([newLabel]))
+    } else if (foodItemLabels.size < maxLabels) {
+      setFoodItemLabels(new Set([...foodItemLabels, newLabel]))
+    }
+    console.log("Food item labels printed: ", foodItemLabels)
+  }, [foodItemLabels, setFoodItemLabels, maxLabels])
+
+  /**
+   * Callback function when the user clicks the "Begin Meal!" button.
+   */
   const beginMealClicked = useCallback(() => {
     console.log('beginMealClicked')
     setLabelGenerationConfirmed(true)
     setMealState(MEAL_STATE.U_BiteSelection)
-  }, [setMealState])
+  }, [setLabelGenerationConfirmed, setMealState])
 
   /** Get the full page view
    *
@@ -103,8 +123,7 @@ const LabelGeneration = () => {
               className='mx-2 btn-md'
               height='90%'
               size='md' 
-              onClick={() =>
-                foodItemLabels.size < maxLabels ? setFoodItemLabels(new Set([...foodItemLabels, document.querySelector('.inputLabel').value])) : null}
+              onClick={onAddLabelClicked}
               >
               Add Label
             </Button>
@@ -120,7 +139,7 @@ const LabelGeneration = () => {
             height: '100%'
           }}
         >
-          {renderLabels()}
+          {renderLabels()}          
         </View>
         <View
           style={{
