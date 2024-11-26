@@ -34,13 +34,22 @@ const LabelGeneration = () => {
   // Indicator of how to arrange screen elements based on orientation
   let dimension = isPortrait ? 'column' : 'row'
   // Limit on the number of labels for food items that can be inputted
-  const maxLabels = 10
+  const maxLabels = 20
+  // Limit on the number of label buttons that can be displayed in a column
+  // on the screen.
+  const maxLabelsPerColumn = 5
   
   /**
    * Create a local state variable to store the current label button being edited.
    * If no label button is being edited, then set the value to null.
    */
   const [editingButton, setEditingButton] = useState(null)
+
+  /**
+   * Create a local state variable to store the text in the modal input field
+   * when the user is editing a label button.
+   */
+  const [editButtonText, setEditButtonText] = useState('')
   
   /**
    * Connect to ROS, if not already connected. Put this in useRef to avoid
@@ -56,21 +65,45 @@ const LabelGeneration = () => {
   let serviceDetails = ROS_SERVICE_NAMES[MEAL_STATE.U_LabelGeneration]
   let invokeGPT4oService = useRef(createROSService(ros.current, serviceDetails.serviceName, serviceDetails.messageType))
 
+  /**
+   * Organize the buttons for the labels in columns based on the maximum 
+   * labels that can be displayed in a column.
+   */
+  const organizeButtonColumns = () => {
+    const buttonColumns = []
+
+    Arrays.from(foodItemLabels).map((label, index) => {
+      const columnIndex = Math.floor(index / maxLabelsPerColumn)
+      if (!buttonColumns[columnIndex]) {
+        buttonColumns[columnIndex] = []
+      }
+      buttonColumns[columnIndex].push(label)
+    })
+    
+    return buttonColumns
+  }
+  
   /** 
-   * Render the labels inputted by the user
-   * as a list of items
+   * Render the labels inputted by the user as a list of items.
    */
   const renderLabels = () => {
     let listItems = null
     if (foodItemLabels.size > 0) {
       listItems = Array.from(foodItemLabels).map((label, index) =>
-        <TouchableOpacity
+        <Button
           key={index}
-          style={{ backgroundColor: 'lightblue', padding: 15, borderRadius: 15, marginVertical: 5 }}
-          onPress={() => setEditingButton({label: label, index: index})}
+          variant='outline-success'
+          style={{ fontSize: textFontSize, marginBottom: '2vh' }}
+          onClick={() => setEditingButton({label: label, index: index})}
         >
-          <Text style={{ color: 'white', textAlign: 'center', fontWeight: '600' }}>{label}</Text>
-        </TouchableOpacity>
+          {label}
+          <Button
+            variant='danger'
+            onClick={() => setFoodItemLabels(new Set(Array.from(foodItemLabels).filter((_, i) => i !== index)))}
+          >
+            D
+          </Button>
+        </Button>
       )
     }
     return <View style={{ flexDirection: 'column', alignItems: 'stretch' }}>
@@ -89,6 +122,21 @@ const LabelGeneration = () => {
       setFoodItemLabels(new Set([...foodItemLabels, newLabel]))
     }
   }, [foodItemLabels, setFoodItemLabels, maxLabels])
+
+  /**
+   * Callback function when the user clickes the "Save" button while
+   * editing a label button. 
+   */
+  const saveEditClicked = useCallback(() => {
+    console.log(foodItemLabels)
+    console.log(editingButton.index)
+    const tempLabels = new Set(Array.from(foodItemLabels).map((label, index) => 
+      index === editingButton.index ? editButtonText : label
+    ))
+    console.log(tempLabels)
+    setFoodItemLabels(tempLabels)
+    setEditingButton(null)
+  })
 
   /**
    * Callback function when the user clicks the "Begin Meal!" button.
@@ -190,34 +238,34 @@ const LabelGeneration = () => {
         >
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <View style={{ width: '80%', backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center' }}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 15 }}>Edit Button Text</Text>
+              <Text style={{ fontSize: textFontSize, marginBottom: 15 }}>Edit Button Text</Text>
               <TextInput 
-                style={{ width: '100%', borderBottomWidth: 1, borderBottomColor: 'green', padding: 10, marginBottom: 15}}
+                style={{ fontSize: textFontSize, width: '100%', borderBottomWidth: 5, borderBottomColor: 'green', padding: 20, marginBottom: 15}}
                 defaultValue={editingButton?.label}
-                onChangeText={(text) => {
-                  setFoodItemLabels(Array.from(foodItemLabels).map((label, index) => {
-                    index === editingButton.index ? {label: text} : label
-                  }));
-                }}
+                onChangeText={(text) => setEditButtonText(text)}
                 autoFocus={true}
               />
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                <TouchableOpacity
-                  style={{ backgroundColor: 'red', padding: 10, borderRadius: 10, width: '45%', alignItems: 'center' }} 
-                  onPress={() => {
-                    setEditingButton(null);
-                  }}
+              <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                <Button
+                  variant='success'
+                  className='justify-content-center mx-2 mb-2'
+                  height='90%'
+                  size='lg'  
+                  onClick={saveEditClicked}
+                  style={{ fontSize: textFontSize }}
                 >
-                    <Text>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{ backgroundColor: 'green', padding: 10, borderRadius: 10, width: '45%', alignItems: 'center' }} 
-                  onPress={() => {
-                    setEditingButton(null);
-                  }}
+                  Save
+                </Button>
+                <Button
+                  variant='danger'
+                  className='justify-content-center mx-2 mb-2'
+                  height='90%'
+                  size='lg'  
+                  onClick={() => {setEditingButton(null)}}
+                  style={{ fontSize: textFontSize }}
                 >
-                    <Text>Save</Text>
-                </TouchableOpacity>
+                  Cancel
+                </Button>
               </View>
             </View>
           </View>
