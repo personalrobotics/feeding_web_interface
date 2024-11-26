@@ -1,14 +1,14 @@
 // React Imports
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
 import { useMediaQuery } from 'react-responsive'
-import { View } from 'react-native'
+import { View, Modal } from 'react-native'
 
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import { useROS, createROSService } from '../../../ros/ros_helpers'
+import { useROS, createROSService, createROSServiceRequest } from '../../../ros/ros_helpers'
 import { ROS_SERVICE_NAMES } from '../../Constants'
 
 /**
@@ -22,6 +22,8 @@ const LabelGeneration = () => {
   const setLabelGenerationConfirmed = useGlobalState((state) => state.setLabelGenerationConfirmed)
   const foodItemLabels = useGlobalState((state) => state.foodItemLabels)
   const setFoodItemLabels = useGlobalState((state) => state.setFoodItemLabels)
+  const gpt4oCaption = useGlobalState((state) => state.gpt4oCaption)
+  const setGPT4oResponse = useGlobalState((state) => state.setGPT4oResponse)
 
   // Flag to check if the current orientation is portrait
   const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
@@ -33,6 +35,12 @@ const LabelGeneration = () => {
   let dimension = isPortrait ? 'column' : 'row'
   // Limit on the number of labels for food items that can be inputted
   const maxLabels = 10
+  
+  /**
+   * Create a local state variable to store the current label button being edited.
+   * If no label button is being edited, then set the value to null.
+   */
+  const [editingButton, setEditingButton] = useState(null)
   
   /**
    * Connect to ROS, if not already connected. Put this in useRef to avoid
@@ -53,7 +61,7 @@ const LabelGeneration = () => {
    * as a list of items
    */
   const renderLabels = () => {
-    const listItems = null
+    let listItems = null
     if (foodItemLabels.size > 0) {
       listItems = [...foodItemLabels].map((label, index) =>
         <li key={index} style={{fontSize: textFontSize}}>{label}</li>
@@ -67,13 +75,11 @@ const LabelGeneration = () => {
    */
   const onAddLabelClicked = useCallback(() => {
     const newLabel = document.querySelector('.inputLabel').value
-    console.log('size of foodItemLabels: ', foodItemLabels.size)
-    if (foodItemLabels.size === 1) {
+    if (foodItemLabels.size === undefined) {
       setFoodItemLabels(new Set([newLabel]))
     } else if (foodItemLabels.size < maxLabels) {
       setFoodItemLabels(new Set([...foodItemLabels, newLabel]))
     }
-    console.log("Food item labels printed: ", foodItemLabels)
   }, [foodItemLabels, setFoodItemLabels, maxLabels])
 
   /**
@@ -81,6 +87,13 @@ const LabelGeneration = () => {
    */
   const beginMealClicked = useCallback(() => {
     console.log('beginMealClicked')
+    // Create a service request for the GPT-4o service
+    const inputLabels = Array.from(foodItemLabels)
+    let request = createROSServiceRequest({ input_labels: inputLabels })
+    // Call the GPT-4o service
+    let service = invokeGPT4oService.current
+    service.callService(request, (response) => {setGPT4oResponse(response.caption)})
+    console.log('GPT-4o service called' + gpt4oCaption)
     setLabelGenerationConfirmed(true)
     setMealState(MEAL_STATE.U_BiteSelection)
   }, [setLabelGenerationConfirmed, setMealState])

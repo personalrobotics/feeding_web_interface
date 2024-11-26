@@ -103,6 +103,10 @@ ROS_SERVICE_NAMES[MEAL_STATE.U_LabelGeneration] = {
   serviceName: 'invoke_gpt4o',
   messageType: 'ada_feeding_msgs/srv/GenerateCaption'
 }
+ROS_SERVICE_NAMES[MEAL_STATE.U_UnderstandPlate] = {
+  serviceName: 'invoke_gpt4o',
+  messageType: 'ada_feeding_msgs/srv/GenerateCaption'
+}
 ROS_SERVICE_NAMES[MEAL_STATE.U_DetectingFoods] = {
   serviceName: 'invoke_gpt4o',
   messageType: 'ada_feeding_msgs/srv/GenerateCaption'
