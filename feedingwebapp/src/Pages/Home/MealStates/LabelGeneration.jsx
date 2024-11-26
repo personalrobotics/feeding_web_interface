@@ -3,7 +3,7 @@ import React, { useCallback, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
 import { useMediaQuery } from 'react-responsive'
-import { View, Modal } from 'react-native'
+import { View, Modal, TextInput, TouchableOpacity, Text } from 'react-native'
 
 // Local Imports
 import '../Home.css'
@@ -63,11 +63,19 @@ const LabelGeneration = () => {
   const renderLabels = () => {
     let listItems = null
     if (foodItemLabels.size > 0) {
-      listItems = [...foodItemLabels].map((label, index) =>
-        <li key={index} style={{fontSize: textFontSize}}>{label}</li>
+      listItems = Array.from(foodItemLabels).map((label, index) =>
+        <TouchableOpacity
+          key={index}
+          style={{ backgroundColor: 'lightblue', padding: 15, borderRadius: 15, marginVertical: 5 }}
+          onPress={() => setEditingButton({label: label, index: index})}
+        >
+          <Text style={{ color: 'white', textAlign: 'center', fontWeight: '600' }}>{label}</Text>
+        </TouchableOpacity>
       )
     }
-    return <ul>{listItems}</ul>
+    return <View style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+      {listItems}
+    </View>
   }
 
   /**
@@ -187,7 +195,7 @@ const LabelGeneration = () => {
                 style={{ width: '100%', borderBottomWidth: 1, borderBottomColor: 'green', padding: 10, marginBottom: 15}}
                 defaultValue={editingButton?.label}
                 onChangeText={(text) => {
-                  setButtons(Array.from(foodItemLabels).map((label, index) => {
+                  setFoodItemLabels(Array.from(foodItemLabels).map((label, index) => {
                     index === editingButton.index ? {label: text} : label
                   }));
                 }}
