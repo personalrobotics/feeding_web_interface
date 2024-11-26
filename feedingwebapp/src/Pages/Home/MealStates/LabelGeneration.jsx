@@ -174,6 +174,46 @@ const LabelGeneration = () => {
             Begin Meal!
           </Button>
         </View>
+        <Modal
+          transparent={true}
+          visible={!!editingButton}
+          animationType='slide'
+          onRequestClose={() => setEditingButton(null)}
+        >
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <View style={{ width: '80%', backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center' }}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 15 }}>Edit Button Text</Text>
+              <TextInput 
+                style={{ width: '100%', borderBottomWidth: 1, borderBottomColor: 'green', padding: 10, marginBottom: 15}}
+                defaultValue={editingButton?.label}
+                onChangeText={(text) => {
+                  setButtons(Array.from(foodItemLabels).map((label, index) => {
+                    index === editingButton.index ? {label: text} : label
+                  }));
+                }}
+                autoFocus={true}
+              />
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                <TouchableOpacity
+                  style={{ backgroundColor: 'red', padding: 10, borderRadius: 10, width: '45%', alignItems: 'center' }} 
+                  onPress={() => {
+                    setEditingButton(null);
+                  }}
+                >
+                    <Text>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ backgroundColor: 'green', padding: 10, borderRadius: 10, width: '45%', alignItems: 'center' }} 
+                  onPress={() => {
+                    setEditingButton(null);
+                  }}
+                >
+                    <Text>Save</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </>
     )
   })
