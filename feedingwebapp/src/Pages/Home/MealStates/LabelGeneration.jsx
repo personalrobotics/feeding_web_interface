@@ -90,20 +90,25 @@ const LabelGeneration = () => {
     let listItems = null
     if (foodItemLabels.size > 0) {
       listItems = Array.from(foodItemLabels).map((label, index) =>
-        <Button
-          key={index}
-          variant='outline-success'
-          style={{ fontSize: textFontSize, marginBottom: '2vh' }}
-          onClick={() => setEditingButton({label: label, index: index})}
-        >
-          {label}
+        <div>
+          <Button
+            key={index}
+            variant='outline-success'
+            style={{ fontSize: textFontSize, marginBottom: '2vh' }}
+            onClick={() => setEditingButton({label: label, index: index})}
+          >
+            {label}  
+          </Button>
           <Button
             variant='danger'
-            onClick={() => setFoodItemLabels(new Set(Array.from(foodItemLabels).filter((_, i) => i !== index)))}
+            style={{ fontSize: textFontSize, marginBottom: '2vh' }}
+            onClick={() => {
+              setFoodItemLabels(new Set(Array.from(foodItemLabels).filter((_, i) => i !== index)))
+            }}
           >
-            D
+            <img style={{ width: '30px', height: 'auto' }} src="/robot_state_imgs/delete.svg" alt='delete_icon'/>
           </Button>
-        </Button>
+        </div>
       )
     }
     return <View style={{ flexDirection: 'column', alignItems: 'stretch' }}>
@@ -171,8 +176,8 @@ const LabelGeneration = () => {
             height: '100%'
           }}
         >
-          <p className='transitionMessage' style={{ marginBottom: margin, marginTop: '0', fontSize: textFontSize }}>
-            Please label the food items you will be eating in this meal.
+          <p className='transitionMessage' style={{ marginBottom: margin, marginTop: '1', fontSize: textFontSize }}>
+            What will you be eating today?
           </p>
         </View>
         <View 
@@ -185,7 +190,9 @@ const LabelGeneration = () => {
             height: '50%'
           }}
         >
-          <label>
+          <label
+            style={{ fontSize: '2.5vh' }}
+          >
             List the food items you&apos;ll be eating this meal: <input type='text' className='inputLabel' />
             <Button 
               variant='warning'
@@ -193,6 +200,7 @@ const LabelGeneration = () => {
               height='90%'
               size='md' 
               onClick={onAddLabelClicked}
+              style={{ fontSize: '2.5vh' }}
               >
               Add Label
             </Button>
