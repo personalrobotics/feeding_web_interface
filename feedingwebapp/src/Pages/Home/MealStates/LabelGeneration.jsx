@@ -38,7 +38,7 @@ const LabelGeneration = () => {
   // Limit on the number of label buttons that can be displayed in a column
   // on the screen.
   const maxLabelsPerColumn = 5
-  
+
   /**
    * Create a local state variable to store the current label button being edited.
    * If no label button is being edited, then set the value to null.
@@ -50,7 +50,7 @@ const LabelGeneration = () => {
    * when the user is editing a label button.
    */
   const [editButtonText, setEditButtonText] = useState('')
-  
+
   /**
    * Connect to ROS, if not already connected. Put this in useRef to avoid
    * re-connecting upon re-renders.
@@ -59,45 +59,45 @@ const LabelGeneration = () => {
 
   /**
    * Create the ROS Service to invoke GPT-4o to transform labels into a caption
-   * for VLM detection. This is created in useRef to avoid re-creating the client 
-   * upon re-renders. 
+   * for VLM detection. This is created in useRef to avoid re-creating the client
+   * upon re-renders.
    */
   let serviceDetails = ROS_SERVICE_NAMES[MEAL_STATE.U_LabelGeneration]
   let invokeGPT4oService = useRef(createROSService(ros.current, serviceDetails.serviceName, serviceDetails.messageType))
 
   /**
-   * Organize the buttons for the labels in columns based on the maximum 
+   * Organize the buttons for the labels in columns based on the maximum
    * labels that can be displayed in a column.
    */
   const organizeButtonColumns = () => {
     const buttonColumns = []
 
-    Arrays.from(foodItemLabels).map((label, index) => {
+    Array.from(foodItemLabels).map((label, index) => {
       const columnIndex = Math.floor(index / maxLabelsPerColumn)
       if (!buttonColumns[columnIndex]) {
         buttonColumns[columnIndex] = []
       }
       buttonColumns[columnIndex].push(label)
     })
-    
+
     return buttonColumns
   }
-  
-  /** 
+
+  /**
    * Render the labels inputted by the user as a list of items.
    */
   const renderLabels = () => {
     let listItems = null
     if (foodItemLabels.size > 0) {
-      listItems = Array.from(foodItemLabels).map((label, index) =>
+      listItems = Array.from(foodItemLabels).map((label, index) => (
         <div>
           <Button
             key={index}
             variant='outline-success'
             style={{ fontSize: textFontSize, marginBottom: '2vh' }}
-            onClick={() => setEditingButton({label: label, index: index})}
+            onClick={() => setEditingButton({ label: label, index: index })}
           >
-            {label}  
+            {label}
           </Button>
           <Button
             variant='danger'
@@ -106,14 +106,12 @@ const LabelGeneration = () => {
               setFoodItemLabels(new Set(Array.from(foodItemLabels).filter((_, i) => i !== index)))
             }}
           >
-            <img style={{ width: '30px', height: 'auto' }} src="/robot_state_imgs/delete.svg" alt='delete_icon'/>
+            <img style={{ width: '30px', height: 'auto' }} src='/robot_state_imgs/delete.svg' alt='delete_icon' />
           </Button>
         </div>
-      )
+      ))
     }
-    return <View style={{ flexDirection: 'column', alignItems: 'stretch' }}>
-      {listItems}
-    </View>
+    return <View style={{ flexDirection: 'column', alignItems: 'stretch' }}>{listItems}</View>
   }
 
   /**
@@ -130,14 +128,12 @@ const LabelGeneration = () => {
 
   /**
    * Callback function when the user clickes the "Save" button while
-   * editing a label button. 
+   * editing a label button.
    */
   const saveEditClicked = useCallback(() => {
     console.log(foodItemLabels)
     console.log(editingButton.index)
-    const tempLabels = new Set(Array.from(foodItemLabels).map((label, index) => 
-      index === editingButton.index ? editButtonText : label
-    ))
+    const tempLabels = new Set(Array.from(foodItemLabels).map((label, index) => (index === editingButton.index ? editButtonText : label)))
     console.log(tempLabels)
     setFoodItemLabels(tempLabels)
     setEditingButton(null)
@@ -153,7 +149,9 @@ const LabelGeneration = () => {
     let request = createROSServiceRequest({ input_labels: inputLabels })
     // Call the GPT-4o service
     let service = invokeGPT4oService.current
-    service.callService(request, (response) => {setGPT4oResponse(response.caption)})
+    service.callService(request, (response) => {
+      setGPT4oResponse(response.caption)
+    })
     console.log('GPT-4o service called' + gpt4oCaption)
     setLabelGenerationConfirmed(true)
     setMealState(MEAL_STATE.U_BiteSelection)
@@ -180,7 +178,7 @@ const LabelGeneration = () => {
             What will you be eating today?
           </p>
         </View>
-        <View 
+        <View
           style={{
             flex: 1,
             flexDirection: 'column',
@@ -190,18 +188,16 @@ const LabelGeneration = () => {
             height: '50%'
           }}
         >
-          <label
-            style={{ fontSize: '2.5vh' }}
-          >
+          <label style={{ fontSize: '2.5vh' }}>
             List the food items you&apos;ll be eating this meal: <input type='text' className='inputLabel' />
-            <Button 
+            <Button
               variant='warning'
               className='mx-2 btn-md'
               height='90%'
-              size='md' 
+              size='md'
               onClick={onAddLabelClicked}
               style={{ fontSize: '2.5vh' }}
-              >
+            >
               Add Label
             </Button>
           </label>
@@ -216,7 +212,7 @@ const LabelGeneration = () => {
             height: '100%'
           }}
         >
-          {renderLabels()}          
+          {renderLabels()}
         </View>
         <View
           style={{
@@ -238,17 +234,19 @@ const LabelGeneration = () => {
             Begin Meal!
           </Button>
         </View>
-        <Modal
-          transparent={true}
-          visible={!!editingButton}
-          animationType='slide'
-          onRequestClose={() => setEditingButton(null)}
-        >
+        <Modal transparent={true} visible={!!editingButton} animationType='slide' onRequestClose={() => setEditingButton(null)}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <View style={{ width: '80%', backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center' }}>
               <Text style={{ fontSize: textFontSize, marginBottom: 15 }}>Edit Button Text</Text>
-              <TextInput 
-                style={{ fontSize: textFontSize, width: '100%', borderBottomWidth: 5, borderBottomColor: 'green', padding: 20, marginBottom: 15}}
+              <TextInput
+                style={{
+                  fontSize: textFontSize,
+                  width: '100%',
+                  borderBottomWidth: 5,
+                  borderBottomColor: 'green',
+                  padding: 20,
+                  marginBottom: 15
+                }}
                 defaultValue={editingButton?.label}
                 onChangeText={(text) => setEditButtonText(text)}
                 autoFocus={true}
@@ -258,7 +256,7 @@ const LabelGeneration = () => {
                   variant='success'
                   className='justify-content-center mx-2 mb-2'
                   height='90%'
-                  size='lg'  
+                  size='lg'
                   onClick={saveEditClicked}
                   style={{ fontSize: textFontSize }}
                 >
@@ -268,8 +266,10 @@ const LabelGeneration = () => {
                   variant='danger'
                   className='justify-content-center mx-2 mb-2'
                   height='90%'
-                  size='lg'  
-                  onClick={() => {setEditingButton(null)}}
+                  size='lg'
+                  onClick={() => {
+                    setEditingButton(null)
+                  }}
                   style={{ fontSize: textFontSize }}
                 >
                   Cancel

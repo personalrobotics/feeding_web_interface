@@ -4,6 +4,7 @@ import React, { useCallback } from 'react'
 // Local Imports
 import '../Home.css'
 import { useROS, createROSService } from '../../../ros/ros_helpers'
+import { ROS_ACTIONS_NAMES } from '../../Constants'
 
 /**
  * The DetectingFoods component displays a circle progress bar while
@@ -22,15 +23,8 @@ const DetectingFoods = (props) => {
    * for VLM detection. This is created in useRef to avoid re-creating the client
    * upon re-renders.
    */
-  let serviceDetails = ROS_SERVICE_NAMES[MEAL_STATE.U_DetectingFoods]
-  let invokeGPT4oService = useRef(createROSService(ros.current, serviceDetails.serviceName, serviceDetails.messageType))
-
-  /**
-   * Create the ROS Action Client. This is created in useRef to avoid
-   * re-creating it upon re-renders.
-   */
-  let actionDetails = ROS_ACTIONS_NAMES[MEAL_STATE.U_DetectingFoods]
-  let segmentAllItems = useRef(createROSActionClient(ros.current, actionDetails.actionName, actionDetails.messageType))
+  let actionDetails = ROS_ACTIONS_NAMES[MEAL_STATE.U_UnderstandPlate]
+  let generateCaptionAction = useRef(createROSActionClient(ros.current, actionDetails.actionName, actionDetails.messageType))
 
   /** Get the full page view
    *
@@ -50,9 +44,9 @@ const DetectingFoods = (props) => {
           }}
         >
           <p className='transitionMessage' style={{ marginBottom: margin, marginTop: '0', fontSize: textFontSize }}>
-            Detecting food items...
+            Understanding the plate...
           </p>
-          <CircularProgressbar value={progress} text={`${progress}%`} />
+          <CircleProgressBar value={progress} text={`${progress}%`} />
         </View>
       </>
     )
