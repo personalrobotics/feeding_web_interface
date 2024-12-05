@@ -54,6 +54,18 @@ ROS_ACTIONS_NAMES[MEAL_STATE.R_MovingAbovePlate] = {
   actionName: 'MoveAbovePlate',
   messageType: 'ada_feeding_msgs/action/MoveTo'
 }
+ROS_ACTIONS_NAMES[MEAL_STATE.U_LabelGeneration] = {
+  serviceName: 'GenerateCaption',
+  messageType: 'ada_feeding_msgs/action/GenerateCaption'
+}
+ROS_ACTIONS_NAMES[MEAL_STATE.U_UnderstandPlate] = {
+  actionName: 'GenerateCaption',
+  messageType: 'ada_feeding_msgs/action/GenerateCaption'
+}
+ROS_ACTIONS_NAMES[MEAL_STATE.U_DetectingFoods] = {
+  serviceName: 'GenerateCaption',
+  messageType: 'ada_feeding_msgs/action/GenerateCaption'
+}
 ROS_ACTIONS_NAMES[MEAL_STATE.U_BiteSelection] = {
   actionName: 'SegmentFromPoint',
   messageType: 'ada_feeding_msgs/action/SegmentFromPoint'
@@ -99,18 +111,6 @@ export const RECOMPUTE_WORKSPACE_WALLS_ACTION_TYPE = 'ada_feeding_msgs/action/Tr
  * the service name and the message type
  */
 let ROS_SERVICE_NAMES = {}
-ROS_SERVICE_NAMES[MEAL_STATE.U_LabelGeneration] = {
-  serviceName: 'invoke_gpt4o',
-  messageType: 'ada_feeding_msgs/srv/GenerateCaption'
-}
-ROS_SERVICE_NAMES[MEAL_STATE.U_UnderstandPlate] = {
-  serviceName: 'invoke_gpt4o',
-  messageType: 'ada_feeding_msgs/srv/GenerateCaption'
-}
-ROS_SERVICE_NAMES[MEAL_STATE.U_DetectingFoods] = {
-  serviceName: 'invoke_gpt4o',
-  messageType: 'ada_feeding_msgs/srv/GenerateCaption'
-}
 ROS_SERVICE_NAMES[MEAL_STATE.U_BiteSelection] = {
   serviceName: 'toggle_table_detection',
   messageType: 'std_srvs/srv/SetBool'

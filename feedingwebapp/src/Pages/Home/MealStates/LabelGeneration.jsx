@@ -3,13 +3,13 @@ import React, { useCallback, useRef, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
 import { useMediaQuery } from 'react-responsive'
-import { View, Modal, TextInput, TouchableOpacity, Text } from 'react-native'
+import { View, Modal, TextInput, Text } from 'react-native'
 
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import { useROS, createROSService, createROSServiceRequest } from '../../../ros/ros_helpers'
-import { ROS_SERVICE_NAMES } from '../../Constants'
+import { useROS, createROSActionClient } from '../../../ros/ros_helpers'
+import { ROS_ACTIONS_NAMES } from '../../Constants'
 
 /**
  * The LabelGeneration component appears after the robot has moved above the plate.
@@ -56,15 +56,7 @@ const LabelGeneration = () => {
    * re-connecting upon re-renders.
    */
   const ros = useRef(useROS().ros)
-
-  /**
-   * Create the ROS Service to invoke GPT-4o to transform labels into a caption
-   * for VLM detection. This is created in useRef to avoid re-creating the client
-   * upon re-renders.
-   */
-  let serviceDetails = ROS_SERVICE_NAMES[MEAL_STATE.U_LabelGeneration]
-  let invokeGPT4oService = useRef(createROSService(ros.current, serviceDetails.serviceName, serviceDetails.messageType))
-
+  
   /**
    * Organize the buttons for the labels in columns based on the maximum
    * labels that can be displayed in a column.
@@ -143,18 +135,8 @@ const LabelGeneration = () => {
    * Callback function when the user clicks the "Begin Meal!" button.
    */
   const beginMealClicked = useCallback(() => {
-    console.log('beginMealClicked')
-    // Create a service request for the GPT-4o service
-    const inputLabels = Array.from(foodItemLabels)
-    let request = createROSServiceRequest({ input_labels: inputLabels })
-    // Call the GPT-4o service
-    let service = invokeGPT4oService.current
-    service.callService(request, (response) => {
-      setGPT4oResponse(response.caption)
-    })
-    console.log('GPT-4o service called' + gpt4oCaption)
     setLabelGenerationConfirmed(true)
-    setMealState(MEAL_STATE.U_BiteSelection)
+    setMealState(MEAL_STATE.U_UnderstandPlate)
   }, [setLabelGenerationConfirmed, setMealState])
 
   /** Get the full page view
