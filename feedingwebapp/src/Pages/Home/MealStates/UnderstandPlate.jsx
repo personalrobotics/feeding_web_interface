@@ -70,8 +70,8 @@ const DetectingFoods = (props) => {
     callROSAction(
       action, 
       { input_labels: inputLabels }, 
-      responseCallback, 
-      feedbackCallback
+      feedbackCallback, 
+      responseCallback
     )
     
     return () => { 
