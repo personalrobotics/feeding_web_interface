@@ -53,7 +53,7 @@ repos:
           - .github/LICENSE_HEADER.md
           - --use-current-year
           - --comment-style
-          - "//"
+          - "/*| *| */"
         types_or: [javascript, jsx, ts, tsx, css]
 
   - repo: https://github.com/psf/black

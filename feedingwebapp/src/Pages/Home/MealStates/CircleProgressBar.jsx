@@ -1,5 +1,7 @@
-// Copyright (c) 2024, Personal Robotics Laboratory
-// License: BSD 3-Clause. See LICENSE.md file in root directory.
+/*
+ * Copyright (c) 2024, Personal Robotics Laboratory
+ * License: BSD 3-Clause. See LICENSE.md file in root directory.
+ */
 
 // Import circle progress bar from progress bar package
 import { Circle } from './progressbar.js'
