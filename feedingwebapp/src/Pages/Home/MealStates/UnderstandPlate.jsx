@@ -4,9 +4,19 @@ import { View } from 'react-native'
 
 // Local Imports
 import '../Home.css'
+import {
+  ROS_ACTIONS_NAMES,
+  ROS_ACTION_STATUS_CANCEL_GOAL,
+  ROS_ACTION_STATUS_EXECUTE,
+  ROS_ACTION_STATUS_SUCCEED,
+  ROS_ACTION_STATUS_ABORT,
+  ROS_ACTION_STATUS_CANCELED,
+  ROS_SERVICE_NAMES,
+  SEGMENTATION_STATUS_SUCCESS,
+  MOVING_STATE_ICON_DICT
+} from '../../Constants'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 import { useROS, createROSActionClient, callROSAction, destroyActionClient } from '../../../ros/ros_helpers'
-import { ROS_ACTIONS_NAMES } from '../../Constants'
 import CircleProgressBar from './CircleProgressBar'
 
 
@@ -34,6 +44,10 @@ const DetectingFoods = (props) => {
 
   const [progress, setProgress] = useState(0)
 
+  const [actionStatus, setActionStatus] = useState({
+    actionStatus: null
+  })
+
   const [isRequestOngoing, setIsRequestOngoing] = useState(false);
 
   /**
@@ -55,7 +69,11 @@ const DetectingFoods = (props) => {
     if (feedbackMsg.values.feedback) {
       setProgress(feedbackMsg.values.feedback)
     }
-  })
+    setActionStatus({
+      actionStatus: ROS_ACTION_STATUS_EXECUTE,
+      feedback: feedbackMsg.values.feedback
+    })
+  }, [setProgress, setActionStatus])
 
   /**
    * Activate the circle progress bar when the ROS Action to invoke GPT-4o is called.
@@ -64,6 +82,7 @@ const DetectingFoods = (props) => {
     // Call the GPT-4o action to generate a caption for the food items
     console.log('reached use effect')
     let action = generateCaptionAction.current
+    console.log('action:', action)
 
     const inputLabels = Array.from(foodItemLabels)
     console.log('input labels:', inputLabels)
@@ -73,6 +92,10 @@ const DetectingFoods = (props) => {
       feedbackCallback, 
       responseCallback
     )
+
+    setActionStatus({
+      actionStatus: ROS_ACTION_STATUS_EXECUTE
+    })
     
     return () => { 
       // Destroy the action client
