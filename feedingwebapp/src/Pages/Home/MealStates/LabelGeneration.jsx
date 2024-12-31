@@ -1,15 +1,11 @@
 // React Imports
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import Button from 'react-bootstrap/Button'
-import Row from 'react-bootstrap/Row'
-import { useMediaQuery } from 'react-responsive'
 import { View, Modal, TextInput, Text } from 'react-native'
 
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
-import { useROS, createROSActionClient } from '../../../ros/ros_helpers'
-import { ROS_ACTIONS_NAMES } from '../../Constants'
 
 /**
  * The LabelGeneration component appears after the robot has moved above the plate.
@@ -18,21 +14,14 @@ import { ROS_ACTIONS_NAMES } from '../../Constants'
 const LabelGeneration = () => {
   // Get the relevant global variables
   const setMealState = useGlobalState((state) => state.setMealState)
-  const labelGenerationConfirmed = useGlobalState((state) => state.labelGenerationConfirmed)
   const setLabelGenerationConfirmed = useGlobalState((state) => state.setLabelGenerationConfirmed)
   const foodItemLabels = useGlobalState((state) => state.foodItemLabels)
   const setFoodItemLabels = useGlobalState((state) => state.setFoodItemLabels)
-  const gpt4oCaption = useGlobalState((state) => state.gpt4oCaption)
-  const setGPT4oResponse = useGlobalState((state) => state.setGPT4oResponse)
 
-  // Flag to check if the current orientation is portrait
-  const isPortrait = useMediaQuery({ query: '(orientation: portrait)' })
   // Font size for text
   let textFontSize = '3.5vh'
   // Margin
   let margin = '5vh'
-  // Indicator of how to arrange screen elements based on orientation
-  let dimension = isPortrait ? 'column' : 'row'
   // Limit on the number of labels for food items that can be inputted
   const maxLabels = 20
   // Limit on the number of label buttons that can be displayed in a column
@@ -51,12 +40,6 @@ const LabelGeneration = () => {
    */
   const [editButtonText, setEditButtonText] = useState('')
 
-  /**
-   * Connect to ROS, if not already connected. Put this in useRef to avoid
-   * re-connecting upon re-renders.
-   */
-  const ros = useRef(useROS().ros)
-  
   /**
    * Organize the buttons for the labels in columns based on the maximum
    * labels that can be displayed in a column.
@@ -81,27 +64,32 @@ const LabelGeneration = () => {
   const renderLabels = () => {
     let listItems = null
     if (foodItemLabels.size > 0) {
-      listItems = Array.from(foodItemLabels).map((label, index) => (
-        <div>
-          <Button
-            key={index}
-            variant='outline-success'
-            style={{ fontSize: textFontSize, marginBottom: '2vh' }}
-            onClick={() => setEditingButton({ label: label, index: index })}
-          >
-            {label}
-          </Button>
-          <Button
-            variant='danger'
-            style={{ fontSize: textFontSize, marginBottom: '2vh' }}
-            onClick={() => {
-              setFoodItemLabels(new Set(Array.from(foodItemLabels).filter((_, i) => i !== index)))
-            }}
-          >
-            <img style={{ width: '30px', height: 'auto' }} src='/robot_state_imgs/delete.svg' alt='delete_icon' />
-          </Button>
-        </div>
-      ))
+      listItems = Array.from(foodItemLabels).map(
+        (label, index) => (
+          label,
+          (
+            <div>
+              <Button
+                key={index}
+                variant='outline-success'
+                style={{ fontSize: textFontSize, marginBottom: '2vh' }}
+                onClick={() => setEditingButton({ label: label, index: index })}
+              >
+                {label}
+              </Button>
+              <Button
+                variant='danger'
+                style={{ fontSize: textFontSize, marginBottom: '2vh' }}
+                onClick={() => {
+                  setFoodItemLabels(new Set(Array.from(foodItemLabels).filter((_, i) => i !== index)))
+                }}
+              >
+                <img style={{ width: '30px', height: 'auto' }} src='/robot_state_imgs/delete.svg' alt='delete_icon' />
+              </Button>
+            </div>
+          )
+        )
+      )
     }
     return <View style={{ flexDirection: 'column', alignItems: 'stretch' }}>{listItems}</View>
   }

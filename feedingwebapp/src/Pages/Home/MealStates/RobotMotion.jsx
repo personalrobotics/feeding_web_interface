@@ -250,7 +250,7 @@ const RobotMotion = (props) => {
    * Callback function for when the resume button is pressed. It calls the
    * action once again.
    *
-   * Note that BiteAcquistiion won't have a "Resume" button, since if the robot
+   * Note that BiteAcquisition won't have a "Resume" button, since if the robot
    * has already touched the food then it may have shifted, which means the
    * previously-selected food mask may no longer be a valid goal.
    */

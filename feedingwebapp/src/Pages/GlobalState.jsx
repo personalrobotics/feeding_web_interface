@@ -26,7 +26,7 @@ export const APP_PAGE = {
  *   - U_PreMeal: Waiting for the user to click "Start Feeding."
  *   - U_LabelGeneration: Waiting for the user to label the food items on the
  *     plate.
- *   - U_UnderstandPlate: Waiting for the robot to generate a visually descriptive  
+ *   - U_UnderstandPlate: Waiting for the robot to generate a visually descriptive
  *     caption that describes the food items on the plate.
  *   - U_DetectingFoods: Waiting for the robot to detect the food items on the
  *     plate.

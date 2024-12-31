@@ -198,6 +198,15 @@ export const SEGMENTATION_STATUS_CANCELED = 3
 export const SEGMENTATION_STATUS_UNKNOWN = 99
 
 /**
+ * The meaning of the status that the label generation action returns in its results.
+ * These should match the action definition.
+ */
+export const LABEL_GENERATION_STATUS_SUCCESS = 0
+export const LABEL_GENERATION_STATUS_FAILED = 1
+export const LABEL_GENERATION_STATUS_CANCELED = 3
+export const LABEL_GENERATION_STATUS_UNKNOWN = 99
+
+/**
  * The meaning of ROS Action statuses.
  * https://docs.ros2.org/latest/api/rclpy/api/actions.html#rclpy.action.server.GoalEvent
  */
