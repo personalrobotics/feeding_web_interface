@@ -123,10 +123,10 @@ const UnderstandPlate = () => {
         if (gpt4oCaption.length > 0) {
           return 'Robot has labeled the food items'
         } else {
-          return 'Retry labeling the food items'
+          return 'Labeling task failed, either retry or continue without labels'
         }
       case ROS_ACTION_STATUS_ABORT:
-        return 'Error in labeling task'
+        return 'Error in labeling task, either retry or continue without labels'
       case ROS_ACTION_STATUS_CANCELED:
         return 'Labeling task was canceled'
       default:

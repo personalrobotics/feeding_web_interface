@@ -144,6 +144,8 @@ const Settings = (props) => {
         return <PlanningScene />
       case SETTINGS_STATE.AUTO_CONTINUE:
         return <AutoContinue />
+      case SETTINGS_STATE.SEMANTIC_LABELING:
+        return <SemanticLabeling />
       default:
         console.log('Invalid settings state', settingsState)
         return <Main />

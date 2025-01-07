@@ -2,10 +2,12 @@
 import React, { useCallback, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import { View, Modal, TextInput, Text } from 'react-native'
+import { toast } from 'react-toastify'
 
 // Local Imports
 import '../Home.css'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
+import { REGULAR_CONTAINER_ID } from '../../Constants'
 
 /**
  * The LabelGeneration component appears after the robot has moved above the plate.
@@ -84,7 +86,7 @@ const LabelGeneration = () => {
                   setFoodItemLabels(new Set(Array.from(foodItemLabels).filter((_, i) => i !== index)))
                 }}
               >
-                <img style={{ width: '30px', height: 'auto' }} src='/robot_state_imgs/delete.svg' alt='delete_icon' />
+                <img style={{ width: '30px', height: 'auto' }} src='/robot_state_imgs/delete.svg' alt='delete_icon'/>
               </Button>
             </div>
           )
@@ -123,8 +125,17 @@ const LabelGeneration = () => {
    * Callback function when the user clicks the "Begin Meal!" button.
    */
   const beginMealClicked = useCallback(() => {
-    setLabelGenerationConfirmed(true)
-    setMealState(MEAL_STATE.U_UnderstandPlate)
+    if (foodItemLabels.size === 0) {
+      // Display a toast message to the user if they have not inputted any labels
+      toast.error('Please input at least one label for the food items you will be eating!', {
+        containerId: REGULAR_CONTAINER_ID,
+        toastId: 'emptyName'
+      })
+    } else {
+      setLabelGenerationConfirmed(true)
+      setMealState(MEAL_STATE.U_UnderstandPlate)
+    }
+        
   }, [setLabelGenerationConfirmed, setMealState])
 
   /** Get the full page view

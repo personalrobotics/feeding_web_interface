@@ -198,6 +198,11 @@ const Main = () => {
       title: 'Auto-Continue',
       icon: FORWARD_ICON,
       onClick: () => onClickSettingsPage(SETTINGS_STATE.AUTO_CONTINUE)
+    },
+    {
+      title: 'Semantic Labeling UI',
+      icon: FORWARD_ICON,
+      onClick: () => onClickSettingsPage(SETTINGS_STATE.SEMANTIC_LABELING)
     }
   ]
 
