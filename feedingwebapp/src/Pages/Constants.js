@@ -62,10 +62,6 @@ ROS_ACTIONS_NAMES[MEAL_STATE.U_UnderstandPlate] = {
   actionName: 'GenerateCaption',
   messageType: 'ada_feeding_msgs/action/GenerateCaption'
 }
-ROS_ACTIONS_NAMES[MEAL_STATE.U_DetectingFoods] = {
-  serviceName: 'GenerateCaption',
-  messageType: 'ada_feeding_msgs/action/GenerateCaption'
-}
 ROS_ACTIONS_NAMES[MEAL_STATE.U_BiteSelection] = {
   actionName: 'SegmentFromPoint',
   messageType: 'ada_feeding_msgs/action/SegmentFromPoint'
@@ -196,6 +192,15 @@ export const SEGMENTATION_STATUS_SUCCESS = 0
 export const SEGMENTATION_STATUS_FAILED = 1
 export const SEGMENTATION_STATUS_CANCELED = 3
 export const SEGMENTATION_STATUS_UNKNOWN = 99
+
+/**
+ * The meaning of the status that the SegmentAllItems action returns in its results.
+ * These should match the action definition.   
+ */
+export const SEGMENT_ALL_ITEMS_STATUS_SUCCESS = 0
+export const SEGMENT_ALL_ITEMS_STATUS_FAILED = 1
+export const SEGMENT_ALL_ITEMS_STATUS_CANCELED = 3
+export const SEGMENT_ALL_ITEMS_STATUS_UNKNOWN = 99
 
 /**
  * The meaning of the status that the label generation action returns in its results.

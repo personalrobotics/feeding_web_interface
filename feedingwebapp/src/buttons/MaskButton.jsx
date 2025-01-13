@@ -1,5 +1,6 @@
 // React imports
 import React, { useCallback, useEffect, useRef } from 'react'
+import { Text } from 'react-native'
 import Button from 'react-bootstrap/Button'
 // PropTypes is used to validate that the used props are in fact passed to this Component
 import PropTypes from 'prop-types'
@@ -124,6 +125,16 @@ function MaskButton(props) {
               pointerEvents: 'none'
             }}
           />
+          <Text
+            style={{
+              position: 'absolute',
+              top: '0px',
+              display: 'block',
+              pointerEvents: 'none'
+            }}
+          >
+            {props.semanticLabel}
+          </Text>
           <canvas
             ref={canvasRef}
             width={maskBoundingBox.width * maskScaleFactor}
@@ -161,6 +172,8 @@ MaskButton.propTypes = {
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired
   }).isRequired,
+  // The semantic label describing the region of interest
+  semanticLabel: PropTypes.string,
   // The function to call when the button is clicked
   onClick: PropTypes.func.isRequired,
   // The value to pass to the onClick function

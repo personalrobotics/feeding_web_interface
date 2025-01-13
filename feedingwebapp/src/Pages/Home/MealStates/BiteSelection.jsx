@@ -28,10 +28,12 @@ import {
   ROS_ACTION_STATUS_CANCELED,
   ROS_SERVICE_NAMES,
   SEGMENTATION_STATUS_SUCCESS,
+  SEGMENT_ALL_ITEMS_STATUS_SUCCESS,
   MOVING_STATE_ICON_DICT
 } from '../../Constants'
 import { useGlobalState, MEAL_STATE } from '../../GlobalState'
 import VideoFeed from '../VideoFeed'
+import { act } from 'react'
 
 /**
  * The BiteSelection component appears after the robot has moved above the plate,
@@ -46,6 +48,9 @@ const BiteSelection = (props) => {
   const setBiteAcquisitionActionGoal = useGlobalState((state) => state.setBiteAcquisitionActionGoal)
   const biteSelectionZoom = useGlobalState((state) => state.biteSelectionZoom)
   const setBiteSelectionZoom = useGlobalState((state) => state.setBiteSelectionZoom)
+  const semanticLabeling = useGlobalState((state) => state.semanticLabeling)
+  const setSemanticLabeling = useGlobalState((state) => state.setSemanticLabeling) // delete
+  const gpt4oCaption = useGlobalState((state) => state.gpt4oCaption)
   // Get icon image for move to mouth
   let moveToStagingConfigurationImage = MOVING_STATE_ICON_DICT[MEAL_STATE.R_MovingToStagingConfiguration]
 
@@ -69,6 +74,7 @@ const BiteSelection = (props) => {
    * image.
    */
   const [actionResult, setActionResult] = useState(null)
+  const [detectFoodsActionResult, setDetectFoodsActionResult] = useState(null)
   const [numImageClicks, setNumImageClicks] = useState(0)
   /**
    * NOTE: We slightly abuse the ROS_ACTION_STATUS values in this local state
@@ -77,6 +83,10 @@ const BiteSelection = (props) => {
    * creating an extra enum.
    */
   const [actionStatus, setActionStatus] = useState({
+    actionStatus: null
+  })
+
+  const [detectFoodsActionStatus, setDetectFoodsActionStatus] = useState({
     actionStatus: null
   })
 
@@ -92,6 +102,13 @@ const BiteSelection = (props) => {
    */
   let actionDetails = ROS_ACTIONS_NAMES[MEAL_STATE.U_BiteSelection]
   let segmentFromPointAction = useRef(createROSActionClient(ros.current, actionDetails.actionName, actionDetails.messageType))
+
+  /**
+   * Create the ROS Action Client to semantically label the food items. This is 
+   * created in local state to avoid re-creating it upon every re-render.
+   */
+  let semanticActionDetails = ROS_ACTIONS_NAMES[MEAL_STATE.U_DetectingFoods]
+  let semanticLabelingAction = useRef(createROSActionClient(ros.current, semanticActionDetails.actionName, semanticActionDetails.messageType))
 
   /**
    * Create the ROS Service to toggle on/off table detection. This is created in
@@ -226,10 +243,48 @@ const BiteSelection = (props) => {
     [segmentFromPointAction, numImageClicks, feedbackCallback, responseCallback, setNumImageClicks, setActionStatus]
   )
 
+  const detectFoodsFeedbackCallback = useCallback(
+    (feedbackMsg) => {
+      setDetectFoodsActionStatus({
+        actionStatus: ROS_ACTION_STATUS_EXECUTE,
+        feedback: feedbackMsg.values.feedback
+      })
+    },
+    [setActionStatus]
+  )
+
+  const detectFoodsResponseCallback = useCallback(
+    (response) => {
+      if (response.response_type === 'result' && response.values.status === SEGMENT_ALL_ITEMS_STATUS_SUCCESS) {
+        setDetectFoodsActionStatus({
+          actionStatus: ROS_ACTION_STATUS_SUCCEED
+        })
+        console.log('Got result', response.values)
+        setDetectFoodsActionResult(response.values)
+      } else {
+        if (
+          response.response_type === 'cancel' ||
+          response.values === ROS_ACTION_STATUS_CANCEL_GOAL ||
+          response.values === ROS_ACTION_STATUS_CANCELED
+        ) {
+          setDetectFoodsActionStatus({
+            actionStatus: ROS_ACTION_STATUS_CANCELED
+          })
+        } else {
+          setDetectFoodsActionStatus({
+            actionStatus: ROS_ACTION_STATUS_ABORT
+          })
+        }
+      }
+    },
+    [setDetectFoodsActionStatus, setDetectFoodsActionResult]
+  )
+
   /**
-   * Cancel any running actions when the component unmounts. Also, toggle on table
-   * detection when the component first mounts and toggle it off when the component
-   * unmounts.
+   * Cancel any running actions when the component unmounts. If semantic labeling is activated
+   * in the settings, call the SegmentAllItems action to detect the food items on the plate. 
+   * Also, toggle on table detection when the component first mounts and toggle it off when the 
+   * component unmounts.
    */
   useEffect(() => {
     // Create a service request
@@ -239,6 +294,26 @@ const BiteSelection = (props) => {
     service.callService(request, (response) => console.log('Got toggle table detection service response', response))
 
     let action = segmentFromPointAction.current
+    
+    // For the sake of testing the SegmentAllItems action call
+    setSemanticLabeling(true)
+
+    if (semanticLabeling) {
+      action = semanticLabelingAction.current
+      console.log('GPT-4o caption:', gpt4oCaption)
+      // Call the semantic labeling ROS action
+      callROSAction(
+        action,
+        { caption: gpt4oCaption },
+        detectFoodsFeedbackCallback,
+        detectFoodsResponseCallback
+      )
+      setActionStatus({
+        actionStatus: ROS_ACTION_STATUS_EXECUTE
+      })
+
+    }
+
     return () => {
       // Create a service request
       let request = createROSServiceRequest({ data: false })
@@ -247,7 +322,7 @@ const BiteSelection = (props) => {
       // Destroy the action client
       destroyActionClient(action)
     }
-  }, [segmentFromPointAction, toggleTableDetectionService])
+  }, [semanticLabelingAction, segmentFromPointAction, toggleTableDetectionService])
 
   /** Get the continue button when debug mode is enabled
    *
@@ -371,6 +446,7 @@ const BiteSelection = (props) => {
                   invertMask={true}
                   maskScaleFactor={maskScaleFactors[i]}
                   maskBoundingBox={detected_item.roi}
+                  semanticLabel={"placeholder"}
                   onClick={foodItemClicked}
                   value={i.toString()}
                 />
@@ -381,6 +457,83 @@ const BiteSelection = (props) => {
       }
     }
   }, [actionStatus, actionResult, foodItemClicked, isPortrait, windowSize, margin, scaleMasksEqually])
+
+
+  /**
+   * Renders the food item buttons including the bounding box and food item label for 
+   * the semantic label based bite selection user interface
+   * 
+   * @returns {JSX.Element} the food item buttons
+   */
+  const renderFoodItemButtons = useCallback(() => {
+    // If the action succeeded
+    if (detectFoodsActionStatus.actionStatus === ROS_ACTION_STATUS_SUCCEED) {
+      // If we have a result and there are detected items
+      if (detectFoodsActionResult && detectFoodsActionResult.detected_items && detectFoodsActionResult.detected_items.length > 0
+          && detectFoodsActionResult.item_labels && detectFoodsActionResult.item_labels.length > 0) {
+        // Get the allotted space per mask
+        let parentWidth, parentHeight
+        if (maskButtonParentRef.current) {
+          parentWidth = maskButtonParentRef.current.clientWidth
+          parentHeight = maskButtonParentRef.current.clientHeight
+        } else {
+          parentWidth = isPortrait ? windowSize.width : windowSize.width / 2.0
+          parentHeight = isPortrait ? windowSize.height / 4.0 : windowSize.height / 3.0
+        }
+        let allottedSpaceWidth = parentWidth / detectFoodsActionResult.detected_items.length - margin * 2
+        let allottedSpaceHeight = parentHeight - margin * 2
+        let buttonSize = {
+          width: allottedSpaceWidth,
+          height: allottedSpaceHeight
+        }
+
+        /**
+         * Determine how much to scale the bounding boxes so that the largest
+         * bounding box fits into the alloted space.
+         */
+        // Get the size of the largest bounding box 
+        let [maxWidth, maxHeight] = [0, 0]
+        if (scaleMasksEqually) {
+          for (let detected_item of detectFoodsActionResult.detected_items) {
+            if (detected_item.width > maxWidth) {
+              maxWidth = detected_item.width
+            }
+            if (detected_item.height > maxHeight) {
+              maxHeight = detected_item.height
+            }
+          }
+        }
+
+        // Create a list to contain the scale factors for each bounding box
+        let bboxScaleFactors = []
+        for (let detected_item of detectFoodsActionResult.detected_items) {
+          let widthScaleFactor = allottedSpaceWidth / (scaleMasksEqually ? maxWidth : detected_item.width)
+          let heightScaleFactor = allottedSpaceHeight / (scaleMasksEqually ? maxHeight : detected_item.height)
+          let bboxScaleFactor = Math.min(widthScaleFactor, heightScaleFactor)
+          bboxScaleFactors.push(bboxScaleFactor)
+        }
+
+        return (
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+            {actionResult.detected_items.map((detected_item, i) => (
+              <View key={i} style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                <MaskButton
+                  imgSrc={'data:image/jpeg;base64,' + detected_item.rgb_image.data}
+                  buttonSize={buttonSize}
+                  maskSrc={'data:image/jpeg;base64,' + detected_item.data}
+                  invertMask={true}
+                  maskScaleFactor={bboxScaleFactors[i]}
+                  maskBoundingBox={detected_item.roi}
+                  onClick={foodItemClicked}
+                  value={i.toString()}
+                />
+              </View>
+            ))}
+          </View>
+        )
+      }
+    } 
+  })
 
   /** Get the button for continue without acquiring bite
    *
